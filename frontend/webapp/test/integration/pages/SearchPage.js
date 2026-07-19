@@ -54,6 +54,15 @@ sap.ui.define([
                         },
                         errorMessage: "Back button not found on search page header"
                     });
+                },
+
+                iOpenExpertFilters: function () {
+                    return this.waitFor({
+                        id: "expertFilterBtn",
+                        viewName: DASHBOARD_VIEW,
+                        actions: new Press(),
+                        errorMessage: "Expert filter button not found on search page"
+                    });
                 }
             },
 
@@ -129,6 +138,40 @@ sap.ui.define([
                             Opa5.assert.ok(true, "Search/results page is the current NavContainer page");
                         },
                         errorMessage: "Search page not found in NavContainer"
+                    });
+                },
+
+                iSeeExpertFilterButton: function () {
+                    return this.waitFor({
+                        id: "expertFilterBtn",
+                        viewName: DASHBOARD_VIEW,
+                        success: function () {
+                            Opa5.assert.ok(true, "Single Filter button is present on the search page");
+                        },
+                        errorMessage: "Expert filter button not found on search page"
+                    });
+                },
+
+                iSeeFilterPopoverControls: function () {
+                    // The popover content (moved from the old inline bar) must contain the
+                    // Budget quick-filter button and the distance Slider. searchOpenDialogs
+                    // reaches controls rendered in the popover's static area.
+                    this.waitFor({
+                        searchOpenDialogs: true,
+                        controlType: "sap.m.Slider",
+                        success: function () {
+                            Opa5.assert.ok(true, "Distance slider is present inside the filter popover");
+                        },
+                        errorMessage: "Distance slider not found inside the filter popover"
+                    });
+                    return this.waitFor({
+                        searchOpenDialogs: true,
+                        controlType: "sap.m.Button",
+                        matchers: new PropertyStrictEquals({ name: "text", value: "Budget" }),
+                        success: function () {
+                            Opa5.assert.ok(true, "'Budget' quick-filter is present inside the filter popover");
+                        },
+                        errorMessage: "'Budget' quick-filter not found inside the filter popover"
                     });
                 }
             }

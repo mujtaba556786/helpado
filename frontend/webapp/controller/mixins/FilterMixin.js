@@ -3,6 +3,30 @@ sap.ui.define([], function () {
 
     return {
 
+        onOpenExpertFilters: function (oEvent) {
+            var oButton = oEvent.getSource();
+            if (!this._pExpertFiltersPopover) {
+                var Fragment = sap.ui.require("sap/ui/core/Fragment");
+                this._pExpertFiltersPopover = Fragment.load({
+                    id:         this.getView().getId(),
+                    name:       "helphub.view.fragments.ExpertFiltersPopover",
+                    controller: this
+                }).then(function (oPopover) {
+                    this.getView().addDependent(oPopover);
+                    return oPopover;
+                }.bind(this));
+            }
+            this._pExpertFiltersPopover.then(function (oPopover) {
+                oPopover.openBy(oButton);
+            });
+        },
+
+        formatExpertFilterLabel: function (iCount) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            var sBase   = oBundle.getText("filterButton");
+            return iCount > 0 ? sBase + " (" + iCount + ")" : sBase;
+        },
+
         onDistanceChange: function (oEvent) {
             var iVal = oEvent.getParameter("value");
             var oModel = this.getModel("appData");

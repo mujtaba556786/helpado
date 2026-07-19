@@ -1,0 +1,56 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+
+    <!--
+      Experts filter popover — anchored to the "Filter" button on the search page.
+      Controls are moved verbatim from the old inline filter bar so all existing
+      handlers, bindings and CSS classes keep working unchanged.
+    -->
+    <Popover id="expertFiltersPopover"
+        title="{i18n>filterTitle}"
+        placement="Bottom"
+        contentWidth="300px">
+
+        <VBox class="sapUiSmallMargin">
+
+            <!-- Quick filter pills -->
+            <HBox wrap="Wrap" alignItems="Center" class="hhExpertPills">
+                <Button icon="sap-icon://status-positive" text="{i18n>availableNow}" type="{= ${appData>/filters/availableNow} ? 'Emphasized' : 'Default'}" press="onFilterAvailableNow" class="hhFilterPill"/>
+                <Button text="{i18n>all}"                 type="{= ${appData>/filters/priceCategory} === 'all' ? 'Emphasized' : 'Default'}" press="onFilterAll" class="hhFilterPill"/>
+                <Button icon="sap-icon://favorite"        text="{i18n>topRated}"     type="{= ${appData>/filters/priceCategory} === 'top' ? 'Emphasized' : 'Default'}" press="onFilterTopRated" class="hhFilterPill"/>
+                <Button icon="sap-icon://money-bills"     text="{i18n>budgetFilter}" type="{= ${appData>/filters/priceCategory} === 'budget' ? 'Emphasized' : 'Default'}" press="onFilterBudget" class="hhFilterPill"/>
+            </HBox>
+
+            <!-- Distance row -->
+            <HBox alignItems="Center" class="hhExpertSliderRow">
+                <core:Icon src="sap-icon://map" class="hhSliderIcon"/>
+                <Slider min="1" max="50" step="1"
+                    value="{appData>/filters/distance}"
+                    liveChange="onDistanceChange"
+                    class="hhDistanceSlider"/>
+                <Text text="{appData>/filters/distanceLabel}" class="hhSliderLabel fontBold"/>
+            </HBox>
+
+            <!-- Language row -->
+            <HBox alignItems="Center" class="hhExpertLangRow">
+                <core:Icon src="sap-icon://world" class="hhSliderIcon"/>
+                <Input value="{appData>/filters/language}"
+                    placeholder="{i18n>languagePlaceholder}"
+                    liveChange="onLangFilter"
+                    width="140px"
+                    class="hhLangInput"/>
+            </HBox>
+
+            <!-- Reset -->
+            <Button text="{i18n>resetFilters}"
+                icon="sap-icon://undo"
+                type="Transparent"
+                press="onResetFilters"
+                visible="{= ${appData>/filters/activeCount} > 0}"
+                class="hhResetBtn"/>
+
+        </VBox>
+    </Popover>
+</core:FragmentDefinition>
