@@ -89,6 +89,21 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    // ── 4b. Filters consolidated into a single popover ────────────────────
+
+    opaTest("Filter button opens a popover containing the filter controls", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressServiceTile("Cleaning");
+
+        Then.onTheSearchPage.iSeeExpertFilterButton();
+
+        When.onTheSearchPage.iOpenExpertFilters();
+
+        Then.onTheSearchPage.iSeeFilterPopoverControls();
+        Then.iTeardownMyUIComponent();
+    });
+
     // ── 5. Other categories also return results ───────────────────────────
 
     opaTest("Pressing Gardening tile shows a populated provider list", function (Given, When, Then) {
