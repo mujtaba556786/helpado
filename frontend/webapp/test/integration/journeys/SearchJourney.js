@@ -97,6 +97,7 @@ sap.ui.define([
         When.onTheDashboard.iPressServiceTile("Cleaning");
 
         Then.onTheSearchPage.iSeeExpertFilterButton();
+        Then.onTheSearchPage.iSeeInlineDistanceAndLanguage();
 
         When.onTheSearchPage.iOpenExpertFilters();
 

@@ -535,15 +535,37 @@ xmlns:l="sap.ui.layout"
                             width="100%"
                             class="hhExpertSearch"/>
 
-                        <!-- Single Filter button — opens the ExpertFiltersPopover -->
-                        <HBox class="hhCatDropWrap">
+                        <!-- Top row: Filter button (opens popover) + inline Language select on the right -->
+                        <HBox class="hhCatDropWrap" justifyContent="SpaceBetween" alignItems="Center">
                             <Button id="expertFilterBtn"
                                 icon="sap-icon://filter"
                                 text="{path:'appData>/filters/activeCount', formatter:'.formatExpertFilterLabel'}"
                                 type="{= ${appData>/filters/activeCount} > 0 ? 'Emphasized' : 'Default'}"
                                 press="onOpenExpertFilters"
                                 class="hhCatDropBtn"/>
+                            <Select id="languageSelect" autoAdjustWidth="true"
+                                selectedKey="{appData>/filters/language}"
+                                change="onLanguageSelect">
+                                <core:Item key=""   text="{i18n>langAny}"/>
+                                <core:Item key="EN" text="English"/>
+                                <core:Item key="DE" text="Deutsch"/>
+                                <core:Item key="TR" text="Türkçe"/>
+                                <core:Item key="AR" text="العربية"/>
+                            </Select>
                         </HBox>
+
+                        <!-- Distance — inline preset chips (primary filter for local search) -->
+                        <Label text="{i18n>filterDistance}" design="Bold" class="sapUiTinyMarginTop"/>
+                        <SegmentedButton id="distanceSeg" width="100%"
+                            selectedKey="{appData>/filters/distance}"
+                            selectionChange="onDistancePreset">
+                            <items>
+                                <SegmentedButtonItem key="5"  text="5 km"/>
+                                <SegmentedButtonItem key="10" text="10 km"/>
+                                <SegmentedButtonItem key="25" text="25 km"/>
+                                <SegmentedButtonItem key="50" text="50 km"/>
+                            </items>
+                        </SegmentedButton>
                     </VBox>
 
                     <!-- ── Heading ── -->

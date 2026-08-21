@@ -153,25 +153,44 @@ sap.ui.define([
                 },
 
                 iSeeFilterPopoverControls: function () {
-                    // The popover content (moved from the old inline bar) must contain the
-                    // Budget quick-filter button and the distance Slider. searchOpenDialogs
-                    // reaches controls rendered in the popover's static area.
+                    // The popover holds availability + quality: a Switch and a SegmentedButton.
+                    // searchOpenDialogs reaches controls rendered in the popover's static area.
                     this.waitFor({
                         searchOpenDialogs: true,
-                        controlType: "sap.m.Slider",
+                        controlType: "sap.m.SegmentedButton",
                         success: function () {
-                            Opa5.assert.ok(true, "Distance slider is present inside the filter popover");
+                            Opa5.assert.ok(true, "Quality SegmentedButton is present inside the filter popover");
                         },
-                        errorMessage: "Distance slider not found inside the filter popover"
+                        errorMessage: "SegmentedButton not found inside the filter popover"
                     });
                     return this.waitFor({
                         searchOpenDialogs: true,
-                        controlType: "sap.m.Button",
-                        matchers: new PropertyStrictEquals({ name: "text", value: "Budget" }),
+                        controlType: "sap.m.Switch",
                         success: function () {
-                            Opa5.assert.ok(true, "'Budget' quick-filter is present inside the filter popover");
+                            Opa5.assert.ok(true, "'Available now' Switch is present inside the filter popover");
                         },
-                        errorMessage: "'Budget' quick-filter not found inside the filter popover"
+                        errorMessage: "Availability Switch not found inside the filter popover"
+                    });
+                },
+
+                iSeeInlineDistanceAndLanguage: function () {
+                    // Distance preset chips and Language select live inline on the search
+                    // page, outside the popover.
+                    this.waitFor({
+                        id: "distanceSeg",
+                        viewName: DASHBOARD_VIEW,
+                        success: function () {
+                            Opa5.assert.ok(true, "Distance preset chips are present inline on the search page");
+                        },
+                        errorMessage: "Inline distance preset chips not found on the search page"
+                    });
+                    return this.waitFor({
+                        id: "languageSelect",
+                        viewName: DASHBOARD_VIEW,
+                        success: function () {
+                            Opa5.assert.ok(true, "Language select is present inline on the search page");
+                        },
+                        errorMessage: "Inline language select not found on the search page"
                     });
                 }
             }
