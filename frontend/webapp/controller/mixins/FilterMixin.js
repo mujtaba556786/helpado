@@ -27,8 +27,9 @@ sap.ui.define([], function () {
             return iCount > 0 ? sBase + " (" + iCount + ")" : sBase;
         },
 
-        onDistanceChange: function (oEvent) {
-            var iVal = oEvent.getParameter("value");
+        // Distance preset chips (5/10/25/50 km) — key is the radius in km.
+        onDistancePreset: function (oEvent) {
+            var iVal = parseInt(oEvent.getParameter("item").getKey(), 10);
             var oModel = this.getModel("appData");
             oModel.setProperty("/filters/distance", iVal);
             oModel.setProperty("/filters/distanceLabel", "Within " + iVal + " km");
@@ -40,28 +41,25 @@ sap.ui.define([], function () {
             this._refreshCurrentFilters();
         },
 
-        onFilterAll: function () {
-            this.getModel("appData").setProperty("/filters/priceCategory", "all");
+        // Quality SegmentedButton (All / Top rated / Budget) — reads the chosen item key.
+        onPriceCategorySelect: function (oEvent) {
+            var oItem = oEvent.getParameter("item");
+            this.getModel("appData").setProperty("/filters/priceCategory", oItem.getKey());
             this._updateActiveFilterCount();
             this._refreshCurrentFilters();
         },
 
-        onFilterTopRated: function () {
-            this.getModel("appData").setProperty("/filters/priceCategory", "top");
+        // Availability Switch — reads the new on/off state directly.
+        onAvailableNowSwitch: function (oEvent) {
+            this.getModel("appData").setProperty("/filters/availableNow", oEvent.getParameter("state"));
             this._updateActiveFilterCount();
             this._refreshCurrentFilters();
         },
 
-        onFilterBudget: function () {
-            this.getModel("appData").setProperty("/filters/priceCategory", "budget");
-            this._updateActiveFilterCount();
-            this._refreshCurrentFilters();
-        },
-
-        onFilterAvailableNow: function () {
-            var oModel = this.getModel("appData");
-            var bCurrent = oModel.getProperty("/filters/availableNow");
-            oModel.setProperty("/filters/availableNow", !bCurrent);
+        // Language Select — key is a language code (EN/DE/…) or "" for any.
+        onLanguageSelect: function (oEvent) {
+            var oItem = oEvent.getParameter("selectedItem");
+            this.getModel("appData").setProperty("/filters/language", oItem ? oItem.getKey() : "");
             this._updateActiveFilterCount();
             this._refreshCurrentFilters();
         },
@@ -80,12 +78,6 @@ sap.ui.define([], function () {
             this._refreshCurrentFilters();
         },
 
-        onLangFilter: function (oEvent) {
-            var sLang = oEvent.getSource().data("lang");
-            this.getModel("appData").setProperty("/filters/language", sLang);
-            this._updateActiveFilterCount();
-            this._refreshCurrentFilters();
-        },
 
         _updateActiveFilterCount: function () {
             var oModel = this.getModel("appData");
@@ -113,7 +105,9 @@ sap.ui.define([], function () {
             var oModel = this.getModel("appData");
             var aAll = oModel.getProperty("/providers") || [];
             var oFilters = oModel.getProperty("/filters") || {};
-            var oUserLoc = oModel.getProperty("/user/location");
+            // Fall back to Berlin centre when geolocation is unset, matching MapMixin —
+            // otherwise every provider computes as 999 km and the distance filter is a no-op.
+            var oUserLoc = oModel.getProperty("/user/location") || { lat: 52.52, lng: 13.405 };
             var that = this;
 
             var sQuery = (oModel.getProperty("/searchQuery") || "").toLowerCase();

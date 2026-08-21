@@ -5,8 +5,8 @@
 
     <!--
       Experts filter popover — anchored to the "Filter" button on the search page.
-      Controls are moved verbatim from the old inline filter bar so all existing
-      handlers, bindings and CSS classes keep working unchanged.
+      Holds availability + quality only; Distance and Language live inline on the
+      search page (see Dashboard.view.xml). Filter logic is unchanged — see FilterMixin.
     -->
     <Popover id="expertFiltersPopover"
         title="{i18n>filterTitle}"
@@ -15,33 +15,25 @@
 
         <VBox class="sapUiSmallMargin">
 
-            <!-- Quick filter pills -->
-            <HBox wrap="Wrap" alignItems="Center" class="hhExpertPills">
-                <Button icon="sap-icon://status-positive" text="{i18n>availableNow}" type="{= ${appData>/filters/availableNow} ? 'Emphasized' : 'Default'}" press="onFilterAvailableNow" class="hhFilterPill"/>
-                <Button text="{i18n>all}"                 type="{= ${appData>/filters/priceCategory} === 'all' ? 'Emphasized' : 'Default'}" press="onFilterAll" class="hhFilterPill"/>
-                <Button icon="sap-icon://favorite"        text="{i18n>topRated}"     type="{= ${appData>/filters/priceCategory} === 'top' ? 'Emphasized' : 'Default'}" press="onFilterTopRated" class="hhFilterPill"/>
-                <Button icon="sap-icon://money-bills"     text="{i18n>budgetFilter}" type="{= ${appData>/filters/priceCategory} === 'budget' ? 'Emphasized' : 'Default'}" press="onFilterBudget" class="hhFilterPill"/>
+            <!-- Availability -->
+            <Label text="{i18n>filterAvailability}" design="Bold" class="sapUiTinyMarginBottom"/>
+            <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBottom">
+                <Text text="{i18n>availableNow}"/>
+                <Switch state="{appData>/filters/availableNow}" change="onAvailableNowSwitch"/>
             </HBox>
 
-            <!-- Distance row -->
-            <HBox alignItems="Center" class="hhExpertSliderRow">
-                <core:Icon src="sap-icon://map" class="hhSliderIcon"/>
-                <Slider min="1" max="50" step="1"
-                    value="{appData>/filters/distance}"
-                    liveChange="onDistanceChange"
-                    class="hhDistanceSlider"/>
-                <Text text="{appData>/filters/distanceLabel}" class="hhSliderLabel fontBold"/>
-            </HBox>
-
-            <!-- Language row -->
-            <HBox alignItems="Center" class="hhExpertLangRow">
-                <core:Icon src="sap-icon://world" class="hhSliderIcon"/>
-                <Input value="{appData>/filters/language}"
-                    placeholder="{i18n>languagePlaceholder}"
-                    liveChange="onLangFilter"
-                    width="140px"
-                    class="hhLangInput"/>
-            </HBox>
+            <!-- Show (quality) -->
+            <Label text="{i18n>filterShow}" design="Bold" class="sapUiTinyMarginBottom"/>
+            <SegmentedButton width="100%"
+                selectedKey="{appData>/filters/priceCategory}"
+                selectionChange="onPriceCategorySelect"
+                class="sapUiSmallMarginBottom">
+                <items>
+                    <SegmentedButtonItem key="all"    text="{i18n>all}"/>
+                    <SegmentedButtonItem key="top"    text="{i18n>topRated}"/>
+                    <SegmentedButtonItem key="budget" text="{i18n>budgetFilter}"/>
+                </items>
+            </SegmentedButton>
 
             <!-- Reset -->
             <Button text="{i18n>resetFilters}"
