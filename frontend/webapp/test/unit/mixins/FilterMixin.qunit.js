@@ -185,6 +185,31 @@ sap.ui.define([
         });
     });
 
+    // A Bonn provider (~478 km from the Berlin USER_LOC) used across the distance tests.
+    function makeBonnProvider() {
+        return [{
+            id: "bonn1", name: "Bonn Helper", serviceType: "Cleaning", service_categories: "Cleaning",
+            lat: 50.7374, lng: 7.0982, rate: 20, rating: 4.5, availability: "all_day",
+            languages: "EN", years: 1, subscription_plan: "pro", featured_until: null
+        }];
+    }
+
+    QUnit.test("provider beyond the selected radius is excluded (no distance fallback)", function (assert) {
+        var oCtx = makeCtx({ providers: makeBonnProvider(), plan: "pro",
+            filters: Object.assign({}, DEFAULT_FILTERS, { distance: 50 }) });
+        var aResult = FilterMixin._applyFiltersForService.call(oCtx, "Cleaning");
+        assert.strictEqual(aResult.length, 0,
+            "Bonn helper (~478 km) is NOT shown to a Berlin user at a 50 km radius");
+    });
+
+    QUnit.test("hard 100 km ceiling excludes very distant providers even at an unbounded radius", function (assert) {
+        var oCtx = makeCtx({ providers: makeBonnProvider(), plan: "pro",
+            filters: Object.assign({}, DEFAULT_FILTERS, { distance: 999 }) });
+        var aResult = FilterMixin._applyFiltersForService.call(oCtx, "Cleaning");
+        assert.strictEqual(aResult.length, 0,
+            "Bonn helper excluded by the 100 km ceiling even with a 999 km selected radius");
+    });
+
     QUnit.test("search query filters by provider name", function (assert) {
         var oCtx = makeCtx({ searchQuery: "sarah" });
         var aResult = FilterMixin._applyFiltersForService.call(oCtx, "Gardening");
