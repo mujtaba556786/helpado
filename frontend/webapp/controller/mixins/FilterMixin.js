@@ -122,6 +122,10 @@ sap.ui.define([], function () {
                 if (aCategories.indexOf(sServiceName) < 0) { return false; }
 
                 var fDist = that._calculateDistanceKm(oUserLoc, { lat: p.lat, lng: p.lng });
+                // Hard ceiling: never show anyone more than 100 km from the user's home,
+                // whatever radius is selected (also excludes providers with no coordinates,
+                // which compute as 999 km).
+                if (fDist > 100) { return false; }
                 if (fDist > oFilters.distance) { return false; }
 
                 if (oFilters.priceCategory === "budget" && p.rate > 25) { return false; }
@@ -147,31 +151,10 @@ sap.ui.define([], function () {
                 return true;
             });
 
-            if (!aFiltered.length) {
-                aFiltered = aAll.filter(function (p) {
-                    var aCategories = (p.serviceType || '').split(',').map(function (s) { return s.trim(); });
-                    if (aCategories.indexOf(sServiceName) < 0) { return false; }
-                    if (oFilters.priceCategory === "budget" && p.rate > 25) { return false; }
-                    if (oFilters.priceCategory === "top" && p.rating < 4.8) { return false; }
-                    if (bAvailableNow && !that._isAvailableNow(p.availability)) { return false; }
-                    if (sQuery) {
-                        var sName = (p.name || "").toLowerCase();
-                        var sType = (p.serviceType || "").toLowerCase();
-                        if (!sName.includes(sQuery) && !sType.includes(sQuery)) { return false; }
-                    }
-                    if (fMinRating > 0 && (!p.rating || p.rating < fMinRating)) { return false; }
-                    if (sLangFilter) {
-                        var sProvLang = (p.languages || "").toLowerCase();
-                        if (!sProvLang.includes(sLangFilter)) { return false; }
-                    }
-                    if (iMaxPrice < Infinity && p.rate > iMaxPrice) { return false; }
-                    return true;
-                });
-                oModel.setProperty("/filters/distanceLabel",
-                    aFiltered.length
-                        ? "No helpers within " + oFilters.distance + " km — showing all available helpers"
-                        : "No helpers found for this category yet");
-            }
+            // No distance-dropping fallback: if nobody matches within the selected radius
+            // the search page shows its empty state. Previously the list was re-filtered
+            // without distance, which surfaced far-away helpers (e.g. a Bonn provider to a
+            // Berlin user) as if they were nearby.
 
             aFiltered.sort(function (a, b) {
                 var da = that._calculateDistanceKm(oUserLoc, { lat: a.lat, lng: a.lng });
