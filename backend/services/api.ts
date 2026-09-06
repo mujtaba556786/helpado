@@ -1,6 +1,16 @@
 
-import { MOCK_USERS, MOCK_SERVICES, MOCK_BOOKINGS, MOCK_STATS, MOCK_REVIEWS } from './mockData';
-import { User, Service, Review, Booking, UserStatus, UserRole } from '../types';
+import { User, Service, Review, Booking, DashboardStats, UserStatus } from '../types';
+
+// Live data only — the panel shows real marketplace content or an empty state.
+export const EMPTY_STATS: DashboardStats = {
+    totalUsers: 0,
+    adImpressions: 0,
+    adClicks: 0,
+    pendingInquiries: 0,
+    averageRating: 0,
+    engagementData: [],
+    categoryData: []
+};
 
 // Same-origin: in production the panel is served by Express under /admin and the
 // API lives at /api on the same host; in dev the Vite server proxies /api → :3000.
@@ -49,19 +59,9 @@ export const apiService = {
             });
             if (res.ok) return await res.json();
         } catch (e) {
-            console.warn("Mock creation");
+            console.warn('User creation request failed', e);
         }
-        return {
-            id: 'U' + Date.now(),
-            name: userData.name || '',
-            email: userData.email || '',
-            role: userData.role || UserRole.CUSTOMER,
-            status: userData.status || UserStatus.ACTIVE,
-            createdAt: new Date().toISOString(),
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Date.now()}`,
-            provider: 'Email',
-            onboarded: true
-        };
+        return null;
     },
 
     async updateUser(id: string, userData: Partial<User>): Promise<boolean> {
@@ -73,7 +73,7 @@ export const apiService = {
             });
             return res.ok;
         } catch {
-            return true;
+            return false;
         }
     },
 
@@ -88,14 +88,14 @@ export const apiService = {
         } catch (e) {
             console.warn("Backend unreachable.");
         }
-        return { success: true, status: role === 'Provider' ? 'Pending Approval' : 'Active' };
+        return { success: false };
     },
 
     async approveUser(id: string) {
         try {
             await fetch(`${BASE_URL}/users/${id}/approve`, { method: 'PUT' });
             return true;
-        } catch { return true; }
+        } catch { return false; }
     },
 
     async updateUserStatus(id: string, status: UserStatus) {
@@ -106,7 +106,7 @@ export const apiService = {
                 body: JSON.stringify({ status })
             });
             return true;
-        } catch { return true; }
+        } catch { return false; }
     },
 
     async moderateReview(id: string, status: 'Approved' | 'Rejected') {
@@ -118,7 +118,7 @@ export const apiService = {
             });
             return res.ok;
         } catch {
-            return true;
+            return false;
         }
     },
 
@@ -130,7 +130,7 @@ export const apiService = {
             });
             return res.ok;
         } catch {
-            return true;
+            return false;
         }
     },
 
@@ -142,7 +142,7 @@ export const apiService = {
                 body: JSON.stringify(data)
             });
             return true;
-        } catch { return true; }
+        } catch { return false; }
     },
 
     async createService(service: Service) {
@@ -153,7 +153,7 @@ export const apiService = {
                 body: JSON.stringify(service)
             });
             return true;
-        } catch { return true; }
+        } catch { return false; }
     },
 
     async updateService(id: string, data: Partial<Service>): Promise<boolean> {
@@ -164,14 +164,14 @@ export const apiService = {
                 body: JSON.stringify(data)
             });
             return res.ok;
-        } catch { return true; }
+        } catch { return false; }
     },
 
     async deleteService(id: string): Promise<boolean> {
         try {
             const res = await fetch(`${BASE_URL}/services/${id}`, { method: 'DELETE' });
             return res.ok;
-        } catch { return true; }
+        } catch { return false; }
     },
 
     async getUsers(): Promise<User[]> {
@@ -179,15 +179,15 @@ export const apiService = {
             const res = await fetch(`${BASE_URL}/users`);
             if (res.ok) return await res.json();
         } catch { }
-        return MOCK_USERS;
+        return [];
     },
 
-    async getStats() {
+    async getStats(): Promise<DashboardStats> {
         try {
             const res = await fetch(`${BASE_URL}/stats`);
             if (res.ok) return await res.json();
         } catch { }
-        return MOCK_STATS;
+        return EMPTY_STATS;
     },
 
     async getServices(): Promise<Service[]> {
@@ -195,7 +195,7 @@ export const apiService = {
             const res = await fetch(`${BASE_URL}/services`);
             if (res.ok) return await res.json();
         } catch { }
-        return MOCK_SERVICES;
+        return [];
     },
 
     async getBookings(): Promise<Booking[]> {
@@ -213,11 +213,17 @@ export const apiService = {
                     providerName: b.provider_name || 'Unknown',
                     serviceName: b.service || 'General',
                     date: b.scheduled_date || b.created_at?.split('T')[0] || '',
-                    status: (b.status?.charAt(0).toUpperCase() + b.status?.slice(1)) as any
-                })) : MOCK_BOOKINGS;
+                    time: b.scheduled_time || '',
+                    status: (b.status?.charAt(0).toUpperCase() + b.status?.slice(1)) as any,
+                    message: b.message || '',
+                    createdAt: b.created_at || '',
+                    customerAvatar: b.customer_avatar || '',
+                    providerAvatar: b.provider_avatar || ''
+                })) : [];
             }
         } catch { }
-        return MOCK_BOOKINGS;
+        // Real data only — no mock fallback in the live panel.
+        return [];
     },
 
     // ── Trust & Safety ────────────────────────────────────────────────────────
@@ -317,6 +323,6 @@ export const apiService = {
                 }
             }
         } catch { }
-        return MOCK_REVIEWS;
+        return [];
     }
 };

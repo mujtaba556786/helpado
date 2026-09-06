@@ -19,7 +19,9 @@ export enum BookingStatus {
   CONFIRMED = 'Confirmed',
   COMPLETED = 'Completed',
   EXPIRED = 'Expired',
-  REJECTED = 'Rejected'
+  REJECTED = 'Rejected',
+  CANCELLED = 'Cancelled',
+  DECLINED = 'Declined'
 }
 
 export interface User {
@@ -69,8 +71,12 @@ export interface Booking {
   providerName: string;
   serviceName: string;
   date: string;
+  time?: string;
   status: BookingStatus;
-  transcript?: string;
+  message?: string;
+  createdAt?: string;
+  customerAvatar?: string;
+  providerAvatar?: string;
 }
 
 export interface Review {
