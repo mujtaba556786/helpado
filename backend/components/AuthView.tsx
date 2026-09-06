@@ -91,8 +91,8 @@ const AuthView: React.FC<AuthViewProps> = ({ onLogin }) => {
 
       <div className="w-full max-w-md bg-white rounded-[3.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] overflow-hidden relative z-10 animate-in zoom-in duration-700">
         <div className="p-12 text-center">
-          <div className="w-24 h-24 bg-indigo-600 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-indigo-600/30 transform -rotate-6 hover:rotate-0 transition-transform duration-500">
-            <span className="text-white text-4xl font-black italic">S</span>
+          <div className="w-24 h-24 bg-[#4FB584] rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-[#4FB584]/30 transform -rotate-6 hover:rotate-0 transition-transform duration-500">
+            <span className="text-white text-4xl font-black">H</span>
           </div>
 
           {step === 'LOGIN' && (
