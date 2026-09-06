@@ -55,17 +55,43 @@ sap.ui.define([
             // full-screen (stretch) dialog was letting the fixed bottom nav show
             // through/underneath. Toggle a body class on Dialog open/close; CSS then
             // hides .hhBottomNav while a dialog is up. Counter handles stacked dialogs.
-            sap.ui.require(["sap/m/Dialog"], function (Dialog) {
-                var fnOpen = Dialog.prototype.open, fnClose = Dialog.prototype.close, iOpen = 0;
+            sap.ui.require(["sap/m/Dialog", "sap/m/InstanceManager"], function (Dialog, InstanceManager) {
+                // Patch the prototype once only. init() runs for every component
+                // instance, so re-wrapping stacked wrappers each with their own
+                // private counter.
+                if (Dialog.prototype._hhNavTogglePatched) { return; }
+                Dialog.prototype._hhNavTogglePatched = true;
+
+                // Derive the state from the dialogs that are actually open rather
+                // than from a counter. A dialog that is destroyed instead of closed
+                // never ran close(), so the old counter never returned to zero and
+                // the bottom nav stayed hidden until a reload. Destroyed instances
+                // can linger in InstanceManager, so filter them out explicitly.
+                function syncBottomNav() {
+                    var bAnyOpen = InstanceManager.getOpenDialogs().some(function (oDialog) {
+                        return oDialog && !oDialog.bIsDestroyed &&
+                            typeof oDialog.isOpen === "function" && oDialog.isOpen();
+                    });
+                    document.body.classList.toggle("hhDialogOpen", bAnyOpen);
+                }
+
+                var fnOpen = Dialog.prototype.open;
+                var fnExit = Dialog.prototype.exit;
+
                 Dialog.prototype.open = function () {
-                    iOpen++;
-                    document.body.classList.add("hhDialogOpen");
-                    return fnOpen.apply(this, arguments);
+                    // afterClose fires once the close animation has finished and the
+                    // dialog has left InstanceManager — more reliable than wrapping
+                    // close(), which runs before either happens.
+                    this.attachEventOnce("afterClose", syncBottomNav);
+                    var vResult = fnOpen.apply(this, arguments);
+                    syncBottomNav();
+                    return vResult;
                 };
-                Dialog.prototype.close = function () {
-                    iOpen = Math.max(0, iOpen - 1);
-                    if (iOpen === 0) { document.body.classList.remove("hhDialogOpen"); }
-                    return fnClose.apply(this, arguments);
+
+                Dialog.prototype.exit = function () {
+                    var vResult = fnExit ? fnExit.apply(this, arguments) : undefined;
+                    syncBottomNav();
+                    return vResult;
                 };
             });
 
