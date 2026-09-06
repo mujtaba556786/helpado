@@ -65,15 +65,23 @@ sap.ui.define([
 
         // Wait for a conversation list to be populated, then press its first item.
         // Avoids fragile class-binding checks on aggregation-cloned items.
+        // Press a conversation row directly. Looking for "the first list with
+        // items" grabbed taskFeedList (5 items) instead, so the DM dialog never
+        // opened. Conversation rows carry hhMsgItem and press onOpenDmChat.
         When.waitFor({
-            controlType: "sap.m.List",
+            controlType: "sap.m.CustomListItem",
             viewName: "helphub.view.Dashboard",
-            matchers: new AggregationFilled({ name: "items" }),
-            success: function (aLists) {
-                var aFilled = aLists.filter(function (l) { return l.getItems().length > 0; });
-                new Press().executeOn(aFilled[0].getItems()[0]);
+            // Match on the bound data, not the style class: the item's class is a
+            // binding expression and UI5 does not support binding "class", so
+            // hasStyleClass("hhMsgItem") never matches. only conversation rows
+            // carry other_name.
+            matchers: function (oItem) {
+                var oCtx = oItem.getBindingContext("appData");
+                var oData = oCtx && oCtx.getObject();
+                return !!oData && typeof oData.other_name === "string";
             },
-            errorMessage: "No conversation list item found to press"
+            actions: new Press(),
+            errorMessage: "No conversation item found to press"
         });
 
         Then.waitFor({
@@ -96,15 +104,23 @@ sap.ui.define([
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 
         When.onTheDashboard.iPressNavTab("messages");
+        // Press a conversation row directly. Looking for "the first list with
+        // items" grabbed taskFeedList (5 items) instead, so the DM dialog never
+        // opened. Conversation rows carry hhMsgItem and press onOpenDmChat.
         When.waitFor({
-            controlType: "sap.m.List",
+            controlType: "sap.m.CustomListItem",
             viewName: "helphub.view.Dashboard",
-            matchers: new AggregationFilled({ name: "items" }),
-            success: function (aLists) {
-                var aFilled = aLists.filter(function (l) { return l.getItems().length > 0; });
-                new Press().executeOn(aFilled[0].getItems()[0]);
+            // Match on the bound data, not the style class: the item's class is a
+            // binding expression and UI5 does not support binding "class", so
+            // hasStyleClass("hhMsgItem") never matches. only conversation rows
+            // carry other_name.
+            matchers: function (oItem) {
+                var oCtx = oItem.getBindingContext("appData");
+                var oData = oCtx && oCtx.getObject();
+                return !!oData && typeof oData.other_name === "string";
             },
-            errorMessage: "No conversation list item found to press"
+            actions: new Press(),
+            errorMessage: "No conversation item found to press"
         });
 
         Then.waitFor({
@@ -134,15 +150,23 @@ sap.ui.define([
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 
         When.onTheDashboard.iPressNavTab("messages");
+        // Press a conversation row directly. Looking for "the first list with
+        // items" grabbed taskFeedList (5 items) instead, so the DM dialog never
+        // opened. Conversation rows carry hhMsgItem and press onOpenDmChat.
         When.waitFor({
-            controlType: "sap.m.List",
+            controlType: "sap.m.CustomListItem",
             viewName: "helphub.view.Dashboard",
-            matchers: new AggregationFilled({ name: "items" }),
-            success: function (aLists) {
-                var aFilled = aLists.filter(function (l) { return l.getItems().length > 0; });
-                new Press().executeOn(aFilled[0].getItems()[0]);
+            // Match on the bound data, not the style class: the item's class is a
+            // binding expression and UI5 does not support binding "class", so
+            // hasStyleClass("hhMsgItem") never matches. only conversation rows
+            // carry other_name.
+            matchers: function (oItem) {
+                var oCtx = oItem.getBindingContext("appData");
+                var oData = oCtx && oCtx.getObject();
+                return !!oData && typeof oData.other_name === "string";
             },
-            errorMessage: "No conversation list item found to press"
+            actions: new Press(),
+            errorMessage: "No conversation item found to press"
         });
 
         Then.waitFor({

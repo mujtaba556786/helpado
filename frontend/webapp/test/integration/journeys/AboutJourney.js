@@ -37,13 +37,8 @@ sap.ui.define([
             actions: new Press(),
             errorMessage: "Header avatar not found"
         });
-        When.waitFor({
-            controlType: "sap.m.Button",
-            viewName: "helphub.view.Dashboard",
-            matchers: new PropertyStrictEquals({ name: "icon", value: "sap-icon://person-placeholder" }),
-            actions: new Press(),
-            errorMessage: "Edit Profile button not found in action sheet"
-        });
+        // No ActionSheet step here: onHeaderAvatarMenu navigates straight to Edit
+        // Profile now, so the old "pick Edit Profile from the sheet" press is gone.
         // Press the gear / settings button in the editPage header
         When.waitFor({
             controlType: "sap.m.Button",
@@ -65,13 +60,7 @@ sap.ui.define([
             actions: new Press(),
             errorMessage: "Header avatar not found"
         });
-        When.waitFor({
-            controlType: "sap.m.Button",
-            viewName: "helphub.view.Dashboard",
-            matchers: new PropertyStrictEquals({ name: "icon", value: "sap-icon://person-placeholder" }),
-            actions: new Press(),
-            errorMessage: "Edit Profile button not found"
-        });
+        // Avatar navigates straight to Edit Profile — no ActionSheet step.
 
         Then.waitFor({
             controlType: "sap.m.Button",
@@ -92,7 +81,11 @@ sap.ui.define([
         iOpenSettingsDialog(Given, When);
 
         Then.waitFor({
+            // The fragment is loaded with id: view.getId(), so the dialog's real id
+            // is "<viewId>--settingsDialog". Without viewName, OPA matches the bare
+            // string against the global id and never finds it.
             id: "settingsDialog",
+            viewName: "helphub.view.Dashboard",
             success: function () {
                 Opa5.assert.ok(true, "SettingsDialog opened after pressing gear button");
             },

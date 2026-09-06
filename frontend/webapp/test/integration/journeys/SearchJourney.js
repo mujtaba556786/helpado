@@ -9,7 +9,7 @@
  *  5. Map-toggle button is present on the search page
  *  6. Helper search field is present
  *  7. Provider list is populated after pressing Gardening tile
- *  8. Provider list is populated after pressing Babysitting tile
+ *  8. Provider list is populated after pressing Elder Care tile
  */
 sap.ui.define([
     "sap/ui/test/opaQunit",
@@ -116,10 +116,11 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
-    opaTest("Pressing Babysitting tile shows a populated provider list", function (Given, When, Then) {
+    opaTest("Pressing Elder Care tile shows a populated provider list", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 
-        When.onTheDashboard.iPressServiceTile("Babysitting");
+        // Babysitting is not in ServiceConstants; Elder Care is.
+        When.onTheDashboard.iPressServiceTile("Elder Care");
 
         Then.onTheDashboard.iSeeProviderList();
         Then.iTeardownMyUIComponent();
