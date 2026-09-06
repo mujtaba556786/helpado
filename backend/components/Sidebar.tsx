@@ -38,8 +38,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
     <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col h-full shadow-2xl z-20">
       <div className="p-6 flex-1 overflow-y-auto">
         <div className="flex items-center space-x-2 mb-10">
-          <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <span className="text-white font-bold text-lg">S</span>
+          <div className="w-10 h-10 bg-[#4FB584] rounded-xl flex items-center justify-center shadow-lg shadow-[#4FB584]/20">
+            <span className="text-white font-bold text-lg">H</span>
           </div>
           <div>
             <span className="text-xl font-black text-white tracking-tighter italic block leading-none">Helpado</span>
