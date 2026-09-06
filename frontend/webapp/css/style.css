@@ -223,6 +223,19 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
     color: var(--sapTextColor, #1e293b);
     border-bottom-left-radius: 4px;
 }
+/* Composer — a comfortable typing/tap target (44px, the usual minimum on
+   phones) matched to the Send button. UI5 Input has no height property, and
+   the height has to be set on the root too or sapMInputBaseHeightMargin
+   keeps it at 36px and the taller inner field overflows it. */
+.sapMInputBase.hhComposerInput,
+.hhComposerInput .sapMInputBaseContentWrapper,
+.hhComposerInput .sapMInputBaseInner {
+    height: 2.75rem;
+}
+.hhComposerSend {
+    min-height: 2.75rem;
+}
+
 .hhBubbleMeta {
     font-size: 0.6875rem;
     opacity: 0.75;

@@ -53,11 +53,17 @@
                             </CustomListItem>
                         </List>
                     </ScrollContainer>
-                    <!-- Input bar — pinned to bottom -->
-                    <HBox alignItems="Center" class="sapUiSmallMarginBeginEnd sapUiTinyMarginBottom">
+                    <!-- Composer — pinned to bottom. The input carries growFactor so it
+                         actually fills the bar (width="100%" alone does not grow a flex
+                         child), and Send is a labelled button rather than a bare arrow. -->
+                    <HBox alignItems="Center"
+                        class="sapUiSmallMarginBeginEnd sapUiTinyMarginTop sapUiSmallMarginBottom hhComposer">
                         <layoutData><FlexItemData shrinkFactor="0"/></layoutData>
-                        <Input id="dmInput" placeholder="{i18n>typeMessage}" width="100%" submit="onDmSend"/>
-                        <Button id="dmSendBtn" icon="sap-icon://paper-plane" type="Emphasized" press="onDmSend" class="sapUiTinyMarginBegin"/>
+                        <Input id="dmInput" placeholder="{i18n>typeMessage}" submit="onDmSend" class="hhComposerInput">
+                            <layoutData><FlexItemData growFactor="1" baseSize="0"/></layoutData>
+                        </Input>
+                        <Button id="dmSendBtn" text="{i18n>sendMessage}" icon="sap-icon://paper-plane"
+                            type="Emphasized" press="onDmSend" class="sapUiSmallMarginBegin hhComposerSend"/>
                     </HBox>
                 </items>
             </FlexBox>
