@@ -20,47 +20,30 @@
     <preference name="StatusBarBackgroundColor" value="#0f172a" />
     <preference name="StatusBarStyle" value="lightcontent" />
 
-    <!-- Splash screen — Android 12+ (Cordova Android 14) uses WindowSplashScreen API -->
-    <preference name="SplashScreenDelay" value="2000" />
+    <!-- Splash screen (cordova-plugin-splashscreen). Android 12+ uses the system
+         SplashScreen API: a centred icon on a solid background, auto-hidden with a
+         fade once the web app has booted. -->
     <preference name="AutoHideSplashScreen" value="true" />
+    <preference name="SplashScreenDelay" value="2000" />
+    <preference name="FadeSplashScreen" value="true" />
+    <preference name="FadeSplashScreenDuration" value="300" />
     <preference name="ShowSplashScreenSpinner" value="false" />
-    <preference name="AndroidWindowSplashScreenBackground" value="#0f172a" />
-    <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screen/android/splash_icon.png" />
+    <preference name="AndroidWindowSplashScreenBackground" value="#FFFFFF" />
+    <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screen/android/splashscreen.png" />
 
     <platform name="android">
         <allow-intent href="market:*" />
-        <icon density="ldpi"    src="res/icon/android/ldpi.png" />
-        <icon density="mdpi"    src="res/icon/android/mdpi.png" />
-        <icon density="hdpi"    src="res/icon/android/hdpi.png" />
-        <icon density="xhdpi"   src="res/icon/android/xhdpi.png" />
-        <icon density="xxhdpi"  src="res/icon/android/xxhdpi.png" />
+        <icon density="ldpi" src="res/icon/android/ldpi.png" />
+        <icon density="mdpi" src="res/icon/android/mdpi.png" />
+        <icon density="hdpi" src="res/icon/android/hdpi.png" />
+        <icon density="xhdpi" src="res/icon/android/xhdpi.png" />
+        <icon density="xxhdpi" src="res/icon/android/xxhdpi.png" />
         <icon density="xxxhdpi" src="res/icon/android/xxxhdpi.png" />
     </platform>
-
+    
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
-        <icon height="20"   src="res/icon/ios/icon-20.png"   width="20" />
-        <icon height="29"   src="res/icon/ios/icon-29.png"   width="29" />
-        <icon height="40"   src="res/icon/ios/icon-40.png"   width="40" />
-        <icon height="58"   src="res/icon/ios/icon-58.png"   width="58" />
-        <icon height="60"   src="res/icon/ios/icon-60.png"   width="60" />
-        <icon height="76"   src="res/icon/ios/icon-76.png"   width="76" />
-        <icon height="80"   src="res/icon/ios/icon-80.png"   width="80" />
-        <icon height="87"   src="res/icon/ios/icon-87.png"   width="87" />
-        <icon height="120"  src="res/icon/ios/icon-120.png"  width="120" />
-        <icon height="152"  src="res/icon/ios/icon-152.png"  width="152" />
-        <icon height="167"  src="res/icon/ios/icon-167.png"  width="167" />
-        <icon height="180"  src="res/icon/ios/icon-180.png"  width="180" />
-        <icon height="1024" src="res/icon/ios/icon-1024.png" width="1024" />
-        <splash src="res/screen/ios/Default~iphone.png"           width="320"  height="480" />
-        <splash src="res/screen/ios/Default@2x~iphone.png"        width="640"  height="960" />
-        <splash src="res/screen/ios/Default-568h@2x~iphone.png"   width="640"  height="1136" />
-        <splash src="res/screen/ios/Default-667h.png"             width="750"  height="1334" />
-        <splash src="res/screen/ios/Default-736h.png"             width="1242" height="2208" />
-        <splash src="res/screen/ios/Default-2436h.png"            width="1125" height="2436" />
-        <splash src="res/screen/ios/Default-Portrait~ipad.png"    width="768"  height="1024" />
-        <splash src="res/screen/ios/Default-Portrait@2x~ipad.png" width="1536" height="2048" />
     </platform>
     
     <plugin name="cordova-plugin-whitelist" spec="^1.3.5" />

@@ -19,7 +19,18 @@
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="StatusBarBackgroundColor" value="#0f172a" />
     <preference name="StatusBarStyle" value="lightcontent" />
-    
+
+    <!-- Splash screen (cordova-plugin-splashscreen). Android 12+ uses the system
+         SplashScreen API: a centred icon on a solid background, auto-hidden with a
+         fade once the web app has booted. -->
+    <preference name="AutoHideSplashScreen" value="true" />
+    <preference name="SplashScreenDelay" value="2000" />
+    <preference name="FadeSplashScreen" value="true" />
+    <preference name="FadeSplashScreenDuration" value="300" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
+    <preference name="AndroidWindowSplashScreenBackground" value="#FFFFFF" />
+    <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screen/android/splashscreen.png" />
+
     <platform name="android">
         <allow-intent href="market:*" />
         <icon density="ldpi" src="res/icon/android/ldpi.png" />
