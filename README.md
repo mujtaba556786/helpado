@@ -1,4 +1,4 @@
-# Helpmate
+# Helpado
 
 Neighborhood Help Network — connect with trusted neighbors for everyday tasks.
 

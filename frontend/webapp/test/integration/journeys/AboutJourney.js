@@ -9,7 +9,7 @@
  *  5. SettingsDialog contains Privacy Policy list item
  *  6. SettingsDialog contains Help & FAQ list item
  *  7. SettingsDialog contains Contact Support list item
- *  8. SettingsDialog contains "HelpMate" title in About section
+ *  8. SettingsDialog contains "Helpado" title in About section
  */
 sap.ui.define([
     "sap/ui/test/opaQunit",
@@ -163,18 +163,18 @@ sap.ui.define([
         });
     });
 
-    // ── 8. HelpMate title in About section ───────────────────────────────────
+    // ── 8. Helpado title in About section ───────────────────────────────────
 
-    opaTest("SettingsDialog About section shows 'HelpMate' title", function (Given, When, Then) {
+    opaTest("SettingsDialog About section shows 'Helpado' title", function (Given, When, Then) {
         iOpenSettingsDialog(Given, When);
 
         Then.waitFor({
             controlType: "sap.m.Title",
-            matchers: new PropertyStrictEquals({ name: "text", value: "HelpMate" }),
+            matchers: new PropertyStrictEquals({ name: "text", value: "Helpado" }),
             success: function () {
-                Opa5.assert.ok(true, "'HelpMate' title found in SettingsDialog About section");
+                Opa5.assert.ok(true, "'Helpado' title found in SettingsDialog About section");
             },
-            errorMessage: "'HelpMate' title not found in SettingsDialog"
+            errorMessage: "'Helpado' title not found in SettingsDialog"
         });
 
         Then.iTeardownMyUIComponent();

@@ -6,7 +6,7 @@
 	},
 	"sEntity": "Theme",
 	"sId": "helpmate",
-	"sLabel": "HelpMate Theme",
+	"sLabel": "Helpado Theme",
 	"oExtends": "Base.baseLib.sap_horizon",
 	"aFiles": [
 		"base",

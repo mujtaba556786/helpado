@@ -173,7 +173,7 @@ sap.ui.define([
             .then(function(oData) {
                 if (oData.success) {
                     this._getReportDialog().then(function(oDialog) { oDialog.close(); });
-                    MessageToast.show("Report submitted. Thank you for keeping HelpMate safe.");
+                    MessageToast.show("Report submitted. Thank you for keeping Helpado safe.");
                 } else {
                     MessageToast.show(oData.error || "Could not submit report.");
                 }

@@ -9,7 +9,8 @@
         <FlexBox height="100vh" alignItems="Center" justifyContent="Center" direction="Column" class="loginBg">
             <VBox width="90%" class="loginCard maxWidth400">
                 <VBox alignItems="Center" class="sapUiMediumMargin">
-                    <Avatar displaySize="XL" backgroundColor="Accent6" initials="❤️" class="sapUiSmallMarginBottom"/>
+                    <Avatar displaySize="XL" displayShape="Square" imageFitType="Contain" class="sapUiSmallMarginBottom"
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234FB584'/%3E%3Cg fill='%23fff'%3E%3Crect x='19.2' y='17.3' width='6.7' height='29.4' rx='3.35'/%3E%3Crect x='38.1' y='17.3' width='6.7' height='29.4' rx='3.35'/%3E%3Crect x='19.2' y='29.1' width='25.6' height='5.8' rx='2.9'/%3E%3C/g%3E%3C/svg%3E"/>
                     <Title text="{i18n>loginTitle}" level="H1" class="sapUiTinyMarginBottom"/>
                     <Text text="{i18n>loginNeighborhoodNetwork}" class="grayText"/>
                     <Text text="{i18n>loginTagline}" class="grayText textCenter"/>
@@ -17,7 +18,7 @@
 
                 <!-- Step 0: Session check — shown on every app open while token is verified -->
                 <VBox id="stepProcessing" visible="{appData>/magicLinkProcessing}" alignItems="Center" class="sapUiMediumMargin">
-                    <core:Icon src="sap-icon://locked" size="3rem" color="#f97316" class="sapUiSmallMarginBottom"/>
+                    <core:Icon src="sap-icon://locked" size="3rem" color="#4FB584" class="sapUiSmallMarginBottom"/>
                     <Title text="Resuming your session…" level="H3" class="sapUiSmallMarginBottom"/>
                     <Text text="Please wait a moment." class="grayText textCenter sapUiSmallMarginBottom"/>
                     <BusyIndicator size="2rem"/>

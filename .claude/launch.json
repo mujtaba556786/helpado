@@ -3,23 +3,23 @@
   "configurations": [
     {
       "name": "frontend",
-      "runtimeExecutable": "/opt/homebrew/bin/node",
+      "runtimeExecutable": "/Users/mujtaba/Documents/helpado/frontend/node_modules/.bin/ui5",
       "runtimeArgs": [
-        "/opt/homebrew/lib/node_modules/serve/build/main.js",
-        "/Users/mujtaba/Documents/helphub/frontend/webapp",
-        "-p",
-        "8080",
-        "--no-clipboard"
+        "serve",
+        "--port",
+        "8080"
       ],
+      "cwd": "/Users/mujtaba/Documents/helpado/frontend",
       "port": 8080
     },
     {
       "name": "backend",
       "runtimeExecutable": "/opt/homebrew/bin/node",
       "runtimeArgs": [
-        "backend/server.js"
+        "/Users/mujtaba/Documents/helpado/backend/server.js"
       ],
-      "port": 3000
+      "port": 3000,
+      "cwd": "/Users/mujtaba/Documents/helpado"
     }
   ]
 }

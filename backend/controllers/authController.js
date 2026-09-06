@@ -15,10 +15,10 @@ const googleClient      = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const EMAIL_HTML = (magicUrl, code) =>
     `<div style="font-family:sans-serif;max-width:420px;margin:auto">
-        <h2 style="color:#f97316">HelpMate</h2>
+        <h2 style="color:#4FB584">Helpado</h2>
         <p>Use either option below to sign in. This expires in <strong>15 minutes</strong> and can only be used once.</p>
         <p style="margin:8px 0 4px;color:#555"><strong>On the web:</strong> tap the button.</p>
-        <a href="${magicUrl}" style="display:inline-block;padding:12px 28px;background:#f97316;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;margin:8px 0 16px">Sign in to HelpMate</a>
+        <a href="${magicUrl}" style="display:inline-block;padding:12px 28px;background:#4FB584;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;margin:8px 0 16px">Sign in to Helpado</a>
         <p style="margin:8px 0 4px;color:#555"><strong>In the app:</strong> enter this code:</p>
         <p style="font-size:32px;font-weight:bold;letter-spacing:6px;color:#0f172a;margin:4px 0 16px">${code}</p>
         <p style="color:#888;font-size:12px">If you didn't request this, you can safely ignore this email.</p>
@@ -27,7 +27,7 @@ const EMAIL_HTML = (magicUrl, code) =>
 async function sendEmail({ to, subject, html }) {
     // ── Resend (HTTPS API — no port 587 needed, works on Railway) ────────────
     if (process.env.RESEND_API_KEY) {
-        const from = process.env.SMTP_FROM || 'HelpMate <onboarding@resend.dev>';
+        const from = process.env.SMTP_FROM || 'Helpado <onboarding@resend.dev>';
         const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -49,7 +49,7 @@ async function sendEmail({ to, subject, html }) {
             host: 'smtp.ethereal.email', port: 587, secure: false,
             auth: { user: testAccount.user, pass: testAccount.pass }
         });
-        const info = await t.sendMail({ from: 'HelpMate <noreply@helphub.local>', to, subject, html });
+        const info = await t.sendMail({ from: 'Helpado <noreply@helphub.local>', to, subject, html });
         console.log(`\n📧 Ethereal preview: ${nodemailer.getTestMessageUrl(info)}\n`);
         return;
     }
@@ -67,7 +67,7 @@ async function sendEmail({ to, subject, html }) {
         auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
     });
     await t.sendMail({
-        from: process.env.SMTP_FROM || '"HelpMate" <noreply@helphub.local>',
+        from: process.env.SMTP_FROM || '"Helpado" <noreply@helphub.local>',
         to, subject, html
     });
     console.log(`[AUTH] Email sent via SMTP to ${to}`);
@@ -165,7 +165,7 @@ async function sendMagicLink(req, res) {
 
     const magicUrl = `${backendBase}/api/auth/magic?token=${rawToken}`;
     try {
-        await sendEmail({ to: email, subject: 'Sign in to HelpMate', html: EMAIL_HTML(magicUrl, code) });
+        await sendEmail({ to: email, subject: 'Sign in to Helpado', html: EMAIL_HTML(magicUrl, code) });
         console.log(`[AUTH] Magic-link + code email sent to: ${email}`);
         res.json({ success: true, directLogin: false, message: 'Sign-in link & code sent — check your inbox.' });
     } catch (err) {
@@ -223,7 +223,7 @@ async function magicLinkCallback(req, res) {
             ? 'This sign-in link has expired. Links are valid for 15 minutes.'
             : 'This sign-in link is invalid or has already been used.';
         return res.status(400).send(`<html><body style="font-family:sans-serif;text-align:center;padding:40px">
-            <h2 style="color:#f97316">HelpMate</h2><p>${msg}</p>
+            <h2 style="color:#4FB584">Helpado</h2><p>${msg}</p>
             <p><a href="${frontendBase}">Request a new link</a></p>
             </body></html>`);
     }

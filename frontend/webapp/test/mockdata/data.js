@@ -1,5 +1,5 @@
 /**
- * Centralized mock data for all Helpmate tests.
+ * Centralized mock data for all Helpado tests.
  * Used by MockServer.js (OPA5) and unit tests directly.
  * Matches the shape of real API responses so tests work with server down.
  */

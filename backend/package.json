@@ -1,7 +1,7 @@
 {
   "name": "servicelink-local",
   "version": "1.0.0",
-  "description": "ServiceLink Admin Marketplace Local Environment",
+  "description": "Helpado Admin Marketplace Local Environment",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -1,7 +1,7 @@
 /**
  * ServiceConstants.js — Frontend-only service catalogue.
  *
- * This is the single source of truth for service categories in HelpMate.
+ * This is the single source of truth for service categories in Helpado.
  * No backend fetch needed — everything is defined here.
  *
  * Fields:

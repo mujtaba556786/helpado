@@ -69,7 +69,7 @@
                 <Panel backgroundDesign="Solid" class="sapUiSmallMargin">
                     <content>
                         <VBox alignItems="Center" class="sapUiSmallMargin">
-                            <Title text="HelpMate" level="H4" class="sapUiTinyMarginBottom"/>
+                            <Title text="Helpado" level="H4" class="sapUiTinyMarginBottom"/>
                             <Text text="{i18n>aboutTagline}" wrapping="true" class="grayText textCenter"/>
                             <ObjectStatus text="Version 2.44" state="Success" class="sapUiTinyMarginTop"/>
                         </VBox>
