@@ -6,7 +6,7 @@
       "runtimeExecutable": "/opt/homebrew/bin/node",
       "runtimeArgs": [
         "/opt/homebrew/lib/node_modules/serve/build/main.js",
-        "/Users/mujtaba/Documents/helphub/frontend/webapp",
+        "/Users/mujtaba/Documents/helpado/frontend/webapp",
         "-p",
         "8080",
         "--no-clipboard"

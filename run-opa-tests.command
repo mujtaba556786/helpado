@@ -1,11 +1,11 @@
 #!/bin/bash
-# HelpHub — OPA5 Integration Test Launcher
+# Helpado — OPA5 Integration Test Launcher
 # Double-click this file to start the dev server and open tests in Chrome.
 
 cd "$(dirname "$0")/frontend"
 
 echo "============================================"
-echo "  HelpHub OPA5 Integration Test Launcher"
+echo "  Helpado OPA5 Integration Test Launcher"
 echo "============================================"
 echo ""
 echo "Starting UI5 dev server on port 8080..."

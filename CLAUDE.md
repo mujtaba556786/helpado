@@ -42,7 +42,7 @@ Before writing or modifying any code:
 ### Running tests locally
 
 ```bash
-cd ~/Documents/helphub
+cd ~/Documents/helpado
 # Double-click, or run directly:
 ./run-opa-tests.command
 # Opens: http://localhost:8080/test/integration/opaTests.qunit.html
