@@ -242,17 +242,20 @@ xmlns:l="sap.ui.layout"
                                             <Text text="{i18n>msgPinned}" class="hhMsgSectionLabel"/>
                                         </HBox>
                                         <List items="{appData>/msgPinned}" showSeparators="None" class="hhMsgList">
-                                            <CustomListItem type="Active" press="onOpenDmChat"
-                                                class="{= ${appData>unread_count} > 0 ? 'hhMsgItem hhMsgItemUnread' : 'hhMsgItem'}">
+                                            <CustomListItem type="Active" press="onOpenDmChat" class="hhMsgItem">
+                                                <customData>
+                                                    <core:CustomData key="hhunread" writeToDom="true"
+                                                        value="{= ${appData>unread_count} &gt; 0 ? 'true' : 'false'}"/>
+                                                </customData>
                                                 <HBox alignItems="Center" class="hhMsgItemInner">
                                                     <Avatar displaySize="M" src="{appData>other_avatar}" initials="{appData>_initials}" backgroundColor="Accent1" class="hhMsgAvatar"/>
                                                     <VBox class="hhMsgContent">
                                                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
-                                                            <Text text="{appData>other_name}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgName hhMsgNameBold' : 'hhMsgName'}"/>
-                                                            <Text text="{path:'appData>last_message_at', formatter:'.formatConvoTime'}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgTime hhMsgTimeAccent' : 'hhMsgTime'}"/>
+                                                            <Text text="{appData>other_name}" wrapping="false" class="hhMsgName"/>
+                                                            <Text text="{path:'appData>last_message_at', formatter:'.formatConvoTime'}" wrapping="false" class="hhMsgTime"/>
                                                         </HBox>
                                                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
-                                                            <Text text="{appData>last_message}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgPreview hhMsgPreviewBold' : 'hhMsgPreview'}"/>
+                                                            <Text text="{appData>last_message}" wrapping="false" class="hhMsgPreview"/>
                                                             <Text text="{appData>unread_count}" visible="{= ${appData>unread_count} > 0}" class="hhUnreadBadge"/>
                                                         </HBox>
                                                     </VBox>
@@ -265,17 +268,20 @@ xmlns:l="sap.ui.layout"
                                     <VBox visible="{appData>/msgTodayVisible}">
                                         <Text text="{i18n>msgToday}" class="hhMsgSectionLabel hhMsgSectionLabelSpaced"/>
                                         <List items="{appData>/msgToday}" showSeparators="None" class="hhMsgList">
-                                            <CustomListItem type="Active" press="onOpenDmChat"
-                                                class="{= ${appData>unread_count} > 0 ? 'hhMsgItem hhMsgItemUnread' : 'hhMsgItem'}">
+                                            <CustomListItem type="Active" press="onOpenDmChat" class="hhMsgItem">
+                                                <customData>
+                                                    <core:CustomData key="hhunread" writeToDom="true"
+                                                        value="{= ${appData>unread_count} &gt; 0 ? 'true' : 'false'}"/>
+                                                </customData>
                                                 <HBox alignItems="Center" class="hhMsgItemInner">
                                                     <Avatar displaySize="M" src="{appData>other_avatar}" initials="{appData>_initials}" backgroundColor="Accent1" class="hhMsgAvatar"/>
                                                     <VBox class="hhMsgContent">
                                                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
-                                                            <Text text="{appData>other_name}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgName hhMsgNameBold' : 'hhMsgName'}"/>
-                                                            <Text text="{path:'appData>last_message_at', formatter:'.formatConvoTime'}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgTime hhMsgTimeAccent' : 'hhMsgTime'}"/>
+                                                            <Text text="{appData>other_name}" wrapping="false" class="hhMsgName"/>
+                                                            <Text text="{path:'appData>last_message_at', formatter:'.formatConvoTime'}" wrapping="false" class="hhMsgTime"/>
                                                         </HBox>
                                                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
-                                                            <Text text="{appData>last_message}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgPreview hhMsgPreviewBold' : 'hhMsgPreview'}"/>
+                                                            <Text text="{appData>last_message}" wrapping="false" class="hhMsgPreview"/>
                                                             <Text text="{appData>unread_count}" visible="{= ${appData>unread_count} > 0}" class="hhUnreadBadge"/>
                                                         </HBox>
                                                     </VBox>
@@ -288,17 +294,20 @@ xmlns:l="sap.ui.layout"
                                     <VBox visible="{appData>/msgYesterdayVisible}">
                                         <Text text="{i18n>msgYesterday}" class="hhMsgSectionLabel hhMsgSectionLabelSpaced"/>
                                         <List items="{appData>/msgYesterday}" showSeparators="None" class="hhMsgList">
-                                            <CustomListItem type="Active" press="onOpenDmChat"
-                                                class="{= ${appData>unread_count} > 0 ? 'hhMsgItem hhMsgItemUnread' : 'hhMsgItem'}">
+                                            <CustomListItem type="Active" press="onOpenDmChat" class="hhMsgItem">
+                                                <customData>
+                                                    <core:CustomData key="hhunread" writeToDom="true"
+                                                        value="{= ${appData>unread_count} &gt; 0 ? 'true' : 'false'}"/>
+                                                </customData>
                                                 <HBox alignItems="Center" class="hhMsgItemInner">
                                                     <Avatar displaySize="M" src="{appData>other_avatar}" initials="{appData>_initials}" backgroundColor="Accent1" class="hhMsgAvatar"/>
                                                     <VBox class="hhMsgContent">
                                                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
-                                                            <Text text="{appData>other_name}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgName hhMsgNameBold' : 'hhMsgName'}"/>
-                                                            <Text text="{path:'appData>last_message_at', formatter:'.formatConvoTime'}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgTime hhMsgTimeAccent' : 'hhMsgTime'}"/>
+                                                            <Text text="{appData>other_name}" wrapping="false" class="hhMsgName"/>
+                                                            <Text text="{path:'appData>last_message_at', formatter:'.formatConvoTime'}" wrapping="false" class="hhMsgTime"/>
                                                         </HBox>
                                                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
-                                                            <Text text="{appData>last_message}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgPreview hhMsgPreviewBold' : 'hhMsgPreview'}"/>
+                                                            <Text text="{appData>last_message}" wrapping="false" class="hhMsgPreview"/>
                                                             <Text text="{appData>unread_count}" visible="{= ${appData>unread_count} > 0}" class="hhUnreadBadge"/>
                                                         </HBox>
                                                     </VBox>
@@ -311,17 +320,20 @@ xmlns:l="sap.ui.layout"
                                     <VBox visible="{appData>/msgEarlierVisible}">
                                         <Text text="{i18n>msgEarlier}" class="hhMsgSectionLabel hhMsgSectionLabelSpaced"/>
                                         <List items="{appData>/msgEarlier}" showSeparators="None" class="hhMsgList">
-                                            <CustomListItem type="Active" press="onOpenDmChat"
-                                                class="{= ${appData>unread_count} > 0 ? 'hhMsgItem hhMsgItemUnread' : 'hhMsgItem'}">
+                                            <CustomListItem type="Active" press="onOpenDmChat" class="hhMsgItem">
+                                                <customData>
+                                                    <core:CustomData key="hhunread" writeToDom="true"
+                                                        value="{= ${appData>unread_count} &gt; 0 ? 'true' : 'false'}"/>
+                                                </customData>
                                                 <HBox alignItems="Center" class="hhMsgItemInner">
                                                     <Avatar displaySize="M" src="{appData>other_avatar}" initials="{appData>_initials}" backgroundColor="Accent1" class="hhMsgAvatar"/>
                                                     <VBox class="hhMsgContent">
                                                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
-                                                            <Text text="{appData>other_name}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgName hhMsgNameBold' : 'hhMsgName'}"/>
-                                                            <Text text="{path:'appData>last_message_at', formatter:'.formatConvoTime'}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgTime hhMsgTimeAccent' : 'hhMsgTime'}"/>
+                                                            <Text text="{appData>other_name}" wrapping="false" class="hhMsgName"/>
+                                                            <Text text="{path:'appData>last_message_at', formatter:'.formatConvoTime'}" wrapping="false" class="hhMsgTime"/>
                                                         </HBox>
                                                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
-                                                            <Text text="{appData>last_message}" wrapping="false" class="{= ${appData>unread_count} > 0 ? 'hhMsgPreview hhMsgPreviewBold' : 'hhMsgPreview'}"/>
+                                                            <Text text="{appData>last_message}" wrapping="false" class="hhMsgPreview"/>
                                                             <Text text="{appData>unread_count}" visible="{= ${appData>unread_count} > 0}" class="hhUnreadBadge"/>
                                                         </HBox>
                                                     </VBox>

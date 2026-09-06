@@ -295,7 +295,25 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 .hhMsgAvatar      { flex-shrink: 0; }
 .hhMsgContent     { flex: 1; min-width: 0; gap: 2px; }
 .hhMsgName.sapMText    { font-size: 15px !important; font-weight: 500 !important; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
-.hhMsgNameBold.sapMText { font-weight: 700 !important; }
+/* Unread conversation styling. Driven by data-hhunread (sap.ui.core.CustomData
+   with writeToDom) rather than a bound class: UI5 does not evaluate binding
+   expressions in "class", so the previous
+   class="{= ${unread_count} > 0 ? 'hhMsgItem hhMsgItemUnread' : 'hhMsgItem'}"
+   silently produced no classes at all — not even the base one. */
+.hhMsgItem[data-hhunread="true"] {
+    background: var(--sapList_Hover_Background, #f0f7e5);
+}
+.hhMsgItem[data-hhunread="true"] .hhMsgName.sapMText {
+    font-weight: 700 !important;
+}
+.hhMsgItem[data-hhunread="true"] .hhMsgTime.sapMText {
+    color: var(--sapButton_Emphasized_Background, #4FB584) !important;
+    font-weight: 700 !important;
+}
+.hhMsgItem[data-hhunread="true"] .hhMsgPreview.sapMText {
+    font-weight: 700 !important;
+    color: var(--sapTextColor, #131e29) !important;
+}
 .hhMsgTime.sapMText    { font-size: 11px !important; flex-shrink: 0; white-space: nowrap; }
 .hhMsgPreview.sapMText { font-size: 13px !important; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; line-height: 1.4; }
 
