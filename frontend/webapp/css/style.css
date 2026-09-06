@@ -202,6 +202,32 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 /* ── Chat bubbles — raw HTML injected via core:HTML ── */
 #chatBubbles     { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
 
+/* ── DM chat bubbles ──────────────────────────────────────────────────────
+   Rendered by real UI5 controls (List/CustomListItem in DmChatDialog); only
+   the bubble shape/colour lives here, driven by theme variables so it follows
+   the brand instead of hardcoded hex values. hhown is written to the DOM by
+   sap.ui.core.CustomData. */
+.hhBubble {
+    max-width: 80%;
+    margin: 0 8px;
+    padding: 8px 12px;
+    border-radius: 16px;
+}
+.hhBubble[data-hhown="true"] {
+    background: var(--sapButton_Emphasized_Background, #4FB584);
+    color: var(--sapButton_Emphasized_TextColor, #fff);
+    border-bottom-right-radius: 4px;
+}
+.hhBubble[data-hhown="false"] {
+    background: var(--sapNeutralBackground, #eff1f2);
+    color: var(--sapTextColor, #1e293b);
+    border-bottom-left-radius: 4px;
+}
+.hhBubbleMeta {
+    font-size: 0.6875rem;
+    opacity: 0.75;
+}
+
 /* ── Booking list ─────────────────────────────────────────────── */
 .bookingInfoBox   { flex: 1 1 auto; min-width: 0; }
 .bookingActionsBox { flex: 0 0 auto; min-width: 100px; }

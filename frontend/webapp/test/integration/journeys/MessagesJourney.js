@@ -6,6 +6,8 @@
  *  2. Switching to Messages tab shows at least one conversation
  *  3. A conversation with unread_count > 0 shows an unread badge
  *  4. DM Chat dialog opens when pressing a conversation item
+ *  5. Messages render as real UI5 controls with their text content
+ *  6. Own vs received messages are distinguished (alignment + read ticks)
  */
 sap.ui.define([
     "sap/ui/test/opaQunit",
@@ -81,6 +83,83 @@ sap.ui.define([
                 Opa5.assert.ok(bOpen, "DM chat dialog opened after pressing a conversation");
             },
             errorMessage: "DM chat dialog did not open after pressing conversation item"
+        });
+
+        Then.iTeardownMyUIComponent();
+    });
+
+    // ── 5. Messages render as real UI5 controls ───────────────────────────
+    // Guards the redesign: bubbles used to be an injected HTML string via
+    // core:HTML, which rendered no controls at all and could not be asserted.
+
+    opaTest("DM chat renders each message as a UI5 control with its text", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("messages");
+        When.waitFor({
+            controlType: "sap.m.List",
+            viewName: "helphub.view.Dashboard",
+            matchers: new AggregationFilled({ name: "items" }),
+            success: function (aLists) {
+                var aFilled = aLists.filter(function (l) { return l.getItems().length > 0; });
+                new Press().executeOn(aFilled[0].getItems()[0]);
+            },
+            errorMessage: "No conversation list item found to press"
+        });
+
+        Then.waitFor({
+            controlType: "sap.m.List",
+            searchOpenDialogs: true,
+            matchers: new AggregationFilled({ name: "items" }),
+            success: function (aLists) {
+                var aTexts = [];
+                aLists[0].findAggregatedObjects(true, function (o) {
+                    if (o.isA("sap.m.Text")) { aTexts.push(o.getText()); }
+                    return false;
+                });
+                Opa5.assert.ok(
+                    aTexts.indexOf("See you tomorrow!") > -1,
+                    "Message body is rendered by a real sap.m.Text control"
+                );
+            },
+            errorMessage: "DM message list rendered no items"
+        });
+
+        Then.iTeardownMyUIComponent();
+    });
+
+    // ── 6. Own vs received distinction ────────────────────────────────────
+
+    opaTest("Own messages are right-aligned and show a read tick", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("messages");
+        When.waitFor({
+            controlType: "sap.m.List",
+            viewName: "helphub.view.Dashboard",
+            matchers: new AggregationFilled({ name: "items" }),
+            success: function (aLists) {
+                var aFilled = aLists.filter(function (l) { return l.getItems().length > 0; });
+                new Press().executeOn(aFilled[0].getItems()[0]);
+            },
+            errorMessage: "No conversation list item found to press"
+        });
+
+        Then.waitFor({
+            controlType: "sap.m.List",
+            searchOpenDialogs: true,
+            matchers: new AggregationFilled({ name: "items" }),
+            success: function (aLists) {
+                var bOwnAligned = false, bTick = false;
+                aLists[0].findAggregatedObjects(true, function (o) {
+                    if (o.isA("sap.m.HBox") && o.getJustifyContent() === "End") { bOwnAligned = true; }
+                    if (o.isA("sap.m.Text") && /\u2713/.test(o.getText() || "")) { bTick = true; }
+                    return false;
+                });
+                Opa5.assert.ok(bOwnAligned, "Own message is aligned to the end (right)");
+                Opa5.assert.ok(bTick, "Own message shows a delivery/read tick");
+            },
+            errorMessage: "Could not inspect rendered DM messages"
         });
 
         Then.iTeardownMyUIComponent();

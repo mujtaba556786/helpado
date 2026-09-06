@@ -559,6 +559,36 @@ sap.ui.define([], function () {
         }
     ];
 
+    // Messages inside CONV1 — covers the three states the DM chat renders:
+    // a received message, an own message that has been read (double tick) and
+    // an own message that has not (single tick).
+    var MESSAGES = [
+        {
+            id: "M1",
+            conversation_id: "CONV1",
+            sender_id: "p1",
+            content: "Hi! Are you free on Saturday?",
+            is_read: 1,
+            created_at: new Date(Date.now() - 7200000).toISOString()
+        },
+        {
+            id: "M2",
+            conversation_id: "CONV1",
+            sender_id: "U_TEST_001",
+            content: "Yes, Saturday morning works for me.",
+            is_read: 1,
+            created_at: new Date(Date.now() - 5400000).toISOString()
+        },
+        {
+            id: "M3",
+            conversation_id: "CONV1",
+            sender_id: "U_TEST_001",
+            content: "See you tomorrow!",
+            is_read: 0,
+            created_at: new Date(Date.now() - 3600000).toISOString()
+        }
+    ];
+
     // Total unread DM count
     var DM_UNREAD_COUNT = CONVERSATIONS.reduce(function (s, c) { return s + (c.unread_count || 0); }, 0); // 1
 
@@ -613,6 +643,7 @@ sap.ui.define([], function () {
         TASKS:                          TASKS,
         // Conversations (one unread, one read)
         CONVERSATIONS:                  CONVERSATIONS,
+        MESSAGES:                       MESSAGES,
         DM_UNREAD_COUNT:               DM_UNREAD_COUNT,
         // Ratings
         RATINGS:                        RATINGS

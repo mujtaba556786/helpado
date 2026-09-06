@@ -20,13 +20,38 @@
             </Bar>
         </customHeader>
 
-<content>
+        <content>
             <FlexBox direction="Column" height="100%" fitContainer="true">
                 <items>
-                    <!-- Messages — grows to fill -->
-                    <ScrollContainer id="dmScrollContainer" vertical="true" horizontal="false">
+                    <!-- Messages — real UI5 controls so they follow the theme and are matchable in OPA5 -->
+                    <ScrollContainer id="dmScrollContainer" vertical="true" horizontal="false" width="100%">
                         <layoutData><FlexItemData growFactor="1" shrinkFactor="1" baseSize="0"/></layoutData>
-                        <core:HTML id="dmBubblesHtml" content="&lt;div&gt;&lt;/div&gt;"/>
+                        <List id="dmMessageList"
+                            items="{appData>/dmMessages}"
+                            showSeparators="None"
+                            backgroundDesign="Transparent"
+                            noDataText="{i18n>noMessagesYet}"
+                            width="100%">
+                            <CustomListItem type="Inactive">
+                                <HBox width="100%"
+                                    justifyContent="{= ${appData>isOwn} ? 'End' : 'Start' }"
+                                    class="sapUiTinyMarginTop">
+                                    <VBox class="hhBubble">
+                                        <customData>
+                                            <core:CustomData key="hhown" value="{appData>isOwnStr}" writeToDom="true"/>
+                                        </customData>
+                                        <Text text="{appData>content}"/>
+                                        <HBox justifyContent="End" alignItems="Center">
+                                            <Text text="{appData>time}" class="hhBubbleMeta"/>
+                                            <Text text="{appData>ticks}"
+                                                tooltip="{appData>tickTooltip}"
+                                                visible="{appData>isOwn}"
+                                                class="hhBubbleMeta sapUiTinyMarginBegin"/>
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                            </CustomListItem>
+                        </List>
                     </ScrollContainer>
                     <!-- Input bar — pinned to bottom -->
                     <HBox alignItems="Center" class="sapUiSmallMarginBeginEnd sapUiTinyMarginBottom">

@@ -175,7 +175,7 @@ sap.ui.define([
             return makeResponse({ success: true, messageId: "DM_MOCK_" + Date.now() });
         }
         if (matchUrl(sUrl, "/api/messages")) {
-            return makeResponse({ success: true, messages: [] });
+            return makeResponse({ success: true, messages: MockData.MESSAGES });
         }
 
         // ── Ratings ───────────────────────────────────────────────────────────

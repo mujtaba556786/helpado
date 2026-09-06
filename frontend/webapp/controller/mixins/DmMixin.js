@@ -85,6 +85,10 @@ sap.ui.define([
             var sUserId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
 
             oModel.setProperty("/currentDmOtherName", sOtherName || "");
+            // Drop the previous conversation so it cannot flash in this one
+            // while the new messages are still loading.
+            this._dmMessages = [];
+            oModel.setProperty("/dmMessages", []);
 
             this._getDmChatDialog().then(function (oDialog) {
                 oDialog.open();
@@ -97,7 +101,7 @@ sap.ui.define([
                         if (oData.success) {
                             var iPrev = (that._dmMessages || []).length;
                             that._dmMessages = oData.messages;
-                            that._renderDmBubbles();
+                            that._setDmMessages();
                             if (oData.messages.length > iPrev) {
                                 fetch(API_BASE + "/api/messages/" + encodeURIComponent(sConvoId) + "/read", {
                                     method: "PUT",
@@ -108,7 +112,7 @@ sap.ui.define([
                             }
                         }
                     })
-                    .catch(function () { if (!that._dmMessages) { that._dmMessages = []; that._renderDmBubbles(); } });
+                    .catch(function () { if (!that._dmMessages) { that._dmMessages = []; that._setDmMessages(); } });
             };
 
             fnLoadMessages();
@@ -117,38 +121,43 @@ sap.ui.define([
             this._dmRefreshInterval = setInterval(fnLoadMessages, 8000);
         },
 
-        _renderDmBubbles: function () {
-            var oHtml = this.byId("dmBubblesHtml");
-            var oScroll = this.byId("dmScrollContainer");
-            if (!oHtml) return;
-
+        // Normalizes raw messages into the appData model so the List in
+        // DmChatDialog renders them. Replaces the old raw-HTML/inline-style
+        // rendering: UI5 Text escapes content for us, and the bubble styling
+        // now comes from the theme instead of hardcoded colours.
+        _setDmMessages: function () {
             var oModel = this.getModel("appData");
+            if (!oModel) return;
+
             var sUserId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
-            var aMessages = this._dmMessages || [];
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
-            var sHtml = aMessages.map(function (m) {
-                var sEsc = (m.content || "").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
-                var sTime = m.created_at ? new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-                if (m.sender_id === sUserId) {
-                    var sRead = m.is_read
-                        ? '<span style="font-size:11px;color:#93c5fd;margin-left:4px">✓✓</span>'
-                        : '<span style="font-size:11px;color:#bfdbfe;margin-left:4px">✓</span>';
-                    return '<div style="text-align:right;margin:4px 0">'
-                        + '<span style="background:#3b82f6;color:white;padding:8px 12px;border-radius:16px 16px 4px 16px;display:inline-block;max-width:80%;word-wrap:break-word;text-align:left">'
-                        + sEsc + '</span>' + sRead
-                        + '<div style="font-size:10px;color:#94a3b8;margin-top:2px">' + sTime + '</div></div>';
-                }
-                return '<div style="text-align:left;margin:4px 0">'
-                    + '<span style="background:#f1f5f9;color:#1e293b;padding:8px 12px;border-radius:16px 16px 16px 4px;display:inline-block;max-width:80%;word-wrap:break-word">'
-                    + sEsc + '</span>'
-                    + '<div style="font-size:10px;color:#94a3b8;margin-top:2px">' + sTime + '</div></div>';
-            }).join("");
+            var aMessages = (this._dmMessages || []).map(function (m) {
+                var bOwn = m.sender_id === sUserId;
+                var bRead = !!m.is_read;
+                return {
+                    content: m.content || "",
+                    isOwn: bOwn,
+                    isOwnStr: bOwn ? "true" : "false",
+                    time: m.created_at
+                        ? new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                        : "",
+                    ticks: bOwn ? (bRead ? "\u2713\u2713" : "\u2713") : "",
+                    tickTooltip: bOwn
+                        ? oBundle.getText(bRead ? "messageRead" : "messageSent")
+                        : ""
+                };
+            });
 
-            oHtml.setContent("<div style='display:flex;flex-direction:column;gap:8px;padding:12px'>" + sHtml + "</div>");
+            oModel.setProperty("/dmMessages", aMessages);
+            this._scrollDmToBottom();
+        },
 
-            if (oScroll) {
-                setTimeout(function () { oScroll.scrollTo(0, 99999, 0); }, 50);
-            }
+        _scrollDmToBottom: function () {
+            var oScroll = this.byId("dmScrollContainer");
+            if (!oScroll) return;
+            // Wait for the List to re-render the new items before scrolling.
+            setTimeout(function () { oScroll.scrollTo(0, 99999, 0); }, 50);
         },
 
         onDmSend: function () {
@@ -170,7 +179,7 @@ sap.ui.define([
                 is_read: 0,
                 created_at: new Date().toISOString()
             });
-            this._renderDmBubbles();
+            this._setDmMessages();
 
             var that = this;
             fetch(API_BASE + "/api/messages", {
@@ -203,6 +212,8 @@ sap.ui.define([
                 this._dmRefreshInterval = null;
             }
             this._getDmChatDialog().then(function (d) { d.close(); }.bind(this));
+            this._dmMessages = [];
+            this.getModel("appData").setProperty("/dmMessages", []);
             this._loadConversations();
         },
 
