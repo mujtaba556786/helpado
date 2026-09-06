@@ -4,7 +4,7 @@
  * Scenarios covered:
  *  1.  Notification bell button is rendered in the header
  *  2.  Notification HTML badge element exists (id="notifBadge")
- *  3.  Pressing the bell opens the Notifications dialog
+ *  3.  Pressing the bell opens the Notifications popover
  *  4.  Notifications dialog contains at least one item
  *  5.  Unread notifications show a visual distinction (is_read=0)
  *  6.  Notifications dialog has a "Mark all read" button
@@ -79,13 +79,16 @@ sap.ui.define([
             errorMessage: "Could not press the notification bell button"
         });
 
+        // The bell opens NotificationsDialogV2, a sap.m.Popover anchored to the
+        // button (CLAUDE.md: use a Popover, not a Dialog, for button-anchored
+        // menus). This assertion still looked for the retired V1 sap.m.Dialog.
         Then.waitFor({
-            controlType: "sap.m.Dialog",
-            success: function (aDialogs) {
-                var bOpen = aDialogs.some(function (d) { return d.isOpen(); });
-                Opa5.assert.ok(bOpen, "Notifications dialog is open");
+            controlType: "sap.m.Popover",
+            success: function (aPopovers) {
+                var bOpen = aPopovers.some(function (p) { return p.isOpen(); });
+                Opa5.assert.ok(bOpen, "Notifications popover is open");
             },
-            errorMessage: "Notifications dialog did not open after pressing the bell"
+            errorMessage: "Notifications popover did not open after pressing the bell"
         });
 
         Then.iTeardownMyUIComponent();
