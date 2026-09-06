@@ -40,7 +40,7 @@
                                         <customData>
                                             <core:CustomData key="hhown" value="{appData>isOwnStr}" writeToDom="true"/>
                                         </customData>
-                                        <Text text="{appData>content}"/>
+                                        <Text text="{appData>content}" renderWhitespace="true"/>
                                         <HBox justifyContent="End" alignItems="Center">
                                             <Text text="{appData>time}" class="hhBubbleMeta"/>
                                             <Text text="{appData>ticks}"
@@ -53,15 +53,18 @@
                             </CustomListItem>
                         </List>
                     </ScrollContainer>
-                    <!-- Composer — pinned to bottom. The input carries growFactor so it
-                         actually fills the bar (width="100%" alone does not grow a flex
-                         child), and Send is a labelled button rather than a bare arrow. -->
-                    <HBox alignItems="Center"
+                    <!-- Composer — pinned to bottom. A growing TextArea (not an Input) so a
+                         long message stays visible and editable before sending; Enter adds a
+                         newline and the labelled Send button is the only send action.
+                         growFactor makes it fill the bar — width="100%" does not grow a flex
+                         child. alignItems=End keeps Send on the last line as the field grows. -->
+                    <HBox alignItems="End"
                         class="sapUiSmallMarginBeginEnd sapUiTinyMarginTop sapUiSmallMarginBottom hhComposer">
                         <layoutData><FlexItemData shrinkFactor="0"/></layoutData>
-                        <Input id="dmInput" placeholder="{i18n>typeMessage}" submit="onDmSend" class="hhComposerInput">
+                        <TextArea id="dmInput" placeholder="{i18n>typeMessage}" rows="1"
+                            growing="true" growingMaxLines="5" width="100%" class="hhComposerInput">
                             <layoutData><FlexItemData growFactor="1" baseSize="0"/></layoutData>
-                        </Input>
+                        </TextArea>
                         <Button id="dmSendBtn" text="{i18n>sendMessage}" icon="sap-icon://paper-plane"
                             type="Emphasized" press="onDmSend" class="sapUiSmallMarginBegin hhComposerSend"/>
                     </HBox>

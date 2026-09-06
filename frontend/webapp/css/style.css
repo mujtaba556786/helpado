@@ -230,7 +230,8 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 .sapMInputBase.hhComposerInput,
 .hhComposerInput .sapMInputBaseContentWrapper,
 .hhComposerInput .sapMInputBaseInner {
-    height: 2.75rem;
+    min-height: 2.75rem;
+    height: auto;
 }
 .hhComposerSend {
     min-height: 2.75rem;
