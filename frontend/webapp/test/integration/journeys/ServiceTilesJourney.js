@@ -2,7 +2,7 @@
  * OPA5 Journey — Service-tile grid on the Find Help tab.
  *
  * Scenarios covered:
- *  1. Service grid renders with 12 tiles on startup
+ *  1. Service grid renders one tile per ServiceConstants category
  *  2. "Popular" hero badge appears only on the Cleaning tile
  *  3. Post-a-Task CTA button is rendered above the tile grid
  *  4. Activity strip is visible (helpers > 0 in mock data)
@@ -14,9 +14,10 @@
 sap.ui.define([
     "sap/ui/test/opaQunit",
     "sap/ui/test/Opa5",
+    "helphub/model/ServiceConstants",
     "helphub/test/integration/pages/DashboardPage",
     "helphub/test/mockserver/MockServer"
-], function (opaTest, Opa5, DashboardPage, MockServer) {
+], function (opaTest, Opa5, ServiceConstants, DashboardPage, MockServer) {
     "use strict";
 
     QUnit.module("Service Tiles — Find Help tab", {
@@ -42,8 +43,11 @@ sap.ui.define([
                 return bHasSvcName;
             },
             success: function (aItems) {
-                Opa5.assert.ok(aItems.length >= 12,
-                    "At least 12 service tiles rendered (got " + aItems.length + ")");
+                // ServiceConstants is the single source of truth for categories,
+                // so derive the expected count from it instead of hardcoding one.
+                Opa5.assert.strictEqual(aItems.length, ServiceConstants.length,
+                    "One tile per service category (expected " + ServiceConstants.length +
+                    ", got " + aItems.length + ")");
             },
             errorMessage: "Service tiles did not render"
         });
@@ -219,7 +223,13 @@ sap.ui.define([
 
     // ── 6. Spot-check specific service categories ─────────────────────────
 
-    var aCategorySpotChecks = ["Cleaning", "Gardening", "Handyman", "Babysitting", "Cooking"];
+    // Spot-check a sample drawn from the catalogue itself. Hardcoding names let
+    // this drift: it still asked for "Babysitting", which is not a category.
+    // In English the i18n label equals the constant's name, which is what the
+    // tile renders.
+    var aCategorySpotChecks = ServiceConstants.slice(0, 5).map(function (oSvc) {
+        return oSvc.name;
+    });
 
     aCategorySpotChecks.forEach(function (sCat) {
         opaTest("Service tile for '" + sCat + "' is present", function (Given, When, Then) {
