@@ -20,19 +20,53 @@
             </Bar>
         </customHeader>
 
-<content>
+        <content>
             <FlexBox direction="Column" height="100%" fitContainer="true">
                 <items>
-                    <!-- Messages — grows to fill -->
-                    <ScrollContainer id="dmScrollContainer" vertical="true" horizontal="false">
+                    <!-- Messages — real UI5 controls so they follow the theme and are matchable in OPA5 -->
+                    <ScrollContainer id="dmScrollContainer" vertical="true" horizontal="false" width="100%">
                         <layoutData><FlexItemData growFactor="1" shrinkFactor="1" baseSize="0"/></layoutData>
-                        <core:HTML id="dmBubblesHtml" content="&lt;div&gt;&lt;/div&gt;"/>
+                        <List id="dmMessageList"
+                            items="{appData>/dmMessages}"
+                            showSeparators="None"
+                            backgroundDesign="Transparent"
+                            noDataText="{i18n>noMessagesYet}"
+                            width="100%">
+                            <CustomListItem type="Inactive">
+                                <HBox width="100%"
+                                    justifyContent="{= ${appData>isOwn} ? 'End' : 'Start' }"
+                                    class="sapUiTinyMarginTop">
+                                    <VBox class="hhBubble">
+                                        <customData>
+                                            <core:CustomData key="hhown" value="{appData>isOwnStr}" writeToDom="true"/>
+                                        </customData>
+                                        <Text text="{appData>content}" renderWhitespace="true"/>
+                                        <HBox justifyContent="End" alignItems="Center">
+                                            <Text text="{appData>time}" class="hhBubbleMeta"/>
+                                            <Text text="{appData>ticks}"
+                                                tooltip="{appData>tickTooltip}"
+                                                visible="{appData>isOwn}"
+                                                class="hhBubbleMeta sapUiTinyMarginBegin"/>
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                            </CustomListItem>
+                        </List>
                     </ScrollContainer>
-                    <!-- Input bar — pinned to bottom -->
-                    <HBox alignItems="Center" class="sapUiSmallMarginBeginEnd sapUiTinyMarginBottom">
+                    <!-- Composer — pinned to bottom. A growing TextArea (not an Input) so a
+                         long message stays visible and editable before sending; Enter adds a
+                         newline and the labelled Send button is the only send action.
+                         growFactor makes it fill the bar — width="100%" does not grow a flex
+                         child. alignItems=End keeps Send on the last line as the field grows. -->
+                    <HBox alignItems="End"
+                        class="sapUiSmallMarginBeginEnd sapUiTinyMarginTop sapUiSmallMarginBottom hhComposer">
                         <layoutData><FlexItemData shrinkFactor="0"/></layoutData>
-                        <Input id="dmInput" placeholder="{i18n>typeMessage}" width="100%" submit="onDmSend"/>
-                        <Button id="dmSendBtn" icon="sap-icon://paper-plane" type="Emphasized" press="onDmSend" class="sapUiTinyMarginBegin"/>
+                        <TextArea id="dmInput" placeholder="{i18n>typeMessage}" rows="1"
+                            growing="true" growingMaxLines="5" width="100%" class="hhComposerInput">
+                            <layoutData><FlexItemData growFactor="1" baseSize="0"/></layoutData>
+                        </TextArea>
+                        <Button id="dmSendBtn" text="{i18n>sendMessage}" icon="sap-icon://paper-plane"
+                            type="Emphasized" press="onDmSend" class="sapUiSmallMarginBegin hhComposerSend"/>
                     </HBox>
                 </items>
             </FlexBox>
