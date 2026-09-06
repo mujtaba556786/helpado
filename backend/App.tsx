@@ -4,7 +4,6 @@ import { apiService, EMPTY_STATS } from './services/api';
 import { User, Service, Booking, Review, UserRole, DashboardStats } from './types';
 import DashboardView from './components/Dashboard';
 import UserManagementView from './components/UserManagement';
-import ServiceManagementView from './components/ServiceManagement';
 import BookingManagementView from './components/BookingManagement';
 import ReviewModerationView from './components/ReviewModeration';
 import Sidebar from './components/Sidebar';
@@ -58,7 +57,6 @@ const App: React.FC = () => {
       // Admin Views
       case 'dashboard': return <DashboardView stats={stats} bookings={bookings} />;
       case 'users': return <UserManagementView users={users} setUsers={setUsers} />;
-      case 'services': return <ServiceManagementView services={services} setServices={setServices} />;
       case 'bookings': return <BookingManagementView bookings={bookings} setBookings={setBookings} />;
       case 'reviews': return <ReviewModerationView reviews={reviews} setReviews={setReviews} />;
       case 'trust-safety': return <TrustSafetyView />;
