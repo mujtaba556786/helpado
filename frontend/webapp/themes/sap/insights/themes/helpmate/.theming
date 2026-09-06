@@ -6,7 +6,7 @@
 	},
 	"sEntity": "Theme",
 	"sId": "helpmate",
-	"sLabel": "HelpMate Theme",
+	"sLabel": "Helpado Theme",
 	"oExtends": "UI5.sap/insights.sap_horizon",
 	"sTextDirections": "LTR,RTL",
 	"sType": "STANDARD",

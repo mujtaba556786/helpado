@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.helpmate.app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>HelpMate</name>
+<widget id="com.helpado.app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Helpado</name>
     <description>Community Help Marketplace</description>
-    <author email="support@helpmate.com" href="https://helpmate.com">
-        HelpMate Team
+    <author email="support@helpado.app" href="https://helpado.app">
+        Helpado Team
     </author>
     
     <content src="index.html" />

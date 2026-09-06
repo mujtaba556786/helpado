@@ -7,7 +7,7 @@
  * When building with Cordova CLI, this file will be replaced with the actual cordova.js
  * 
  * Version: 12.0.0-mock
- * Author: HelpMate Development Team
+ * Author: Helpado Development Team
  * License: MIT
  * 
  * Usage:

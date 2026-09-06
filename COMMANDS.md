@@ -1,4 +1,4 @@
-# Helpmate — Commands Reference
+# Helpado — Commands Reference
 
 ## Start the App
 

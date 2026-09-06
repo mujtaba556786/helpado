@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
             <span className="text-white font-bold text-lg">S</span>
           </div>
           <div>
-            <span className="text-xl font-black text-white tracking-tighter italic block leading-none">ServiceLink</span>
+            <span className="text-xl font-black text-white tracking-tighter italic block leading-none">Helpado</span>
             <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">{userRole === UserRole.ADMIN ? 'Admin Console' : 'Marketplace'}</span>
           </div>
         </div>

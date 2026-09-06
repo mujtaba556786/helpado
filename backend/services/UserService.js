@@ -22,7 +22,7 @@ async function geocodeAddress({ street_name, street_number, city, state, country
     const url = `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`;
 
     return new Promise((resolve) => {
-        const req = https.get(url, { headers: { 'User-Agent': 'HelpMate/1.0 mujtabaahmed556@gmail.com' } }, (res) => {
+        const req = https.get(url, { headers: { 'User-Agent': 'Helpado/1.0 mujtabaahmed556@gmail.com' } }, (res) => {
             let body = '';
             res.on('data', d => body += d);
             res.on('end', () => {
@@ -254,11 +254,11 @@ async function approveUser(id) {
             if (user.email) {
                 const { transporter, isEthereal } = await createMailTransporter();
                 const info = await transporter.sendMail({
-                    from: `"Helpmate" <${process.env.SMTP_USER || 'noreply@helpmate.app'}>`,
+                    from: `"Helpado" <${process.env.SMTP_USER || 'noreply@helpado.app'}>`,
                     to: user.email,
-                    subject: '🎉 Your Helpmate provider account is approved!',
+                    subject: '🎉 Your Helpado provider account is approved!',
                     html: `<div style="font-family:sans-serif;max-width:520px;margin:auto">
-                        <h2>Welcome to Helpmate, ${user.name || 'there'}!</h2>
+                        <h2>Welcome to Helpado, ${user.name || 'there'}!</h2>
                         <p>Great news — your provider account has been <strong>approved</strong>.</p>
                         <p>You can now:</p>
                         <ul>
@@ -267,7 +267,7 @@ async function approveUser(id) {
                             <li>Build your reputation with reviews</li>
                         </ul>
                         <p>Log in to get started.</p>
-                        <p style="color:#888;font-size:12px">Helpmate — Neighborhood Help Network</p>
+                        <p style="color:#888;font-size:12px">Helpado — Neighborhood Help Network</p>
                     </div>`
                 });
                 if (isEthereal) console.log('Provider approval email preview:', nodemailer.getTestMessageUrl(info));

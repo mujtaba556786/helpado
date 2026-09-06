@@ -232,15 +232,6 @@ sap.ui.define([
             // Suppress the first-run onboarding dialog so it never blocks OPA5.
             localStorage.setItem("hhOnboarded", "1");
 
-            // Provide HelpmateStorage alias used by Dashboard.controller.js
-            if (!window.HelpmateStorage) {
-                window.HelpmateStorage = {
-                    get:   function (k, cb) { cb(localStorage.getItem(k)); },
-                    set:   function (k, v)  { localStorage.setItem(k, v); },
-                    clear: function ()      {}
-                };
-            }
-
             _originalFetch = window.fetch;
             window.fetch = function (url, options) {
                 return handleFetch(url, options);

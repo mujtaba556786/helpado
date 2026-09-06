@@ -98,7 +98,7 @@ const AuthView: React.FC<AuthViewProps> = ({ onLogin }) => {
           {step === 'LOGIN' && (
             <div className="space-y-8 animate-in slide-in-from-bottom-6">
               <div>
-                <h2 className="text-4xl font-black text-slate-900 tracking-tighter italic">ServiceLink</h2>
+                <h2 className="text-4xl font-black text-slate-900 tracking-tighter italic">Helpado</h2>
                 <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-2">Enterprise Administration</p>
               </div>
 
@@ -182,7 +182,7 @@ const AuthView: React.FC<AuthViewProps> = ({ onLogin }) => {
       
       {/* Footer Branding */}
       <div className="absolute bottom-8 text-center w-full z-10">
-        <p className="text-slate-600 font-black uppercase tracking-[0.4em] text-[9px] opacity-40">ServiceLink Ecosystem • v2.5 Enterprise</p>
+        <p className="text-slate-600 font-black uppercase tracking-[0.4em] text-[9px] opacity-40">Helpado Ecosystem • v2.5 Enterprise</p>
       </div>
     </div>
   );

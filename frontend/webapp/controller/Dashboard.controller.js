@@ -395,7 +395,7 @@ sap.ui.define([
             if (window.cordova && window.cordova.InAppBrowser) {
                 window.cordova.InAppBrowser.open(
                     sUrl, "_blank",
-                    "location=no,toolbar=yes,toolbarcolor=#f97316," +
+                    "location=no,toolbar=yes,toolbarcolor=#4FB584," +
                     "closebuttoncaption=Close,closebuttoncolor=#ffffff," +
                     "zoom=no,hardwareback=yes"
                 );
@@ -479,11 +479,11 @@ sap.ui.define([
         },
 
         onOpenHelp: function() {
-            window.location.href = "mailto:mujtabaahmed556@gmail.com?subject=HelpMate%20Help%20%26%20FAQ";
+            window.location.href = "mailto:mujtabaahmed556@gmail.com?subject=Helpado%20Help%20%26%20FAQ";
         },
 
         onContactSupport: function() {
-            window.location.href = "mailto:mujtabaahmed556@gmail.com?subject=HelpMate%20Support%20Request";
+            window.location.href = "mailto:mujtabaahmed556@gmail.com?subject=Helpado%20Support%20Request";
         },
 
         onLanguageMenu: function(oEvent) {
