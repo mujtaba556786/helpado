@@ -58,7 +58,7 @@
                     <StandardListItem
                         icon="sap-icon://money-bills"
                         title="Rate"
-                        info="{= ${appData>/selectedProfile/rate} ? ${appData>/selectedProfile/rate} + ' ' + (${appData>/selectedProfile/currency} || 'EUR') + '/hr' : '—'}"
+                        info="{= ${appData>/selectedProfile/rate} ? '\u20ac' + ${appData>/selectedProfile/rate} + '/hr' : '—'}"
                         type="Inactive"/>
                     <StandardListItem
                         icon="sap-icon://history"

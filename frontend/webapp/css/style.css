@@ -610,11 +610,22 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 .hhExpertTagPlain { opacity: 0.65; }
 
 /* Actions row */
-.hhExpertActions  { gap: 6px; align-items: center; flex-wrap: wrap; padding-top: 4px; border-top: 1px solid; }
-.hhExpertIconBtn.sapMBtn   { width: 40px !important; height: 40px !important; padding: 0 !important; border-radius: 50% !important; }
-.hhExpertProfileBtn.sapMBtn { font-size: 0.82rem !important; padding: 0 8px !important; }
-.hhExpertBookBtn.sapMBtn    { border-radius: 8px !important; height: 34px !important; font-size: 0.82rem !important; font-weight: 600 !important; }
-.hhExpertMsgBtn.sapMBtn     { border-radius: 8px !important; height: 34px !important; font-size: 0.82rem !important; }
+/* Action row. Message used to wrap onto a line of its own — odd, since on a
+   marketplace it is at least as important as Book. Keep the row on one line:
+   the favourite star stays icon-sized, Profile shrinks to its icon-plus-label
+   minimum, and Book/Message share the remaining width. */
+.hhExpertActions  { gap: 6px; align-items: center; flex-wrap: nowrap; padding-top: 4px; border-top: 1px solid; }
+.hhExpertIconBtn.sapMBtn   { width: 34px !important; height: 34px !important; min-width: 34px !important; flex: 0 0 auto; padding: 0 !important; border-radius: 50% !important; }
+.hhExpertProfileBtn.sapMBtn { font-size: 0.78rem !important; padding: 0 4px !important; flex: 0 0 auto; }
+.hhExpertBookBtn.sapMBtn    { border-radius: 8px !important; height: 34px !important; font-size: 0.78rem !important; font-weight: 600 !important; flex: 1 1 0; min-width: 0 !important; }
+.hhExpertMsgBtn.sapMBtn     { border-radius: 8px !important; height: 34px !important; font-size: 0.78rem !important; flex: 1 1 0; min-width: 0 !important; }
+
+/* Availability/price column: "Unavailable" is wider than "Available" and was
+   squeezing the left column until "1.5 km away" wrapped, so cards had uneven
+   heights. Fix the column width so every card lines up, and keep the distance
+   on one line — pinning the column alone just made every card wrap instead. */
+.hhExpertPriceBox { min-width: 84px; flex: 0 0 auto; }
+.hhExpertDist.sapMText { white-space: nowrap !important; }
 
 /* ── iOS scroll ───────────────────────────────────────────────── */
 section { -webkit-overflow-scrolling: touch; }
