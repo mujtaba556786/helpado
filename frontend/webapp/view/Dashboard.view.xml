@@ -43,7 +43,7 @@ xmlns:l="sap.ui.layout"
                         <Text text="{i18n>chooseService}" class="fiPageSubtitle"/>
 
                         <!-- Activity strip: live marketplace pulse -->
-                        <HBox id="activityStrip" class="fiActivityStrip" justifyContent="SpaceBetween"
+                        <HBox id="activityStrip" class="fiActivityStrip" justifyContent="Start" wrap="Wrap"
                             visible="{= ${appData>/homeActivity/helpers} > 0}">
                             <HBox alignItems="Center" class="fiActivityItem">
                                 <core:Icon src="sap-icon://employee" class="fiActivityIcon"/>
@@ -63,7 +63,7 @@ xmlns:l="sap.ui.layout"
                         <!-- Primary CTA: shifts app from directory to marketplace -->
                         <VBox id="primaryCta" class="fiPrimaryCta" alignItems="Stretch">
                             <Button text="Post a Task" type="Emphasized" icon="sap-icon://add"
-                                press="onOpenPostTask" class="fiCtaBtn"/>
+                                press="onOpenPostTask" width="100%" class="fiCtaBtn"/>
                         </VBox>
 
                         <FlexBox wrap="Wrap" class="fiServicesGrid" items="{appData>/services}">
