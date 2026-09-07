@@ -420,24 +420,10 @@ xmlns:l="sap.ui.layout"
                     visible="{= ${appData>/currentTab} === 'saved'}">
                     <VBox class="fiSavedTab">
 
-                                    <!-- Recently Viewed -->
-                                    <Title text="{i18n>recentlyViewed}" level="H4" class="sapUiSmallMarginBottom"/>
-                                    <List id="recentlyViewedList" items="{appData>/recentlyViewed}" noDataText="{i18n>noHelpersViewed}" class="fiCardList">
-                                        <CustomListItem class="fiPersonCard">
-                                            <HBox class="fiPersonCardInner" justifyContent="SpaceBetween" alignItems="Center">
-                                                <HBox alignItems="Center">
-                                                    <Avatar displaySize="S" src="{appData>photo}" initials="P" backgroundColor="Accent1" class="sapUiTinyMarginEnd"/>
-                                                    <VBox>
-                                                        <Title text="{appData>name}" level="H5"/>
-                                                        <Text text="{appData>serviceType}" class="grayText smallText"/>
-                                                    </VBox>
-                                                </HBox>
-                                                <Button text="{i18n>profile}" icon="sap-icon://person-placeholder" type="Transparent" press="onViewRecentProfile"/>
-                                            </HBox>
-                                        </CustomListItem>
-                                    </List>
-
-                                    <!-- Saved Helpers -->
+                                    <!-- Saved Helpers first: this tab is called "Saved", so it
+                                         should open on what it is named after. Recently Viewed
+                                         previously filled the top half and pushed the actual
+                                         saved list below the fold. -->
                                     <Title text="{i18n>savedHelpers}" level="H4" class="sapUiSmallMarginTop sapUiSmallMarginBottom"/>
                                     <List id="favoritesList" items="{appData>/favoriteProviders}" noDataText="{i18n>noSavedHelpers}" class="fiCardList">
                                         <CustomListItem class="fiPersonCard">
@@ -460,6 +446,23 @@ xmlns:l="sap.ui.layout"
                                             </HBox>
                                         </CustomListItem>
                                     </List>
+                                    <!-- Recently Viewed -->
+                                    <Title text="{i18n>recentlyViewed}" level="H4" class="sapUiSmallMarginBottom"/>
+                                    <List id="recentlyViewedList" items="{appData>/recentlyViewed}" noDataText="{i18n>noHelpersViewed}" class="fiCardList">
+                                        <CustomListItem class="fiPersonCard">
+                                            <HBox class="fiPersonCardInner" justifyContent="SpaceBetween" alignItems="Center">
+                                                <HBox alignItems="Center">
+                                                    <Avatar displaySize="S" src="{appData>photo}" initials="P" backgroundColor="Accent1" class="sapUiTinyMarginEnd"/>
+                                                    <VBox>
+                                                        <Title text="{appData>name}" level="H5"/>
+                                                        <Text text="{appData>serviceType}" class="grayText smallText"/>
+                                                    </VBox>
+                                                </HBox>
+                                                <Button text="{i18n>profile}" icon="sap-icon://person-placeholder" type="Transparent" press="onViewRecentProfile"/>
+                                            </HBox>
+                                        </CustomListItem>
+                                    </List>
+
 
                     </VBox>
                 </ScrollContainer>

@@ -69,6 +69,13 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 .sapMDialog .sapMDialogSection {
     padding-top: 2.75rem !important;
 }
+/* Dialogs that ALSO have a subHeader need to clear both bars. Measured: the
+   title group occupies 0-44px and the subHeader 44-92px, while the section only
+   padded 44px — so the first row of content (the task's status chip and budget)
+   rendered underneath the subHeader and was invisible. */
+.sapMDialog.hhDialogWithSubHeader .sapMDialogSection {
+    padding-top: 5.75rem !important;
+}
 .hhBottomNav .sapMBarMiddle,
 .hhBottomNav .sapMBarPH {
     display: flex !important;
