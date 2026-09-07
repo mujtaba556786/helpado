@@ -63,6 +63,35 @@ async function updateStatus(bookingId, status) {
         throw err;
     }
 
+    // Reviews are gated on a booking being 'completed', so completion cannot be a
+    // free-for-all: otherwise anyone could create a booking, mark it completed and
+    // review a helper they never met. A booking may only be completed if it was
+    // actually confirmed and its scheduled date is not still in the future.
+    if (status === 'completed') {
+        const [[current]] = await pool.query(
+            'SELECT status, scheduled_date FROM bookings WHERE id = ?', [bookingId]
+        );
+        if (!current) {
+            throw Object.assign(new Error('Booking not found'), { statusCode: 404 });
+        }
+        if (current.status !== 'confirmed') {
+            throw Object.assign(
+                new Error('Only a confirmed booking can be marked completed'),
+                { statusCode: 409 }
+            );
+        }
+        if (current.scheduled_date) {
+            const dScheduled = new Date(current.scheduled_date);
+            const dToday = new Date(); dToday.setHours(0, 0, 0, 0);
+            if (dScheduled > dToday) {
+                throw Object.assign(
+                    new Error('This booking has not taken place yet'),
+                    { statusCode: 409 }
+                );
+            }
+        }
+    }
+
     await pool.execute('UPDATE bookings SET status = ? WHERE id = ?', [status, bookingId]);
 
     const [[booking]] = await pool.query(

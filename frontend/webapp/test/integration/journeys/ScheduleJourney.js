@@ -189,4 +189,42 @@ sap.ui.define([
 
         Then.iTeardownMyUIComponent();
     });
+
+    // ── Mark as completed ─────────────────────────────────────────────────
+    // Reviews require a completed booking, and nothing used to move a booking
+    // into that state, so this action is what makes reviewing possible at all.
+    // It must appear only on the customer's own confirmed booking whose date has
+    // passed — B1 (confirmed, 2025-06-20) qualifies; B2 (pending) must not.
+
+    opaTest("Confirmed past booking offers 'Mark as completed'", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+
+        Then.waitFor({
+            controlType: "sap.m.Button",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oBtn) {
+                if (!oBtn.getText || oBtn.getText() !== "Mark as completed") return false;
+                // getVisible() is the control's own flag — a button inside a hidden
+                // parent still reports true. Check it is actually rendered.
+                var oDom = oBtn.getDomRef();
+                return !!oDom && oDom.offsetParent !== null;
+            },
+            success: function (aButtons) {
+                var aStatuses = aButtons.map(function (b) {
+                    var oCtx = b.getBindingContext("appData");
+                    return oCtx && oCtx.getObject() ? oCtx.getObject().status : "?";
+                });
+                Opa5.assert.ok(aButtons.length > 0, "'Mark as completed' is offered");
+                Opa5.assert.ok(
+                    aStatuses.every(function (s) { return s === "confirmed"; }),
+                    "only on confirmed bookings (got: " + aStatuses.join(", ") + ")"
+                );
+            },
+            errorMessage: "'Mark as completed' was not offered on any confirmed past booking"
+        });
+
+        Then.iTeardownMyUIComponent();
+    });
 });
