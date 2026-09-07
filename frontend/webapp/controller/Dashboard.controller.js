@@ -68,6 +68,7 @@ sap.ui.define([
             }
             this._loadProvidersFromApi();
             this._initServicesFromConstants();
+            this._applyInterestOrder();
             this._loadSchedule();
             this._loadFavorites();
             this._loadUnreadDmCount();
@@ -92,6 +93,22 @@ sap.ui.define([
             setTimeout(this._checkTermsAccepted.bind(this), 350);
         },
 
+        /**
+         * Computes appData>/selectedProfile/rateDisplay before a dialog opens.
+         *
+         * Seven different places assign /selectedProfile, and a property binding
+         * with `formatter` against the object path renders empty (the same class
+         * of silent binding failure as the mark-completed button). Computing the
+         * string in JS and binding a plain property is the pattern that works.
+         */
+        _refreshRateDisplay: function() {
+            var oModel = this.getModel("appData");
+            var oProfile = oModel.getProperty("/selectedProfile");
+            if (oProfile) {
+                oModel.setProperty("/selectedProfile/rateDisplay", this.formatPriceDisplay(oProfile));
+            }
+        },
+
         // ── FRAGMENT DIALOG FACTORIES ────────────────────────────────────────────
         _getProfileDialog: function() {
             if (!this._pProfileDialog) {
@@ -101,6 +118,7 @@ sap.ui.define([
                     controller: this
                 }).then(function(oDialog) {
                     this.getView().addDependent(oDialog);
+                    oDialog.attachBeforeOpen(this._refreshRateDisplay, this);
                     return oDialog;
                 }.bind(this));
             }
@@ -115,6 +133,7 @@ sap.ui.define([
                     controller: this
                 }).then(function(oDialog) {
                     this.getView().addDependent(oDialog);
+                    oDialog.attachBeforeOpen(this._refreshRateDisplay, this);
                     return oDialog;
                 }.bind(this));
             }

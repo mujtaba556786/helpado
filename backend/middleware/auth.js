@@ -2,19 +2,33 @@ const jwt = require('jsonwebtoken');
 const pool = require('../db/pool');
 const { JWT_SECRET } = require('../config/secrets');
 
-const ADMIN_PANEL_TOKEN = process.env.ADMIN_PANEL_TOKEN || 'helphub-admin-panel';
+// No fallback value: an unset ADMIN_PANEL_TOKEN must fail closed. A default here
+// would be a publicly-known master key for every admin endpoint.
+const ADMIN_PANEL_TOKEN = process.env.ADMIN_PANEL_TOKEN || '';
 
 const handleAsync = (fn) => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
 
 async function requireAdmin(req, res, next) {
-    if (req.headers['x-admin-token'] === ADMIN_PANEL_TOKEN) return next();
+    if (ADMIN_PANEL_TOKEN && req.headers['x-admin-token'] === ADMIN_PANEL_TOKEN) return next();
 
-    const userId = req.headers['x-user-id'] || req.query.user_id;
-    if (!userId) return res.status(401).json({ success: false, error: 'Not authenticated' });
+    // Identity comes from a signed JWT only. The previous x-user-id / ?user_id
+    // fallback let any caller claim to be an admin just by setting a header.
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, error: 'Not authenticated' });
+
+    let userId;
+    try {
+        userId = jwt.verify(token, JWT_SECRET).userId;
+    } catch {
+        return res.status(401).json({ success: false, error: 'Invalid or expired token' });
+    }
+
     const [[user]] = await pool.query('SELECT role FROM users WHERE id = ?', [userId]);
     if (!user || user.role !== 'admin') return res.status(403).json({ success: false, error: 'Admin only' });
+    req.userId = userId;
     next();
 }
 

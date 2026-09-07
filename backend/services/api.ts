@@ -182,9 +182,18 @@ export const apiService = {
         return [];
     },
 
+    async getHealth(): Promise<boolean> {
+        try {
+            const res = await fetch(`${BASE_URL}/health`);
+            if (!res.ok) return false;
+            const data = await res.json();
+            return !!data.success;
+        } catch { return false; }
+    },
+
     async getStats(): Promise<DashboardStats> {
         try {
-            const res = await fetch(`${BASE_URL}/stats`);
+            const res = await fetch(`${BASE_URL}/stats`, { headers: { 'x-admin-token': adminToken } });
             if (res.ok) return await res.json();
         } catch { }
         return EMPTY_STATS;

@@ -128,20 +128,9 @@ async function passwordlessLogin(req, res) {
     res.json({ success: true, ...result });
 }
 
-// TESTING ONLY — these emails are treated as already-verified: no email/code is
-// sent, they log in immediately. REMOVE before real launch.
-const TEST_AUTO_LOGIN_EMAILS = ['mujtabaahmed556@gmail.com'];
-
 async function sendMagicLink(req, res) {
     const { email } = req.body;
     if (!email) return res.status(400).json({ success: false, error: 'email is required' });
-
-    // TESTING: whitelisted email skips email/OTP and logs in directly.
-    if (TEST_AUTO_LOGIN_EMAILS.includes(String(email).toLowerCase().trim())) {
-        const result = await AuthService.loginPasswordless(email, undefined, 'Email');
-        console.log(`[AUTH] TEST auto-login (whitelist) for: ${email}`);
-        return res.json({ success: true, directLogin: true, ...result });
-    }
 
     // SECURITY: every login must prove email ownership. We always send a one-time
     // link + 6-digit code; tokens are only issued after the link is clicked

@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { apiService, EMPTY_STATS } from './services/api';
 import { User, Service, Booking, Review, UserRole, DashboardStats } from './types';
+import { AI_FEATURES_ENABLED } from './constants';
 import DashboardView from './components/Dashboard';
 import UserManagementView from './components/UserManagement';
 import BookingManagementView from './components/BookingManagement';
@@ -103,7 +104,7 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-8 bg-[#fdfdfe]">
           {renderContent()}
         </div>
-        <AIAssistant context={{ stats, users, bookings }} />
+        {AI_FEATURES_ENABLED && <AIAssistant context={{ stats, users, bookings }} />}
       </main>
     </div>
   );

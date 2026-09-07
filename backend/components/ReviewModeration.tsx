@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Review } from '../types';
-import { ICONS } from '../constants';
+import { ICONS, AI_FEATURES_ENABLED } from '../constants';
 import { apiService } from '../services/api';
 import { GoogleGenAI } from "@google/genai";
 
@@ -101,14 +101,16 @@ const ReviewModerationView: React.FC<ReviewModerationProps> = ({ reviews, setRev
                 }`}>
                     {review.status}
                 </span>
+                {AI_FEATURES_ENABLED && (
                 <button
                     onClick={() => aiScan(review)}
                     disabled={scanning === review.id}
-                    className="flex items-center space-x-1 text-[10px] font-black text-indigo-600 hover:text-indigo-800 disabled:opacity-50"
+                    className="flex items-center space-x-1 text-[10px] font-black text-emerald-700 hover:text-emerald-900 disabled:opacity-50"
                 >
                     <ICONS.Bot className="w-3 h-3" />
                     <span>{scanning === review.id ? 'Scanning...' : 'AI SAFETY SCAN'}</span>
                 </button>
+                )}
               </div>
 
               <div className="flex items-center space-x-2">

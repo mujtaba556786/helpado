@@ -76,7 +76,7 @@ app.use(cors({
     },
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id', 'x-admin-token']
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-token']
 }));
 
 app.use(express.json());
@@ -435,6 +435,18 @@ async function initDb() {
 
 // ── Route mounts ──────────────────────────────────────────────────────────────
 app.use('/api/home',           require('./routes/homeRoutes'));
+// Liveness + DB reachability. Public on purpose: it returns no data, only
+// whether the process and its database are answering. Backs the admin panel's
+// status indicator, which previously was a hardcoded green light.
+app.get('/api/health', async (req, res) => {
+    try {
+        await require('./db/pool').query('SELECT 1');
+        res.json({ success: true, status: 'ok', db: true });
+    } catch (e) {
+        res.status(503).json({ success: false, status: 'degraded', db: false });
+    }
+});
+
 app.use('/api/subscription',   require('./routes/subscriptionRoutes'));
 app.use('/api/users',          require('./routes/userRoutes'));
 app.use('/api/providers',      require('./routes/providerRoutes'));

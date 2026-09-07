@@ -1,3 +1,13 @@
+/**
+ * The Gemini-backed admin features (Marketplace AI, AI Safety Scan) are hidden.
+ * They read process.env.API_KEY from browser code, which Vite does not define,
+ * so every call threw "process is not defined" and silently produced nothing.
+ * Re-enabling needs the calls moved behind a server route that holds the key —
+ * a Vite `define` would ship the key to every visitor. Flip this to true only
+ * once that route exists.
+ */
+export const AI_FEATURES_ENABLED = false;
+
 
 import React from 'react';
 

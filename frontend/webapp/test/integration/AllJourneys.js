@@ -15,6 +15,7 @@
  *  NotificationsJourney — bell, dialog, items, Mark-all-read, filter chips
  *  NavigationJourney    — tab cycle, tile→search, back-nav, NavContainer page existence
  *  AboutJourney         — Settings tab hero, legal/support list items, version, made-in text
+ *  BookingJourney       — booking dialog rate + TimePicker, onboarding chips + Back button
  */
 sap.ui.define([
     "helphub/test/integration/journeys/DashboardJourney",
@@ -25,7 +26,8 @@ sap.ui.define([
     "helphub/test/integration/journeys/MessagesJourney",
     "helphub/test/integration/journeys/NotificationsJourney",
     "helphub/test/integration/journeys/NavigationJourney",
-    "helphub/test/integration/journeys/AboutJourney"
+    "helphub/test/integration/journeys/AboutJourney",
+    "helphub/test/integration/journeys/BookingJourney"
 ], function () {
     "use strict";
     QUnit.start();

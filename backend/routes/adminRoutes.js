@@ -5,7 +5,7 @@ const s        = require('../middleware/schemas');
 const ctrl     = require('../controllers/adminController');
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
-router.get('/stats',                     handleAsync(ctrl.getStats));
+router.get('/stats',                     requireAdmin, handleAsync(ctrl.getStats));
 
 // ── Reviews ───────────────────────────────────────────────────────────────────
 router.get('/admin/reviews',             requireAdmin, handleAsync(ctrl.getReviews));

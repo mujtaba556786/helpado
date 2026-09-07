@@ -36,8 +36,10 @@ sap.ui.define([
             var sService    = oModel.getProperty("/selectedProfile/serviceType");
             var sCustomerId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
 
-            if (!sDate) { MessageToast.show("Please select a date."); return; }
-            if (!sCustomerId) { MessageToast.show("Please log in to book a helper."); return; }
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+
+            if (!sDate) { MessageToast.show(oBundle.getText("bookingErrNoDate")); return; }
+            if (!sCustomerId) { MessageToast.show(oBundle.getText("bookingErrNotLoggedIn")); return; }
 
             fetch(API_BASE + "/api/bookings", {
                 method: "POST",
@@ -54,12 +56,13 @@ sap.ui.define([
             .then(function(r) { return r.json(); })
             .then(function(oData) {
                 if (oData.success) {
-                    var sProviderName = oModel.getProperty("/selectedProfile/name") || "the helper";
+                    var sProviderName = oModel.getProperty("/selectedProfile/name") ||
+                        oBundle.getText("bookingTheHelper");
                     this._getBookingDialog().then(function(d) { d.close(); }.bind(this));
                     MessageBox.success(
-                        "Your request has been sent to " + sProviderName + ".\nYou'll be notified once they confirm.",
+                        oBundle.getText("bookingSentMsg", [sProviderName]),
                         {
-                            title: "Booking Request Sent!",
+                            title: oBundle.getText("bookingSentTitle"),
                             onClose: function() {
                                 this._loadSchedule();
                                 oModel.setProperty("/currentTab", "mySchedule");
@@ -68,10 +71,11 @@ sap.ui.define([
                         }
                     );
                 } else {
-                    MessageToast.show("Booking failed: " + (oData.error || "Unknown error"));
+                    MessageToast.show(oBundle.getText("bookingFailed",
+                        [oData.error || oBundle.getText("bookingUnknownError")]));
                 }
             }.bind(this))
-            .catch(function() { MessageToast.show("Could not reach the server."); });
+            .catch(function() { MessageToast.show(oBundle.getText("bookingNoServer")); });
         },
 
         onAcceptBooking: function(oEvent) {
@@ -113,7 +117,7 @@ sap.ui.define([
                             MessageToast.show(oData.error || "Could not cancel booking.");
                         }
                     })
-                    .catch(function() { MessageToast.show("Could not reach the server."); });
+                    .catch(function() { MessageToast.show(oBundle.getText("bookingNoServer")); });
                 }
             });
         },

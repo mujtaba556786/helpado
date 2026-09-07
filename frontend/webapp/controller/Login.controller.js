@@ -98,12 +98,6 @@ sap.ui.define([
                     MessageToast.show(oData.error || "Could not send link. Try again.");
                     return;
                 }
-                if (oData.directLogin) {
-                    // TESTING: whitelisted email is auto-verified server-side — no
-                    // email/code needed. Log in immediately.
-                    that._applySession(oData);
-                    return;
-                }
                 // Link + 6-digit code emailed. Show the "check inbox / enter code"
                 // step. There is no direct-login shortcut anymore — every login
                 // proves email ownership via the link or the code.

@@ -13,7 +13,10 @@ sap.ui.define([
                 var oModel = this.getModel("appData");
                 oModel.setProperty("/onboarding/step", 1);
                 oModel.setProperty("/onboarding/interests", []);
-                this._getOnboardingDialog().then(function(d) { d.open(); }.bind(this));
+                this._getOnboardingDialog().then(function(d) {
+                    d.open();
+                    this._syncOnboardingButtons();
+                }.bind(this));
             }
         },
 
@@ -22,9 +25,32 @@ sap.ui.define([
             var iStep  = oModel.getProperty("/onboarding/step");
             if (iStep < 3) {
                 oModel.setProperty("/onboarding/step", iStep + 1);
+                this._syncOnboardingButtons();
             } else {
                 this._finishOnboarding();
             }
+        },
+
+        onOnboardingBack: function() {
+            var oModel = this.getModel("appData");
+            var iStep  = oModel.getProperty("/onboarding/step");
+            if (iStep > 1) {
+                oModel.setProperty("/onboarding/step", iStep - 1);
+                this._syncOnboardingButtons();
+            }
+        },
+
+        /**
+         * Skip belongs to step 1 only, Back to steps 2-3. Set here rather than
+         * bound in the fragment because `visible` expression bindings are not
+         * applied to buttons in the Dialog `buttons` aggregation.
+         */
+        _syncOnboardingButtons: function() {
+            var iStep = this.getModel("appData").getProperty("/onboarding/step");
+            var oSkip = this.byId("onboardSkipBtn");
+            var oBack = this.byId("onboardBackBtn");
+            if (oSkip) { oSkip.setVisible(iStep === 1); }
+            if (oBack) { oBack.setVisible(iStep > 1); }
         },
 
         onOnboardingSkip: function() {
@@ -37,6 +63,9 @@ sap.ui.define([
             if (aInterests.length) {
                 localStorage.setItem("hhInterests", JSON.stringify(aInterests));
             }
+            // Reorder the dashboard tiles straight away, otherwise picking
+            // interests would have no visible effect until the next reload.
+            this._applyInterestOrder();
             this._getOnboardingDialog().then(function(d) { d.close(); }.bind(this));
         },
 
@@ -54,6 +83,37 @@ sap.ui.define([
                 oBtn.setType("Emphasized");
             }
             oModel.setProperty("/onboarding/interests", aInterests);
+        },
+
+        /**
+         * Sorts appData>/services so the categories picked during onboarding come
+         * first, keeping catalogue order within each group (stable sort). This is
+         * what gives onboarding step 3 a purpose — before this, hhInterests was
+         * written on finish and never read anywhere in the app.
+         */
+        _applyInterestOrder: function() {
+            var oModel = this.getModel("appData");
+            var aServices = oModel.getProperty("/services") || [];
+            if (!aServices.length) { return; }
+
+            var aInterests;
+            try {
+                aInterests = JSON.parse(localStorage.getItem("hhInterests") || "[]");
+            } catch (e) {
+                return;
+            }
+            if (!aInterests || !aInterests.length) { return; }
+
+            var aSorted = aServices.map(function (svc, i) {
+                return { svc: svc, i: i, picked: aInterests.indexOf(svc.name) >= 0 ? 0 : 1 };
+            }).sort(function (a, b) {
+                return a.picked - b.picked || a.i - b.i;
+            }).map(function (o) { return o.svc; });
+
+            oModel.setProperty("/services", aSorted);
+            if (this._applyTileColors) {
+                setTimeout(this._applyTileColors.bind(this), 150);
+            }
         },
 
         _loadFavorites: function() {
@@ -90,15 +150,16 @@ sap.ui.define([
                 }
             }
             if (!oCtx) return;
-            var sId   = oCtx.getObject().id;
-            var aFavs = (oModel.getProperty("/favorites") || []).slice();
-            var iIdx  = aFavs.indexOf(sId);
+            var sId     = oCtx.getObject().id;
+            var aFavs   = (oModel.getProperty("/favorites") || []).slice();
+            var iIdx    = aFavs.indexOf(sId);
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             if (iIdx >= 0) {
                 aFavs.splice(iIdx, 1);
-                MessageToast.show("Removed from saved.");
+                MessageToast.show(oBundle.getText("favRemoved"));
             } else {
                 aFavs.push(sId);
-                MessageToast.show("Saved to your helpers!");
+                MessageToast.show(oBundle.getText("favAdded"));
             }
             oModel.setProperty("/favorites", aFavs);
             localStorage.setItem("hhFavorites", JSON.stringify(aFavs));
