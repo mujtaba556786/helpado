@@ -121,7 +121,9 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
     display: block !important;
 }
 .hhNavBtn .sapMBtnContent {
-    font-size: 0.65rem !important;
+    /* 0.65rem (10.4px) truncated "Messages" to "Mes...s". 0.7rem still fits the
+       75px tab at 375px and is far more legible. */
+    font-size: 0.7rem !important;
     line-height: 1.1 !important;
     white-space: nowrap;
     overflow: hidden;
@@ -132,7 +134,13 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 }
 /* Higher specificity to beat SAP Bar theme hiding labels */
 .hhBottomNav .hhNavBtn .sapMBtnContent { display: block !important; }
-/* Active/inactive coloring handled entirely by SAP UI5 Emphasized/Transparent types */
+/* Nav label colour. The theme green #4BB87D on white measures 2.48:1 — well
+   under WCAG AA 4.5:1 — and at this size that is the primary navigation being
+   hard to read. #2F855A is the same hue darkened to ~4.5:1. */
+.hhBottomNav .hhNavBtn .sapMBtnContent,
+.hhBottomNav .hhNavBtn .sapMBtnIcon.sapUiIcon {
+    color: #2F855A !important;
+}
 /* Badge on Tasks / Messages */
 .hhNavBtnWrap {
     position: relative;
@@ -142,7 +150,10 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 }
 .hhNavBadge {
     position: absolute;
-    top: 4px; right: 6px;
+    /* The nearest positioned ancestor is UI5's own sapMFlexItem, which has
+       height 0 and sits level with the label — so top:0 put the badge on top of
+       the text. Offset upward from that baseline to land on the icon instead. */
+    top: -30px; right: 10px;
     background: #ef4444; color: #fff;
     font-size: 0.58rem; font-weight: 700;
     min-width: 16px; height: 16px;
@@ -153,9 +164,11 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 }
 /* Small phones — tighten slightly */
 @media (max-width: 380px) {
-    .hhNavBtn.sapMBtn { padding: 5px 2px !important; }
+    .hhNavBtn.sapMBtn { padding: 5px 0 !important; }
     .hhNavBtn .sapMBtnIcon.sapUiIcon { font-size: 1.2rem !important; }
-    .hhNavBtn .sapMBtnContent { font-size: 0.6rem !important; }
+    /* Was 0.6rem (9.6px) — this is the rule 375px phones actually hit, and it
+       was both the truncation and the legibility problem. */
+    .hhNavBtn .sapMBtnContent { font-size: 0.7rem !important; }
 }
 /* Very narrow — hide labels */
 @media (max-width: 320px) {
@@ -650,6 +663,9 @@ section { -webkit-overflow-scrolling: touch; }
     border-radius: 10px;
     padding: 8px 12px;
     margin-bottom: 10px;
+    /* Three nowrap items exceeded 375px and the third was clipped off-screen.
+       Wrapping keeps every stat visible. */
+    gap: 4px 14px;
     gap: 4px;
 }
 
