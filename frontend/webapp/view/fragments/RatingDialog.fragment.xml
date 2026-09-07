@@ -1,0 +1,35 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <!-- Reviewing is its own focused task. It used to be an inline form beneath the
+         existing reviews, which blurred reading someone else's opinion with writing
+         your own, and appeared on every profile. -->
+    <Dialog id="ratingDialog"
+        title="{i18n>rateThisHelper}"
+        contentWidth="92%"
+        stretch="{device>/system/phone}">
+
+        <content>
+            <VBox class="sapUiMediumMargin">
+                <Text text="{appData>/selectedProfile/name}" class="fontBold sapUiSmallMarginBottom"/>
+
+                <Label text="{i18n>yourRating}" required="true" class="sapUiTinyMarginBottom"/>
+                <RatingIndicator id="newRatingStars" maxValue="5" value="0" class="sapUiSmallMarginBottom"/>
+
+                <Label text="{i18n>yourComment}" class="sapUiTinyMarginBottom"/>
+                <TextArea id="newRatingComment" rows="4" width="100%"
+                    placeholder="{i18n>ratingPlaceholder}" growing="true" growingMaxLines="6"/>
+            </VBox>
+        </content>
+
+        <beginButton>
+            <Button text="{i18n>submitRating}" type="Emphasized" icon="sap-icon://paper-plane"
+                press="onSubmitRating"/>
+        </beginButton>
+        <endButton>
+            <Button text="{i18n>cancel}" press="onCloseRatingDialog"/>
+        </endButton>
+    </Dialog>
+
+</core:FragmentDefinition>

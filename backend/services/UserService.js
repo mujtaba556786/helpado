@@ -215,6 +215,22 @@ async function createRating({ provider_id, user_id, reviewer_name, stars, commen
     const iStars = parseInt(stars);
     if (!iStars || iStars < 1 || iStars > 5) throw Object.assign(new Error('stars must be 1–5'), { status: 400 });
 
+    // You may only review someone you actually hired. Without this, any logged-in
+    // user could rate any provider they had never met — enough for a competitor to
+    // sink a provider's rating, and it made every existing rating meaningless.
+    // Hiding the form client-side is not sufficient: this endpoint is callable
+    // directly.
+    const [[booked]] = await pool.query(
+        "SELECT id FROM bookings WHERE customer_id = ? AND provider_id = ? AND status = 'completed' LIMIT 1",
+        [user_id, provider_id]
+    );
+    if (!booked) {
+        throw Object.assign(
+            new Error('You can only review a helper after a completed booking with them'),
+            { status: 403 }
+        );
+    }
+
     const [[existing]] = await pool.query('SELECT id FROM ratings WHERE provider_id = ? AND user_id = ?', [provider_id, user_id]);
     if (existing) {
         await pool.execute(

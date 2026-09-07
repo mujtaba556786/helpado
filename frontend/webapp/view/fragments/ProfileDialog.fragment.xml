@@ -8,6 +8,22 @@
         verticalScrolling="true"
         stretch="true">
 
+        <!-- Safety actions live behind an overflow menu rather than sitting at the
+             bottom of every profile. They stay one tap away, but the page no longer
+             frames each helper as a potential threat. -->
+        <customHeader>
+            <Bar>
+                <contentMiddle>
+                    <Title text="{appData>/selectedProfile/name}" level="H4"/>
+                </contentMiddle>
+                <contentRight>
+                    <Button id="profileOverflowBtn" icon="sap-icon://overflow" type="Transparent"
+                        tooltip="{i18n>moreOptions}" press="onProfileOverflow"
+                        visible="{= String(${appData>/selectedProfile/id}) !== String(${appData>/user/id})}"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
+
         <content>
             <VBox>
 
@@ -106,33 +122,16 @@
                         </CustomListItem>
                     </List>
 
-                    <!-- Leave a review — only for other people -->
-                    <Panel
-                        headerText="{i18n>rateThisHelper}"
-                        class="sapUiSmallMarginTop"
-                        visible="{= String(${appData>/selectedProfile/id}) !== String(${appData>/user/id})}">
-                        <content>
-                            <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
-                                <Label text="{i18n>yourRating}" required="true" class="sapUiTinyMarginBottom"/>
-                                <RatingIndicator id="newRatingStars" maxValue="5" value="0" class="sapUiTinyMarginBottom"/>
-                                <Label text="{i18n>yourComment}" class="sapUiTinyMarginBottom"/>
-                                <TextArea id="newRatingComment" rows="3" width="100%" placeholder="{i18n>ratingPlaceholder}" class="sapUiTinyMarginBottom"/>
-                                <Button text="{i18n>submitRating}" type="Emphasized" icon="sap-icon://paper-plane" press="onSubmitRating" width="100%"/>
-                            </VBox>
-                        </content>
-                    </Panel>
+                    <!-- Reviewing is a separate, focused task, and only offered
+                         once a booking with this helper has completed — the form
+                         used to sit inline under the reviews on every profile, so
+                         anyone could rate anyone they had never met. -->
+                    <Button text="{i18n>leaveReview}" icon="sap-icon://feedback" type="Default"
+                        width="100%" class="sapUiSmallMarginTop"
+                        press="onOpenRatingDialog"
+                        visible="{appData>/canRateSelectedProfile}"/>
                 </VBox>
 
-                <!-- ── Safety (only for other people) ── -->
-                <VBox class="sapUiMediumMarginBeginEnd sapUiSmallMarginTop sapUiSmallMarginBottom"
-                    visible="{= String(${appData>/selectedProfile/id}) !== String(${appData>/user/id})}">
-                    <Text text="Use these options if you feel unsafe or this user is behaving inappropriately."
-                        wrapping="true" class="smallText sapUiSmallMarginBottom"/>
-                    <HBox>
-                        <Button text="Block User"  type="Reject" icon="sap-icon://cancel" press="onBlockUser"  class="sapUiSmallMarginEnd"/>
-                        <Button text="Report User" type="Ghost"  icon="sap-icon://flag"   press="onReportUser"/>
-                    </HBox>
-                </VBox>
 
             </VBox>
         </content>
