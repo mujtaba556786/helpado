@@ -107,6 +107,21 @@ sap.ui.define([
             if (oProfile) {
                 oModel.setProperty("/selectedProfile/rateDisplay", this.formatPriceDisplay(oProfile));
             }
+
+            // Whose profile is this? The fragment used
+            //   visible="{= String(${.../selectedProfile/id}) === String(${.../user/id})}"
+            // on the Edit-Profile row and its negation on Book/Message. Both rows
+            // rendered at once: the dialogs are pre-warmed before either id exists,
+            // String(undefined) === String(undefined) evaluated true, and that row
+            // never re-evaluated. So you could Book and Message yourself, and see
+            // Edit Profile on a stranger. Computing the flags here — on every open —
+            // removes the dependency on when the expression happens to run.
+            var sSelected = oProfile && oProfile.id;
+            var sUser     = oModel.getProperty("/user/id") ||
+                            localStorage.getItem("helpmate_user_id");
+            var bOwn      = !!sSelected && !!sUser && String(sSelected) === String(sUser);
+            oModel.setProperty("/isOwnProfile",   bOwn);
+            oModel.setProperty("/isOtherProfile", !!sSelected && !bOwn);
         },
 
         // ── FRAGMENT DIALOG FACTORIES ────────────────────────────────────────────

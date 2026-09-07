@@ -255,16 +255,24 @@ sap.ui.define([
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
             if (!this._pProfileSheet) {
+                // Both actions are Transparent so the sheet reads as one uniform
+                // menu. "Block" was type:"Reject", which in this theme paints a
+                // pink fill; combined with the focus ring UI5 puts on the first
+                // item when the sheet opens, it rendered as a red-bordered box
+                // that looked like a text input rather than a menu entry.
+                // Severity ascends: report first, block last.
                 this._oProfileSheet = new ActionSheet({
                     title: oBundle.getText("safetyOptions"),
                     buttons: [
                         new Button({
-                            text: "Block User", icon: "sap-icon://cancel", type: "Reject",
-                            press: this.onBlockUser.bind(this)
+                            text: oBundle.getText("reportUser"),
+                            icon: "sap-icon://flag", type: "Transparent",
+                            press: this.onReportUser.bind(this)
                         }),
                         new Button({
-                            text: "Report User", icon: "sap-icon://flag",
-                            press: this.onReportUser.bind(this)
+                            text: oBundle.getText("blockUser"),
+                            icon: "sap-icon://cancel", type: "Transparent",
+                            press: this.onBlockUser.bind(this)
                         })
                     ]
                 });

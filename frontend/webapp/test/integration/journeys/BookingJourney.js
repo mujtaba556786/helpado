@@ -8,7 +8,10 @@
  *  3. Onboarding step 3 renders one chip per ServiceConstants category, keyed
  *     and labelled from the catalogue (it previously had 12 hardcoded English
  *     names that had drifted from the real 10)
- *  4. Onboarding has a Back button that returns from step 2 to step 1 (there
+ *  4. The safety sheet is one uniform, localised menu — "Block User" was a
+ *     type:"Reject" button, which this theme paints as a pink filled box that
+ *     reads as a text input, and both labels were hardcoded English
+ *  5. Onboarding has a Back button that returns from step 2 to step 1 (there
  *     was previously no way back once you pressed Next)
  */
 sap.ui.define([
@@ -50,7 +53,40 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
-    // ── 3 & 4. Onboarding ─────────────────────────────────────────────────
+    // ── 3. Safety sheet ───────────────────────────────────────────────────
+
+    opaTest("Safety sheet is one uniform, localised menu", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+        When.onTheSchedulePage.iPressViewProfileButton();
+        When.onTheBookingDialog.iPressProfileOverflow();
+
+        Then.onTheBookingDialog.iSeeAUniformSafetySheet();
+        Then.iTeardownMyUIComponent();
+    });
+
+    opaTest("Safety is reachable without hunting for the overflow menu", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+        When.onTheSchedulePage.iPressViewProfileButton();
+
+        Then.onTheBookingDialog.iSeeADiscoverableSafetyEntry();
+        Then.iTeardownMyUIComponent();
+    });
+
+    opaTest("Profile shows either Book/Message or Edit Profile, never both", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+        When.onTheSchedulePage.iPressViewProfileButton();
+
+        Then.onTheBookingDialog.iSeeOnlyTheRightProfileActions();
+        Then.iTeardownMyUIComponent();
+    });
+
+    // ── 4 & 5. Onboarding ─────────────────────────────────────────────────
 
     opaTest("Onboarding interest chips come from the service catalogue", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
