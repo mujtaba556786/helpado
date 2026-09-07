@@ -77,7 +77,7 @@ sap.ui.define([], function () {
                     .bindPopup(
                         "<b>" + p.name + "</b><br>" +
                         (p.serviceType || "") + "<br>" +
-                        "$" + (p.rate || 0) + "/hr • ⭐ " + (p.rating || "")
+                        this.formatCurrency(p.rate, p.currency) + "/hr • ⭐ " + (p.rating || "")
                     );
                 this._aProviderMarkers.push(oMarker);
             }.bind(this));
@@ -183,9 +183,19 @@ sap.ui.define([], function () {
             return (R * c).toFixed(1) + " km away";
         },
 
+        // Single source of truth for money. Providers store an ISO code
+        // ("EUR"), which was being printed literally -> "EUR22/hr", and the
+        // fallback was "$" on a euro-market app.
+        CURRENCY_SYMBOLS: { EUR: "\u20ac", USD: "$", GBP: "\u00a3", CHF: "CHF\u00a0", TRY: "\u20ba" },
+
+        formatCurrency: function (vAmount, sCode) {
+            var sSym = this.CURRENCY_SYMBOLS[(sCode || "EUR").toUpperCase()] || "\u20ac";
+            return sSym + (vAmount || 0);
+        },
+
         formatPriceDisplay: function (oProvider) {
             if (!oProvider) return "";
-            return (oProvider.currency || "$") + (oProvider.rate || "0") + "/hr";
+            return this.formatCurrency(oProvider.rate, oProvider.currency) + "/hr";
         },
 
         formatAvailabilityStatus: function (oProvider) {

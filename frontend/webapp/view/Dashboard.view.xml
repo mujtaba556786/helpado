@@ -590,7 +590,11 @@ xmlns:l="sap.ui.layout"
                     </HBox>
 
                     <!-- ── Ad slot (soft) ── -->
-                    <core:HTML content='&lt;div class="hhAdSlot"&gt;&lt;ins class="adsbygoogle" style="display:inline-block;width:100%;height:50px;" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="1111111111"&gt;&lt;/ins&gt;&lt;span class="hhAdLabel"&gt;Ad&lt;/span&gt;&lt;/div&gt;'/>
+                    <!-- Ad slot hidden: index.html does not load the AdSense script and the
+                         publisher id is still the ca-pub-XXXX placeholder, so this rendered
+                         as an empty grey box labelled "Ad". Set visible="true" once a real
+                         publisher id and the adsbygoogle script are in place. -->
+                    <core:HTML visible="false" content='&lt;div class="hhAdSlot"&gt;&lt;ins class="adsbygoogle" style="display:inline-block;width:100%;height:50px;" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="1111111111"&gt;&lt;/ins&gt;&lt;span class="hhAdLabel"&gt;Ad&lt;/span&gt;&lt;/div&gt;'/>
 
                     <!-- ── Empty state ── -->
                     <VBox visible="{= !${appData>/filteredProviders} || ${appData>/filteredProviders}.length === 0 }"
@@ -673,7 +677,11 @@ xmlns:l="sap.ui.layout"
                     </List>
 
                     <!-- ── Bottom ad (soft) ── -->
-                    <core:HTML content='&lt;div class="hhAdSlot"&gt;&lt;ins class="adsbygoogle" style="display:inline-block;width:100%;height:50px;" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="2222222222"&gt;&lt;/ins&gt;&lt;span class="hhAdLabel"&gt;Ad&lt;/span&gt;&lt;/div&gt;'/>
+                    <!-- Ad slot hidden: index.html does not load the AdSense script and the
+                         publisher id is still the ca-pub-XXXX placeholder, so this rendered
+                         as an empty grey box labelled "Ad". Set visible="true" once a real
+                         publisher id and the adsbygoogle script are in place. -->
+                    <core:HTML visible="false" content='&lt;div class="hhAdSlot"&gt;&lt;ins class="adsbygoogle" style="display:inline-block;width:100%;height:50px;" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="2222222222"&gt;&lt;/ins&gt;&lt;span class="hhAdLabel"&gt;Ad&lt;/span&gt;&lt;/div&gt;'/>
 
                 </VBox>
             </content>
