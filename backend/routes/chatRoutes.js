@@ -1,7 +1,9 @@
 const router = require('express').Router();
-const { handleAsync } = require('../middleware/auth');
+const { handleAsync, requireAuth } = require('../middleware/auth');
 const ctrl = require('../controllers/chatController');
 
-router.post('/', handleAsync(ctrl.chat));
+// Hidden feature, but the endpoint is live and calls a paid provider: signed-in
+// callers only.
+router.post('/', requireAuth, handleAsync(ctrl.chat));
 
 module.exports = router;

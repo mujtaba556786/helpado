@@ -12,7 +12,7 @@ async function getUnreadCount(req, res) {
 }
 
 async function markRead(req, res) {
-    await NotificationService.markRead(req.params.id);
+    await NotificationService.markRead(req.params.id, req.userId);
     res.json({ success: true });
 }
 
@@ -31,7 +31,7 @@ async function saveDeviceToken(req, res) {
 async function deleteDeviceToken(req, res) {
     const { token } = req.body;
     if (!token) return res.status(400).json({ success: false, error: 'token required' });
-    await PushService.removeToken(token);
+    await PushService.removeToken(token, req.userId);
     res.json({ success: true });
 }
 

@@ -68,7 +68,7 @@ export const apiService = {
         try {
             const res = await fetch(`${BASE_URL}/users/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
                 body: JSON.stringify(userData)
             });
             return res.ok;
@@ -81,7 +81,7 @@ export const apiService = {
         try {
             const res = await fetch(`${BASE_URL}/users/${id}/onboard`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
                 body: JSON.stringify({ name, role, bio })
             });
             if (res.ok) return await res.json();
@@ -93,7 +93,10 @@ export const apiService = {
 
     async approveUser(id: string) {
         try {
-            await fetch(`${BASE_URL}/users/${id}/approve`, { method: 'PUT' });
+            await fetch(`${BASE_URL}/users/${id}/approve`, {
+                method: 'PUT',
+                headers: { 'x-admin-token': adminToken }
+            });
             return true;
         } catch { return false; }
     },
@@ -102,7 +105,7 @@ export const apiService = {
         try {
             await fetch(`${BASE_URL}/users/${id}/status`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
                 body: JSON.stringify({ status })
             });
             return true;
@@ -138,7 +141,7 @@ export const apiService = {
         try {
             await fetch(`${BASE_URL}/users/${id}/profile`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
                 body: JSON.stringify(data)
             });
             return true;
@@ -149,7 +152,7 @@ export const apiService = {
         try {
             await fetch(`${BASE_URL}/services`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
                 body: JSON.stringify(service)
             });
             return true;
@@ -160,7 +163,7 @@ export const apiService = {
         try {
             const res = await fetch(`${BASE_URL}/services/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
                 body: JSON.stringify(data)
             });
             return res.ok;
@@ -169,14 +172,19 @@ export const apiService = {
 
     async deleteService(id: string): Promise<boolean> {
         try {
-            const res = await fetch(`${BASE_URL}/services/${id}`, { method: 'DELETE' });
+            const res = await fetch(`${BASE_URL}/services/${id}`, {
+                method: 'DELETE',
+                headers: { 'x-admin-token': adminToken }
+            });
             return res.ok;
         } catch { return false; }
     },
 
     async getUsers(): Promise<User[]> {
         try {
-            const res = await fetch(`${BASE_URL}/users`);
+            const res = await fetch(`${BASE_URL}/users`, {
+                headers: { 'x-admin-token': adminToken }
+            });
             if (res.ok) return await res.json();
         } catch { }
         return [];

@@ -11,8 +11,16 @@ sap.ui.define([
     // Uses Cordova NativeStorage (iOS/Android) when available, falls back to
     // localStorage for browser/dev. Swap NativeStorage → cordova-plugin-secure-key-store
     // for encrypted Keychain/Keystore storage in production.
+    // Synchronous mirror of the access token. StorageHelper.get is callback-based
+    // (NativeStorage is async on Cordova), but the fetch wrapper below has to
+    // attach the Authorization header synchronously, so every read and write of
+    // the token keeps this in step.
+    var _sAccessToken = null;
+    try { _sAccessToken = localStorage.getItem("helpmate_token"); } catch (e) { /* ignore */ }
+
     var StorageHelper = {
         set: function(k, v) {
+            if (k === "helpmate_token") { _sAccessToken = v; }
             if (window.NativeStorage) {
                 window.NativeStorage.setItem(k, v, function() {}, function() {});
             } else {
@@ -20,13 +28,18 @@ sap.ui.define([
             }
         },
         get: function(k, cb) {
+            function done(v) {
+                if (k === "helpmate_token") { _sAccessToken = v; }
+                cb(v);
+            }
             if (window.NativeStorage) {
-                window.NativeStorage.getItem(k, cb, function() { cb(null); });
+                window.NativeStorage.getItem(k, done, function() { done(null); });
             } else {
-                cb(localStorage.getItem(k));
+                done(localStorage.getItem(k));
             }
         },
         remove: function(k) {
+            if (k === "helpmate_token") { _sAccessToken = null; }
             if (window.NativeStorage) {
                 window.NativeStorage.remove(k, function() {}, function() {});
             } else {
@@ -50,6 +63,81 @@ sap.ui.define([
 
         init() {
             UIComponent.prototype.init.apply(this, arguments);
+
+            // ── Authenticate every API call ────────────────────────────────────
+            // The API used to take the caller's identity from the URL or request
+            // body, so nothing needed a token. Now that it verifies a JWT, all 42
+            // call sites need one — wrapping fetch once here does that without
+            // touching each of them, and gives them refresh-on-401 too. Access
+            // tokens last 15 minutes, so without the retry the app would start
+            // failing a quarter of an hour into every session.
+            if (!window.__hhFetchAuthPatched) {
+                window.__hhFetchAuthPatched = true;
+                var _fetch = window.fetch;
+
+                function isApiCall(sUrl) {
+                    return typeof sUrl === "string" &&
+                        sUrl.indexOf("/api/") !== -1 &&
+                        sUrl.indexOf("/api/auth/") === -1;
+                }
+
+                function withAuth(oInit, sToken) {
+                    var oNext = Object.assign({}, oInit || {});
+                    var oHeaders = Object.assign({}, (oInit && oInit.headers) || {});
+                    // Never overwrite a header a caller set deliberately.
+                    if (sToken && !oHeaders.Authorization && !oHeaders.authorization) {
+                        oHeaders.Authorization = "Bearer " + sToken;
+                    }
+                    oNext.headers = oHeaders;
+                    return oNext;
+                }
+
+                var pRefresh = null;   // shared so a burst of 401s refreshes once
+
+                function refreshOnce() {
+                    if (pRefresh) { return pRefresh; }
+                    pRefresh = new Promise(function (resolve) {
+                        StorageHelper.get("helphub_refresh_token", function (sRefresh) {
+                            if (!sRefresh) { return resolve(null); }
+                            _fetch(API_BASE + "/api/auth/refresh", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ refreshToken: sRefresh })
+                            })
+                            .then(function (r) { return r.json(); })
+                            .then(function (d) {
+                                if (d && d.success && d.accessToken) {
+                                    StorageHelper.set("helpmate_token", d.accessToken);
+                                    resolve(d.accessToken);
+                                } else {
+                                    StorageHelper.clear();
+                                    resolve(null);
+                                }
+                            })
+                            .catch(function () { resolve(null); });
+                        });
+                    }).then(function (sToken) {
+                        pRefresh = null;
+                        return sToken;
+                    });
+                    return pRefresh;
+                }
+
+                window.fetch = function (input, init) {
+                    if (!isApiCall(input)) {
+                        return _fetch.call(this, input, init);
+                    }
+                    var that = this;
+                    return _fetch.call(that, input, withAuth(init, _sAccessToken))
+                        .then(function (oRes) {
+                            if (oRes.status !== 401) { return oRes; }
+                            return refreshOnce().then(function (sToken) {
+                                if (!sToken) { return oRes; }
+                                return _fetch.call(that, input, withAuth(init, sToken));
+                            });
+                        });
+                };
+            }
 
             // Hide the bottom navigation bar whenever ANY dialog is open. Even a
             // full-screen (stretch) dialog was letting the fixed bottom nav show
