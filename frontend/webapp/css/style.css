@@ -175,6 +175,18 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
     .hhNavBtn .sapMBtnContent { display: none !important; }
 }
 
+/* ── Brand wordmark ───────────────────────────────────────────
+   The header showed "Helpado" as plain bold text, indistinguishable from a
+   page title. Tie it to the mark: brand green (#2F855A, the AA-safe shade
+   used for nav labels) with slightly tightened tracking so it reads as a
+   wordmark rather than a heading. */
+.hhWordmark.sapMTitle {
+    color: #2F855A !important;
+    font-weight: 700 !important;
+    font-size: 1.15rem !important;
+    letter-spacing: -0.015em !important;
+}
+
 /* ── Login ────────────────────────────────────────────────────── */
 .loginCard {
     border-radius: 18px;

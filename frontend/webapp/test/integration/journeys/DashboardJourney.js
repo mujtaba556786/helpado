@@ -35,12 +35,12 @@ sap.ui.define([
 
     // ── Hero badge ────────────────────────────────────────────────────────────
 
-    opaTest("Cleaning tile shows a 'Popular' hero badge", function (Given, When, Then) {
+    opaTest("Cleaning tile shows no 'Popular' hero badge (feature off)", function (Given, When, Then) {
         Given.iStartMyUIComponent({
             componentConfig: { name: "helphub", manifest: true }
         });
 
-        Then.onTheDashboard.iSeeHeroBadgeOnCleaning();
+        Then.onTheDashboard.iSeeNoHeroBadge();
         Then.iTeardownMyUIComponent();
     });
 
