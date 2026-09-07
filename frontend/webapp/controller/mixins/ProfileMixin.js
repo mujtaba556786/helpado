@@ -1,7 +1,9 @@
 sap.ui.define([
     "sap/m/MessageToast",
+    "sap/m/ActionSheet",
+    "sap/m/Button",
     "helphub/config"
-], function(MessageToast, Config) {
+], function(MessageToast, ActionSheet, Button, Config) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -109,6 +111,7 @@ sap.ui.define([
             if (oStars)   oStars.setValue(0);
             if (oComment) oComment.setValue("");
 
+            this._setRatingEligibility();
             this._getProfileDialog().then(function(oDialog) { oDialog.open(); }.bind(this));
             this._loadProfileRatings(oProvider.id);
         },
@@ -146,6 +149,7 @@ sap.ui.define([
                     MessageToast.show("Your review has been submitted and is pending approval.");
                     if (oStars)   oStars.setValue(0);
                     if (oComment) oComment.setValue("");
+                    this.onCloseRatingDialog();
                     // Note: average and review list only update after admin approval
                     var sId = oModel.getProperty("/selectedProfile/id");
                     this._loadProfileRatings(sId);
@@ -182,6 +186,7 @@ sap.ui.define([
             if (oStars)   oStars.setValue(0);
             if (oComment) oComment.setValue("");
 
+            this._setRatingEligibility();
             this._getProfileDialog().then(function(oDialog) { oDialog.open(); }.bind(this));
 
             if (oProfile.id) {
@@ -239,8 +244,86 @@ sap.ui.define([
             if (oStars)   oStars.setValue(0);
             if (oComment) oComment.setValue("");
 
+            this._setRatingEligibility();
             this._getProfileDialog().then(function(oDialog) { oDialog.open(); }.bind(this));
             this._loadProfileRatings(sProviderId);
+        },
+
+        // ── Profile overflow (safety actions) ─────────────────────────────
+        onProfileOverflow: function (oEvent) {
+            var oSource = oEvent.getSource();
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+
+            if (!this._pProfileSheet) {
+                this._oProfileSheet = new ActionSheet({
+                    title: oBundle.getText("safetyOptions"),
+                    buttons: [
+                        new Button({
+                            text: "Block User", icon: "sap-icon://cancel", type: "Reject",
+                            press: this.onBlockUser.bind(this)
+                        }),
+                        new Button({
+                            text: "Report User", icon: "sap-icon://flag",
+                            press: this.onReportUser.bind(this)
+                        })
+                    ]
+                });
+                this.getView().addDependent(this._oProfileSheet);
+                this._pProfileSheet = true;
+            }
+            this._oProfileSheet.openBy(oSource);
+        },
+
+        // ── Focused rating dialog ─────────────────────────────────────────
+        onOpenRatingDialog: function () {
+            this._getRatingDialog().then(function (d) { d.open(); });
+        },
+
+        onCloseRatingDialog: function () {
+            if (this._pRatingDialog) {
+                this._getRatingDialog().then(function (d) { d.close(); });
+            }
+        },
+
+        _getRatingDialog: function () {
+            if (!this._pRatingDialog) {
+                var Fragment = sap.ui.require("sap/ui/core/Fragment");
+                this._pRatingDialog = Fragment.load({
+                    id:         this.getView().getId(),
+                    name:       "helphub.view.fragments.RatingDialog",
+                    controller: this
+                }).then(function (oDialog) {
+                    this.getView().addDependent(oDialog);
+                    return oDialog;
+                }.bind(this));
+            }
+            return this._pRatingDialog;
+        },
+
+        /**
+         * Whether the logged-in user may review the profile currently open.
+         * Only after a booking with that helper has actually completed —
+         * previously the form appeared on every profile, so anyone could rate
+         * anyone they had never met. The server enforces the same rule; this
+         * just keeps the form from appearing when it would be rejected.
+         */
+        _setRatingEligibility: function () {
+            var oModel = this.getModel("appData");
+            if (!oModel) return;
+
+            var sProfileId = String(oModel.getProperty("/selectedProfile/id") || "");
+            var sUserId    = String(oModel.getProperty("/user/id") ||
+                                    localStorage.getItem("helpmate_user_id") || "");
+            var aBookings  = oModel.getProperty("/upcomingBookings") || [];
+
+            var bEligible = !!sProfileId && !!sUserId && sProfileId !== sUserId &&
+                aBookings.some(function (b) {
+                    return String(b.provider_id) === sProfileId &&
+                           String(b.customer_id) === sUserId &&
+                           String(b.status).toLowerCase() === "completed";
+                });
+
+            oModel.setProperty("/canRateSelectedProfile", bEligible);
         },
 
         onCloseProfile: function() {
