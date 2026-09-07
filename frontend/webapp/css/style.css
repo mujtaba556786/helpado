@@ -461,13 +461,16 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 .fiSvcCard:hover .fiSvcIcon { color: #fff !important; }
 
 .fiSvcCardInner {
-    padding: 22px 12px 18px !important;
-    gap: 10px !important; min-height: 100px;
+    /* Was 22/18px padding, 10px gap, 100px min-height -> a 153px tile, roughly a
+       third of a 375x812 viewport each, so ten categories took several screens.
+       Tightened to ~115px without crowding the icon or label. */
+    padding: 14px 10px 12px !important;
+    gap: 6px !important; min-height: 76px;
 }
 .fiSvcIconWrap {
-    width: 48px !important;
-    height: 48px !important;
-    min-width: 48px !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
     border-radius: 12px !important;
     background: rgba(16,185,129,0.12) !important;
     transition: background 0.2s ease !important;
