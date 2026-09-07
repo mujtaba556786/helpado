@@ -24,7 +24,26 @@ const EMAIL_HTML = (magicUrl, code) =>
         <p style="color:#888;font-size:12px">If you didn't request this, you can safely ignore this email.</p>
      </div>`;
 
-async function sendEmail({ to, subject, html }) {
+// Plain-text alternative. An HTML-only message is a long-standing spam signal:
+// filters expect multipart/alternative, and a login mail that is one button and
+// one big number with no text part looks a lot like phishing. Resend builds the
+// multipart message when both `html` and `text` are supplied.
+const EMAIL_TEXT = (magicUrl, code) =>
+`Helpado — sign in
+
+Use either option below. Both expire in 15 minutes and work only once.
+
+On the web, open this link:
+${magicUrl}
+
+In the app, enter this code:
+${code}
+
+If you didn't request this, you can ignore this email — nothing will happen.
+
+Helpado`;
+
+async function sendEmail({ to, subject, html, text }) {
     // ── Resend (HTTPS API — no port 587 needed, works on Railway) ────────────
     if (process.env.RESEND_API_KEY) {
         const from = process.env.SMTP_FROM || 'Helpado <onboarding@resend.dev>';
@@ -34,7 +53,12 @@ async function sendEmail({ to, subject, html }) {
                 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ from, to, subject, html })
+            body: JSON.stringify({
+                from, to, subject, html, text,
+                // A real Reply-To on the sending domain reads as a genuine sender
+                // rather than an unattended blast.
+                reply_to: process.env.SMTP_REPLY_TO || undefined
+            })
         });
         const data = await res.json();
         if (!res.ok) throw new Error('Resend error: ' + (data.message || JSON.stringify(data)));
@@ -68,7 +92,7 @@ async function sendEmail({ to, subject, html }) {
     });
     await t.sendMail({
         from: process.env.SMTP_FROM || '"Helpado" <noreply@helphub.local>',
-        to, subject, html
+        to, subject, html, text
     });
     console.log(`[AUTH] Email sent via SMTP to ${to}`);
 }
@@ -128,9 +152,34 @@ async function passwordlessLogin(req, res) {
     res.json({ success: true, ...result });
 }
 
+/**
+ * Testing shortcut: addresses listed in TEST_AUTO_LOGIN_EMAILS skip the email
+ * and the code entirely and get a session straight away.
+ *
+ * This was previously a hardcoded array holding the owner's own address, so
+ * anyone who typed that public address into the login screen got a full
+ * session. It is env-driven now: absent unless someone deliberately sets it,
+ * never written in the repo, and switched off by deleting one Railway variable
+ * instead of shipping a code change.
+ *
+ * OFF unless TEST_AUTO_LOGIN_EMAILS is set. Do not leave it set in production.
+ */
+function isTestAutoLoginEmail(sEmail) {
+    const raw = process.env.TEST_AUTO_LOGIN_EMAILS;
+    if (!raw) { return false; }
+    const allowed = raw.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+    return allowed.includes(String(sEmail).toLowerCase().trim());
+}
+
 async function sendMagicLink(req, res) {
     const { email } = req.body;
     if (!email) return res.status(400).json({ success: false, error: 'email is required' });
+
+    if (isTestAutoLoginEmail(email)) {
+        const result = await AuthService.loginPasswordless(email, undefined, 'Email');
+        console.warn(`[AUTH] TEST auto-login used for ${email} — TEST_AUTO_LOGIN_EMAILS is set`);
+        return res.json({ success: true, directLogin: true, ...result });
+    }
 
     // SECURITY: every login must prove email ownership. We always send a one-time
     // link + 6-digit code; tokens are only issued after the link is clicked
@@ -154,7 +203,12 @@ async function sendMagicLink(req, res) {
 
     const magicUrl = `${backendBase}/api/auth/magic?token=${rawToken}`;
     try {
-        await sendEmail({ to: email, subject: 'Sign in to Helpado', html: EMAIL_HTML(magicUrl, code) });
+        await sendEmail({
+            to: email,
+            subject: `Your Helpado sign-in code: ${code}`,
+            html: EMAIL_HTML(magicUrl, code),
+            text: EMAIL_TEXT(magicUrl, code)
+        });
         console.log(`[AUTH] Magic-link + code email sent to: ${email}`);
         res.json({ success: true, directLogin: false, message: 'Sign-in link & code sent — check your inbox.' });
     } catch (err) {
