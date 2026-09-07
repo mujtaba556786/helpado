@@ -15,7 +15,7 @@ xmlns:l="sap.ui.layout"
                 <Bar>
                     <contentLeft>
                         <HBox alignItems="Center">
-                            <Title text="{i18n>dashboardTitle}" level="H3" class="sapUiTinyMarginBegin"/>
+                            <Title text="{i18n>dashboardTitle}" level="H3" class="sapUiTinyMarginBegin hhWordmark"/>
                         </HBox>
                     </contentLeft>
                     <contentRight>
@@ -74,8 +74,12 @@ xmlns:l="sap.ui.layout"
                                             <core:Icon src="{appData>icon}" class="fiSvcIcon"/>
                                         </VBox>
                                         <Text text="{appData>label}" class="fiSvcName"/>
+                                        <!-- "Popular" is hidden for now: nothing measures popularity, it is a
+                                             hardcoded is_hero flag, and claiming it on 3 of 10 tiles with
+                                             two live providers is social proof we cannot substantiate.
+                                             Restore by putting the is_hero binding back on visible. -->
                                         <ObjectStatus text="Popular" state="Success"
-                                            visible="{appData>is_hero}"
+                                            visible="false"
                                             class="fiHeroBadge"/>
                                     </VBox>
                                 </CustomListItem>

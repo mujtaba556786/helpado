@@ -85,15 +85,27 @@ sap.ui.define([
                     });
                 },
 
-                iSeeHeroBadgeOnCleaning: function () {
+                // The "Popular" badge is intentionally hidden (see Dashboard.view.xml):
+                // nothing measures popularity yet. Guard that it stays hidden rather
+                // than asserting it appears.
+                iSeeNoHeroBadge: function () {
                     return this.waitFor({
-                        controlType: "sap.m.ObjectStatus",
+                        controlType: "sap.m.CustomListItem",
                         viewName: DASHBOARD_VIEW,
-                        matchers: new PropertyStrictEquals({ name: "text", value: "Popular" }),
                         success: function (aItems) {
-                            Opa5.assert.ok(aItems.length > 0, "'Popular' hero badge is present on Cleaning tile");
+                            var bVisible = false;
+                            aItems.forEach(function (oItem) {
+                                oItem.findAggregatedObjects(true, function (o) {
+                                    if (o.isA("sap.m.ObjectStatus") &&
+                                        o.getText() === "Popular" && o.getVisible()) {
+                                        bVisible = true;
+                                    }
+                                    return false;
+                                });
+                            });
+                            Opa5.assert.ok(!bVisible, "No tile shows a visible 'Popular' badge");
                         },
-                        errorMessage: "Hero badge 'Popular' not found on Cleaning tile"
+                        errorMessage: "Could not inspect service tiles for the Popular badge"
                     });
                 },
 

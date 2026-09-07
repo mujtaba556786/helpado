@@ -3,7 +3,7 @@
  *
  * Scenarios covered:
  *  1. Service grid renders one tile per ServiceConstants category
- *  2. "Popular" hero badge appears only on the Cleaning tile
+ *  2. "Popular" hero badge stays hidden (feature intentionally off)
  *  3. Post-a-Task CTA button is rendered above the tile grid
  *  4. Activity strip is visible (helpers > 0 in mock data)
  *  5. Notification bell button exists in the header
@@ -57,10 +57,10 @@ sap.ui.define([
 
     // ── 2. Hero badge on Cleaning only ────────────────────────────────────
 
-    opaTest("'Popular' hero badge is visible on the Cleaning tile", function (Given, When, Then) {
+    opaTest("No tile shows a 'Popular' badge while the flag is off", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 
-        Then.onTheDashboard.iSeeHeroBadgeOnCleaning();
+        Then.onTheDashboard.iSeeNoHeroBadge();
 
         Then.iTeardownMyUIComponent();
     });
