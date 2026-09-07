@@ -2,7 +2,8 @@
     xmlns="sap.m"
     xmlns:core="sap.ui.core">
 
-    <Dialog id="bookingDialog" title="{i18n>bookAHelper}"
+    <Dialog id="bookingDialog"
+        class="hhDialogWithSubHeader" title="{i18n>bookAHelper}"
         contentWidth="90%"
         stretch="true">
 
