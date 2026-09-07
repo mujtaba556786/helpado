@@ -404,6 +404,14 @@ xmlns:l="sap.ui.layout"
                                                     <Button text="{i18n>accept}" icon="sap-icon://accept" type="Accept" press="onAcceptBooking"/>
                                                     <Button text="{i18n>decline}" icon="sap-icon://decline" type="Reject" press="onDeclineBooking"/>
                                                 </HBox>
+                                                <!-- Customer action: mark completed. Reviews require a
+                                                     completed booking, and nothing previously moved a booking
+                                                     into that state — so no one could ever review anyone.
+                                                     Offered once the scheduled date has passed. -->
+                                                <HBox wrap="Wrap" class="fiBookingActions"
+                                                    visible="{appData>canMarkCompleted}">
+                                                    <Button text="{i18n>markCompleted}" icon="sap-icon://complete" type="Accept" press="onMarkBookingCompleted"/>
+                                                </HBox>
                                                 <!-- Customer action: cancel -->
                                                 <HBox wrap="Wrap" class="fiBookingActions" visible="{= ${appData>status} === 'pending' &amp;&amp; String(${appData>/user/id}) === String(${appData>customer_id})}">
                                                     <Button text="{i18n>cancelBooking}" icon="sap-icon://sys-cancel-2" type="Reject" press="onCancelBooking"/>

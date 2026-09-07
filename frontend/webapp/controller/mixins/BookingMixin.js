@@ -118,6 +118,67 @@ sap.ui.define([
             });
         },
 
+        /**
+         * Whether the "Mark as completed" action applies to this booking.
+         * Written as a formatter, not an expression binding: UI5 expression
+         * bindings do not support `new Date(...)`, so the inline version silently
+         * failed and the button appeared on every booking regardless of status.
+         */
+        formatCanMarkCompleted: function (sStatus, sCustomerId, sDate, sUserId) {
+            if (String(sStatus) !== "confirmed") return false;
+            if (!sUserId || String(sCustomerId) !== String(sUserId)) return false;
+            if (!sDate) return false;
+            var dScheduled = new Date(sDate);
+            if (isNaN(dScheduled.getTime())) return false;
+            var dToday = new Date();
+            dToday.setHours(0, 0, 0, 0);
+            return dScheduled <= dToday;
+        },
+
+        /**
+         * Customer confirms the work actually happened. This is the only path that
+         * moves a booking to 'completed', which in turn is what unlocks reviewing
+         * that helper — before this existed no booking had ever reached that state,
+         * so nobody could review anyone.
+         */
+        onMarkBookingCompleted: function (oEvent) {
+            var oCtx = oEvent.getSource().getBindingContext("appData");
+            if (!oCtx) return;
+            var oBooking = oCtx.getObject();
+            if (!oBooking || !oBooking.id) return;
+
+            var sBookingId = oBooking.id;
+            var sUserId    = this.getModel("appData").getProperty("/user/id");
+            var oBundle    = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            var that       = this;
+
+            MessageBox.confirm(
+                "Confirm that " + (oBooking.provider_name || "this helper") +
+                " completed this booking? You will then be able to leave a review.", {
+                title: oBundle.getText("markCompleted"),
+                actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+                emphasizedAction: MessageBox.Action.OK,
+                onClose: function (sAction) {
+                    if (sAction !== MessageBox.Action.OK) return;
+                    fetch(API_BASE + "/api/bookings/" + encodeURIComponent(sBookingId) + "/status", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ status: "completed", user_id: sUserId })
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (oData) {
+                        if (oData.success) {
+                            MessageToast.show(oBundle.getText("bookingCompleted"));
+                            that._loadSchedule();
+                        } else {
+                            MessageToast.show(oData.error || "Could not update this booking.");
+                        }
+                    })
+                    .catch(function () { MessageToast.show("Could not reach the server."); });
+                }
+            });
+        },
+
         _updateBookingStatus: function(oEvent, sStatus) {
             var oCtx = oEvent.getSource().getBindingContext("appData");
             if (!oCtx) return;
@@ -208,6 +269,20 @@ sap.ui.define([
             } else {
                 aFiltered = aAll.filter(function(b) { return b.status === sFilter; });
             }
+            // Precompute the "can be marked completed" flag here rather than in the
+            // view. Expression bindings cannot call new Date(), and a parts/formatter
+            // binding on the HBox's visible silently did not apply at all (every row
+            // stayed visible), so a plain boolean property is the reliable option.
+            var sUserId = String(oModel.getProperty("/user/id") ||
+                                 localStorage.getItem("helpmate_user_id") || "");
+            aFiltered = aFiltered.map(function (b) {
+                return Object.assign({}, b, {
+                    canMarkCompleted: this.formatCanMarkCompleted(
+                        b.status, b.customer_id, b.scheduled_date, sUserId
+                    )
+                });
+            }.bind(this));
+
             oModel.setProperty("/filteredBookings", aFiltered);
         },
 
