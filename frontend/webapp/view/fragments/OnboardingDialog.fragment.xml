@@ -92,30 +92,36 @@
         </VBox>
 
         <!-- Step 3: Pick interests -->
+        <!-- Chips are bound to appData>/services, which is built from
+             model/ServiceConstants.js with labels resolved through the i18n
+             bundle. Previously this list was 12 hardcoded English literals that
+             had drifted from the real 10-category catalogue. -->
         <VBox visible="{= ${appData>/onboarding/step} === 3}" class="sapUiMediumMargin">
-            <Text text="{i18n>onboardSelectInterests}" class="grayText sapUiSmallMarginBottom"/>
-            <FlexBox wrap="Wrap" class="sapUiTinyMarginTop">
-                <Button icon="sap-icon://home-share"        text="Cleaning"     data:interestKey="Cleaning"     press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://tree"              text="Gardening"    data:interestKey="Gardening"    press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://wrench"            text="Handyman"     data:interestKey="Handyman"     press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://group"             text="Babysitting"  data:interestKey="Babysitting"  press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://heart"             text="Elder Care"   data:interestKey="Elder Care"   press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://customer"          text="Pet Care"     data:interestKey="Pet Care"     press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://car-rental"        text="Transport"    data:interestKey="Transport"    press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://basket"            text="Groceries"    data:interestKey="Groceries"    press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://meal"              text="Cooking"      data:interestKey="Cooking"      press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://physical-activity" text="Massage"      data:interestKey="Massage"      press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://education"         text="Math Tuition" data:interestKey="Math Tuition" press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
-                <Button icon="sap-icon://laptop"            text="IT Support"   data:interestKey="IT Support"   press="onToggleInterest" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"/>
+            <Text text="{i18n>onboardSelectInterests}" class="grayText sapUiSmallMarginBottom" wrapping="true"/>
+            <FlexBox wrap="Wrap" class="sapUiTinyMarginTop" items="{appData>/services}">
+                <Button icon="{appData>icon}" text="{appData>label}"
+                    press="onToggleInterest"
+                    class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                    <customData>
+                        <core:CustomData key="interestKey" value="{appData>name}"/>
+                    </customData>
+                </Button>
             </FlexBox>
         </VBox>
 
-        <beginButton>
-            <Button text="{i18n>skip}" type="Transparent" press="onOnboardingSkip" visible="{= ${appData>/onboarding/step} === 1}"/>
-        </beginButton>
-        <endButton>
-            <Button text="{= ${appData>/onboarding/step} === 3 ? ${i18n>onboardGetStarted} : ${i18n>onboardNext}}" type="Emphasized" press="onOnboardingNext"/>
-        </endButton>
+        <!-- Three buttons need the `buttons` aggregation; begin/endButton only
+             has two slots, which is why there was previously no way back.
+             Visibility is set from JS in _syncOnboardingButtons: an expression
+             binding on `visible` does not apply to buttons in this aggregation
+             (Skip stayed visible on every step), the same silent binding failure
+             seen on the mark-completed button. -->
+        <buttons>
+            <Button id="onboardSkipBtn" text="{i18n>skip}" type="Transparent" press="onOnboardingSkip"/>
+            <Button id="onboardBackBtn" text="{i18n>onboardBack}" type="Transparent" press="onOnboardingBack" visible="false"/>
+            <Button id="onboardNextBtn"
+                text="{= ${appData>/onboarding/step} === 3 ? ${i18n>onboardGetStarted} : ${i18n>onboardNext}}"
+                type="Emphasized" press="onOnboardingNext"/>
+        </buttons>
     </Dialog>
 
 </core:FragmentDefinition>

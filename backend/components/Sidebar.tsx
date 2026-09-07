@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ICONS } from '../constants';
+import { apiService } from '../services/api';
 import { UserRole } from '../types';
 
 interface SidebarProps {
@@ -10,6 +11,17 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) => {
+  // Was a hardcoded green "Live Gateway" pulse that stayed green while the API
+  // was down. Now polls /api/health; null = still checking.
+  const [healthy, setHealthy] = useState<boolean | null>(null);
+  useEffect(() => {
+    let alive = true;
+    const check = () => apiService.getHealth().then(ok => { if (alive) setHealthy(ok); });
+    check();
+    const t = setInterval(check, 30000);
+    return () => { alive = false; clearInterval(t); };
+  }, []);
+
   const adminItems = [
     { id: 'dashboard', label: 'Overview', icon: ICONS.Dashboard },
     { id: 'users', label: 'Moderation Queue', icon: ICONS.Users },
@@ -55,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                 activeTab === item.id
-                  ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20'
+                  ? 'bg-[#4FB584] text-white shadow-xl shadow-[#4FB584]/20'
                   : 'hover:bg-slate-800 hover:text-white'
               }`}
             >
@@ -68,10 +80,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
 
       <div className="p-6 border-t border-slate-800 bg-slate-900/50">
         <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/50">
-          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Network</p>
+          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">API status</p>
           <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span className="text-xs font-bold text-slate-300">Live Gateway</span>
+            <div className={`w-2 h-2 rounded-full ${
+              healthy === null ? 'bg-slate-500'
+              : healthy ? 'bg-emerald-500 animate-pulse'
+              : 'bg-red-500'
+            }`}></div>
+            <span className="text-xs font-bold text-slate-300">
+              {healthy === null ? 'Checking\u2026' : healthy ? 'Online' : 'Unreachable'}
+            </span>
           </div>
         </div>
       </div>

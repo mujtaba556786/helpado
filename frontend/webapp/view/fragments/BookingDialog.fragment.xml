@@ -5,7 +5,7 @@
     <Dialog id="bookingDialog"
         class="hhDialogWithSubHeader" title="{i18n>bookAHelper}"
         contentWidth="90%"
-        stretch="true">
+        stretch="{device>/system/phone}">
 
         <!-- Helper name pinned below header, never hidden -->
         <subHeader>
@@ -20,10 +20,19 @@
             <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
                 <Label text="{i18n>service}" required="true"/>
                 <Text text="{appData>/selectedProfile/serviceType}" class="fontBold sapUiTinyMarginBottom"/>
+
+                <!-- The rate the helper charges, so it is never a surprise at the
+                     point of booking. No duration is collected, so this is shown
+                     as an hourly rate with an explicit "agreed with helper" note
+                     rather than a total we cannot actually compute. -->
+                <Label text="{i18n>bookingRate}"/>
+                <ObjectStatus text="{appData>/selectedProfile/rateDisplay}" state="Success" class="fontBold"/>
+                <Text text="{i18n>bookingRateNote}" class="grayText smallText sapUiTinyMarginBottom" wrapping="true"/>
+
                 <Label text="{i18n>preferredDate}" required="true"/>
                 <DatePicker id="bookingDate" value="{appData>/bookingForm/date}" minDate="{appData>/today}" valueFormat="yyyy-MM-dd" displayFormat="MMM dd, yyyy" width="100%" class="sapUiTinyMarginBottom"/>
                 <Label text="{i18n>preferredTime}"/>
-                <Input id="bookingTime" value="{appData>/bookingForm/time}" placeholder="{i18n>timePlaceholder}" width="100%" class="sapUiTinyMarginBottom"/>
+                <TimePicker id="bookingTime" value="{appData>/bookingForm/time}" valueFormat="HH:mm" displayFormat="HH:mm" support2400="false" placeholder="{i18n>timePlaceholder}" width="100%" class="sapUiTinyMarginBottom"/>
                 <Label text="{i18n>messageToHelper}"/>
                 <TextArea value="{appData>/bookingForm/message}" rows="3" width="100%" placeholder="{i18n>describeNeedPlaceholder}"/>
             </VBox>

@@ -194,7 +194,7 @@ sap.ui.define([], function () {
         },
 
         formatPriceDisplay: function (oProvider) {
-            if (!oProvider) return "";
+            if (!oProvider || !oProvider.rate) return "\u2014";
             return this.formatCurrency(oProvider.rate, oProvider.currency) + "/hr";
         },
 

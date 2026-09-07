@@ -53,8 +53,8 @@
                 <HBox justifyContent="SpaceAround"
                     class="sapUiMediumMarginBeginEnd sapUiSmallMarginBottom"
                     visible="{= String(${appData>/selectedProfile/id}) !== String(${appData>/user/id})}">
-                    <Button text="Book"    icon="sap-icon://appointment-2" type="Emphasized" press="onOpenBooking"/>
-                    <Button text="Message" icon="sap-icon://discussion"    type="Default"    press="onStartDm"/>
+                    <Button text="{i18n>book}"    icon="sap-icon://appointment-2" type="Emphasized" press="onOpenBooking"/>
+                    <Button text="{i18n>messageAction}" icon="sap-icon://discussion"    type="Default"    press="onStartDm"/>
                     <!-- Ask AI hidden until the feature is ready: /api/chat has no ANTHROPIC_API_KEY
                          set, so every tap fails. Re-enable by removing visible="false" once the key is
                          configured and the route has auth + rate limiting. -->
@@ -74,7 +74,7 @@
                     <StandardListItem
                         icon="sap-icon://money-bills"
                         title="Rate"
-                        info="{= ${appData>/selectedProfile/rate} ? '\u20ac' + ${appData>/selectedProfile/rate} + '/hr' : '—'}"
+                        info="{appData>/selectedProfile/rateDisplay}"
                         type="Inactive"/>
                     <StandardListItem
                         icon="sap-icon://history"

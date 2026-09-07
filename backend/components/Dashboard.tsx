@@ -108,13 +108,10 @@ const DashboardView: React.FC<DashboardProps> = ({ stats, bookings }) => {
                 </div>
                 <div>
                     <h3 className="text-xl font-black text-white italic tracking-tight leading-none">Endpoint Diagnostics</h3>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Live Backend Verification (Port 3001)</p>
+                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Live backend verification &middot; same-origin /api</p>
                 </div>
             </div>
-            <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gateway Monitor Active</span>
-            </div>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Run a check below</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -149,8 +146,8 @@ const DashboardView: React.FC<DashboardProps> = ({ stats, bookings }) => {
         </div>
 
         <div className="mt-8 p-4 bg-black/40 rounded-2xl border border-white/5">
-            <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2">Network Topology Hint</p>
-            <p className="text-xs text-slate-400 font-medium">The frontend is configured to prioritize <code className="text-indigo-400">http://localhost:3001</code>. If the fetch fails, it automatically serves cached mock data to prevent app crashes.</p>
+            <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2">How this works</p>
+            <p className="text-xs text-slate-400 font-medium">The panel is served by the API itself and calls <code className="text-emerald-400">/api</code> on the same origin. There is no mock fallback: if a request fails you will see the failure here and the affected view will be empty rather than showing invented data.</p>
         </div>
       </div>
     </div>
