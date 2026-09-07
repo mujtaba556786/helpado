@@ -19,7 +19,7 @@
                 <contentRight>
                     <Button id="profileOverflowBtn" icon="sap-icon://overflow" type="Transparent"
                         tooltip="{i18n>moreOptions}" press="onProfileOverflow"
-                        visible="{= String(${appData>/selectedProfile/id}) !== String(${appData>/user/id})}"/>
+                        visible="{appData>/isOtherProfile}"/>
                 </contentRight>
             </Bar>
         </customHeader>
@@ -52,7 +52,7 @@
                 <!-- ── Action buttons (only for other people) ── -->
                 <HBox justifyContent="SpaceAround"
                     class="sapUiMediumMarginBeginEnd sapUiSmallMarginBottom"
-                    visible="{= String(${appData>/selectedProfile/id}) !== String(${appData>/user/id})}">
+                    visible="{appData>/isOtherProfile}">
                     <Button text="{i18n>book}"    icon="sap-icon://appointment-2" type="Emphasized" press="onOpenBooking"/>
                     <Button text="{i18n>messageAction}" icon="sap-icon://discussion"    type="Default"    press="onStartDm"/>
                     <!-- Ask AI hidden until the feature is ready: /api/chat has no ANTHROPIC_API_KEY
@@ -64,7 +64,7 @@
                 <!-- ── Edit Profile shortcut (only for own profile) ── -->
                 <HBox justifyContent="Center"
                     class="sapUiMediumMarginBeginEnd sapUiSmallMarginBottom"
-                    visible="{= String(${appData>/selectedProfile/id}) === String(${appData>/user/id})}">
+                    visible="{appData>/isOwnProfile}">
                     <Button text="{i18n>editProfile}" icon="sap-icon://edit" type="Emphasized"
                         press="onEditProfileFromDialog" width="100%"/>
                 </HBox>
@@ -131,6 +131,17 @@
                         press="onOpenRatingDialog"
                         visible="{appData>/canRateSelectedProfile}"/>
                 </VBox>
+
+                <!-- The overflow menu alone was not discoverable: nobody thinks to
+                     tap three dots to block someone. This repeats the same sheet at
+                     the foot of the profile, where people actually look for it,
+                     without letting safety actions compete with Book and Message at
+                     the top. Both entry points open the same ActionSheet. -->
+                <Button text="{i18n>reportOrBlock}" icon="sap-icon://shield"
+                    type="Transparent" width="100%"
+                    class="sapUiSmallMarginTop sapUiSmallMarginBottom"
+                    press="onProfileOverflow"
+                    visible="{appData>/isOtherProfile}"/>
 
 
             </VBox>

@@ -62,6 +62,18 @@ sap.ui.define([
                     });
                 },
 
+                iPressProfileOverflow: function () {
+                    return this.waitFor({
+                        controlType: "sap.m.Button",
+                        searchOpenDialogs: true,
+                        matchers: function (oBtn) {
+                            return oBtn.getIcon() === "sap-icon://overflow" && oBtn.getVisible();
+                        },
+                        actions: new Press(),
+                        errorMessage: "Overflow button not found in the profile dialog"
+                    });
+                },
+
                 iPressOnboardingNext: function () {
                     return this.waitFor({
                         controlType: "sap.m.Dialog",
@@ -184,6 +196,109 @@ sap.ui.define([
                                 "Every chip has a label resolved from the i18n bundle");
                         },
                         errorMessage: "Onboarding dialog not open"
+                    });
+                },
+
+                /**
+                 * The safety sheet rendered "Block User" as type "Reject", which in
+                 * this theme paints a pink fill; with the focus ring UI5 puts on the
+                 * first item it looked like a text input, not a menu entry. Both
+                 * items must stay Transparent, and both must be localised — they
+                 * were hardcoded English.
+                 */
+                iSeeAUniformSafetySheet: function () {
+                    return this.waitFor({
+                        controlType: "sap.m.ActionSheet",
+                        searchOpenDialogs: true,
+                        success: function (aSheets) {
+                            var aBtns = aSheets[0].getButtons();
+                            Opa5.assert.strictEqual(aBtns.length, 2,
+                                "Safety sheet offers exactly two actions");
+
+                            var bUniform = aBtns.every(function (b) {
+                                return b.getType() === "Transparent";
+                            });
+                            Opa5.assert.ok(bUniform,
+                                "Both actions are Transparent — no Reject fill, so the sheet " +
+                                "reads as one menu (types: " +
+                                aBtns.map(function (b) { return b.getType(); }).join(", ") + ")");
+
+                            var bIcons = aBtns.every(function (b) { return !!b.getIcon(); });
+                            Opa5.assert.ok(bIcons, "Both actions carry an icon");
+
+                            // A missing i18n key resolves to the key name itself.
+                            var bLocalised = aBtns.every(function (b) {
+                                var t = b.getText();
+                                return t && t !== "blockUser" && t !== "reportUser";
+                            });
+                            Opa5.assert.ok(bLocalised,
+                                "Both labels resolve through the i18n bundle (got: " +
+                                aBtns.map(function (b) { return b.getText(); }).join(", ") + ")");
+                        },
+                        errorMessage: "Safety ActionSheet did not open"
+                    });
+                },
+
+                /**
+                 * The overflow menu was the only way in, and nobody thinks to tap
+                 * three dots to block someone. There must also be a plainly worded
+                 * entry point in the profile body.
+                 */
+                iSeeADiscoverableSafetyEntry: function () {
+                    return this.waitFor({
+                        controlType: "sap.m.Button",
+                        searchOpenDialogs: true,
+                        matchers: function (oBtn) {
+                            return oBtn.getIcon() === "sap-icon://shield" && oBtn.getVisible();
+                        },
+                        success: function (aBtns) {
+                            var sText = aBtns[0].getText();
+                            Opa5.assert.ok(sText && sText !== "reportOrBlock",
+                                "Profile body has a labelled safety entry point, " +
+                                "not just the overflow icon (got: '" + sText + "')");
+                        },
+                        errorMessage: "No safety entry point found in the profile body — " +
+                            "the overflow menu would be the only way to block or report"
+                    });
+                },
+
+                /**
+                 * Book/Message and Edit Profile are mutually exclusive, but both
+                 * rendered at once: the String(...) === String(...) expression ran
+                 * while the dialog was pre-warmed and both ids were undefined, so it
+                 * latched true. You could book and message yourself, and Edit Profile
+                 * appeared on strangers.
+                 */
+                iSeeOnlyTheRightProfileActions: function () {
+                    return this.waitFor({
+                        controlType: "sap.m.Dialog",
+                        matchers: function (oDialog) { return oDialog.getId().indexOf("profileDialog") >= 0; },
+                        success: function (aDialogs) {
+                            var oDialog = aDialogs[0];
+                            var oModel  = oDialog.getModel("appData");
+                            var bOwn    = oModel.getProperty("/isOwnProfile");
+
+                            var aRows = [];
+                            oDialog.findAggregatedObjects(true, function (c) {
+                                if (c.isA("sap.m.HBox")) {
+                                    var sKids = c.getItems().map(function (i) {
+                                        return i.getText ? i.getText() : "";
+                                    }).filter(Boolean).join("/");
+                                    if (sKids) { aRows.push({ kids: sKids, visible: c.getVisible() }); }
+                                }
+                                return false;
+                            });
+
+                            var oEdit  = aRows.filter(function (r) { return /Edit/i.test(r.kids); })[0];
+                            var oOther = aRows.filter(function (r) { return /Book|Message/i.test(r.kids); })[0];
+                            Opa5.assert.ok(oEdit && oOther, "Both action rows exist in the dialog");
+                            Opa5.assert.ok(!(oEdit.visible && oOther.visible),
+                                "Book/Message and Edit Profile are never both visible " +
+                                "(edit=" + oEdit.visible + ", other=" + oOther.visible + ")");
+                            Opa5.assert.strictEqual(oEdit.visible, !!bOwn,
+                                "Edit Profile shows only on your own profile (isOwnProfile=" + bOwn + ")");
+                        },
+                        errorMessage: "Profile dialog not open"
                     });
                 },
 

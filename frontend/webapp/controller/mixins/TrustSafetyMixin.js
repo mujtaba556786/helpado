@@ -50,8 +50,9 @@ sap.ui.define([
                     }
                 }.bind(this))
                 .catch(function() {
-                    MessageToast.show("Could not save acceptance. Please try again.");
-                });
+                    MessageToast.show(this.getOwnerComponent().getModel("i18n")
+                        .getResourceBundle().getText("termsSaveFailed"));
+                }.bind(this));
         },
 
         onTermsEscapeHandler: function(oPromise) {
@@ -70,8 +71,9 @@ sap.ui.define([
 
         onBlockUser: function() {
             var oModel  = this.getModel("appData");
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var sId     = oModel.getProperty("/selectedProfile/id");
-            var sName   = oModel.getProperty("/selectedProfile/name") || "this user";
+            var sName   = oModel.getProperty("/selectedProfile/name") || oBundle.getText("thisUser");
             if (!sId) return;
 
             var that = this;
@@ -86,31 +88,32 @@ sap.ui.define([
                         that.apiFetch(API_BASE + "/api/users/" + sId + "/block", { method: "POST" })
                             .then(function(oData) {
                                 if (oData.success) {
-                                    MessageToast.show(sName + " has been blocked.");
+                                    MessageToast.show(oBundle.getText("userBlocked", [sName]));
                                     that._getProfileDialog().then(function(d) { d.close(); });
                                 }
                             })
                             .catch(function() {
-                                MessageToast.show("Could not block user. Please try again.");
+                                MessageToast.show(oBundle.getText("blockFailed"));
                             });
                     };
 
                     var oDialog = new Dialog({
-                        title: "Block User",
+                        title: oBundle.getText("blockUser"),
                         type: "Message",
                         state: "Warning",
                         content: new MText({
-                            text: "Block " + sName + "? They will no longer be able to"
-                                + " message or book with you.",
+                            text: oBundle.getText("blockUserConfirm", [sName]),
                             wrapping: true
                         }),
+                        // Cancel stays Emphasized: on a destructive confirmation the
+                        // safe choice should be the prominent one.
                         beginButton: new Button({
-                            text: "Block",
+                            text: oBundle.getText("blockAction"),
                             type: "Reject",
                             press: function() { oDialog.close(); fnDoBlock(); }
                         }),
                         endButton: new Button({
-                            text: "Cancel",
+                            text: oBundle.getText("cancel"),
                             type: "Emphasized",
                             press: function() { oDialog.close(); }
                         }),
@@ -122,19 +125,20 @@ sap.ui.define([
         },
 
         onBlockCurrentDm: function() {
+            var oBundle  = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var sOtherId = this._currentConvoOtherId;
-            var sName    = this._currentConvoOtherName || "this user";
+            var sName    = this._currentConvoOtherName || oBundle.getText("thisUser");
             if (!sOtherId) return;
 
             this.apiFetch(API_BASE + "/api/users/" + sOtherId + "/block", { method: "POST" })
                 .then(function(oData) {
                     if (oData.success) {
-                        MessageToast.show(sName + " has been blocked.");
+                        MessageToast.show(oBundle.getText("userBlocked", [sName]));
                         this._getDmChatDialog().then(function(oDialog) { oDialog.close(); });
                     }
                 }.bind(this))
                 .catch(function() {
-                    MessageToast.show("Could not block user. Please try again.");
+                    MessageToast.show(oBundle.getText("blockFailed"));
                 });
         },
 
@@ -156,9 +160,10 @@ sap.ui.define([
         },
 
         onSubmitReport: function() {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var oReport = this.getModel("appData").getProperty("/report") || {};
             if (!oReport.category) {
-                MessageToast.show("Please select a report category.");
+                MessageToast.show(oBundle.getText("reportPickCategory"));
                 return;
             }
             this.apiFetch(API_BASE + "/api/reports", {
@@ -173,13 +178,13 @@ sap.ui.define([
             .then(function(oData) {
                 if (oData.success) {
                     this._getReportDialog().then(function(oDialog) { oDialog.close(); });
-                    MessageToast.show("Report submitted. Thank you for keeping Helpado safe.");
+                    MessageToast.show(oBundle.getText("reportSubmitted"));
                 } else {
-                    MessageToast.show(oData.error || "Could not submit report.");
+                    MessageToast.show(oData.error || oBundle.getText("reportFailed"));
                 }
             }.bind(this))
             .catch(function() {
-                MessageToast.show("Could not submit report. Please try again.");
+                MessageToast.show(oBundle.getText("reportFailed"));
             });
         },
 
