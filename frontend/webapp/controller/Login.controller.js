@@ -98,9 +98,16 @@ sap.ui.define([
                     MessageToast.show(oData.error || "Could not send link. Try again.");
                     return;
                 }
+                if (oData.directLogin) {
+                    // The server listed this address in TEST_AUTO_LOGIN_EMAILS and
+                    // signed us in without sending anything. Only reachable while
+                    // that variable is deliberately set.
+                    that._applySession(oData);
+                    return;
+                }
                 // Link + 6-digit code emailed. Show the "check inbox / enter code"
-                // step. There is no direct-login shortcut anymore — every login
-                // proves email ownership via the link or the code.
+                // step. Ordinary logins have no shortcut — they prove ownership of
+                // the address via the link or the code.
                 that._pendingEmail = sEmail;
                 that.byId("stepEmail").setVisible(false);
                 that.byId("stepLinkSent").setVisible(true);
