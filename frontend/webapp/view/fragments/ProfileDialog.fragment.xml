@@ -39,7 +39,10 @@
                     visible="{= String(${appData>/selectedProfile/id}) !== String(${appData>/user/id})}">
                     <Button text="Book"    icon="sap-icon://appointment-2" type="Emphasized" press="onOpenBooking"/>
                     <Button text="Message" icon="sap-icon://discussion"    type="Default"    press="onStartDm"/>
-                    <Button text="Ask AI"  icon="sap-icon://da"            type="Default"    press="onOpenChat"/>
+                    <!-- Ask AI hidden until the feature is ready: /api/chat has no ANTHROPIC_API_KEY
+                         set, so every tap fails. Re-enable by removing visible="false" once the key is
+                         configured and the route has auth + rate limiting. -->
+                    <Button text="Ask AI"  icon="sap-icon://da"            type="Default"    press="onOpenChat" visible="false"/>
                 </HBox>
 
                 <!-- ── Edit Profile shortcut (only for own profile) ── -->
