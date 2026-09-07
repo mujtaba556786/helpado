@@ -660,7 +660,8 @@ xmlns:l="sap.ui.layout"
                                     <!-- Secondary: Message -->
                                     <Button text="{i18n>messageHelper}" type="Default" icon="sap-icon://discussion" press="onQuickMessage" class="hhExpertMsgBtn"/>
                                     <!-- AI icon -->
-                                    <Button icon="sap-icon://da" type="Transparent" press="onQuickChat" tooltip="{i18n>askAi}" class="hhExpertIconBtn"/>
+                                    <!-- Ask AI hidden until the feature is ready — see ProfileDialog.fragment.xml -->
+                                    <Button icon="sap-icon://da" type="Transparent" press="onQuickChat" tooltip="{i18n>askAi}" class="hhExpertIconBtn" visible="false"/>
                                 </HBox>
 
                             </VBox>
