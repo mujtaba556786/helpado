@@ -54,8 +54,9 @@ async function saveToken(userId, token, platform = 'android') {
     );
 }
 
-async function removeToken(token) {
-    await pool.execute('DELETE FROM device_tokens WHERE token = ?', [token]);
+async function removeToken(token, userId) {
+    await pool.execute('DELETE FROM device_tokens WHERE token = ? AND user_id = ?',
+        [token, userId]);
 }
 
 module.exports = { sendToUser, saveToken, removeToken };

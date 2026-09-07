@@ -2,7 +2,7 @@ const router   = require('express').Router();
 const path     = require('path');
 const multer   = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const { handleAsync } = require('../middleware/auth');
+const { handleAsync, requireAdmin, requireSelfParam } = require('../middleware/auth');
 const validate = require('../middleware/validate');
 const s        = require('../middleware/schemas');
 const ctrl     = require('../controllers/userController');
@@ -29,12 +29,18 @@ const avatarUpload = multer({
     }
 });
 
-router.get('/',            handleAsync(ctrl.getAll));
-router.put('/:id',         validate(s.updateUser),    handleAsync(ctrl.updateUser));
-router.post('/:id/avatar', avatarUpload.single('avatar'), handleAsync(ctrl.uploadAvatar));
-router.put('/:id/status',  validate(s.updateStatus),  handleAsync(ctrl.updateStatus));
-router.put('/:id/approve', handleAsync(ctrl.approveUser));
-router.put('/:id/onboard', validate(s.onboardUser),   handleAsync(ctrl.onboardUser));
-router.put('/:id/profile', validate(s.updateProfile), handleAsync(ctrl.updateProfile));
+// Every one of these took the target user from the URL and did no checking, so
+// any caller could edit a stranger's profile — or approve themselves as a
+// verified provider. Self-service routes are pinned to the caller's own id;
+// moderation routes are admin-only. The public helper list lives on
+// /api/providers, so the full user dump is admin-only too.
+router.get('/',            requireAdmin,                                    handleAsync(ctrl.getAll));
+router.put('/:id',         requireSelfParam('id'), validate(s.updateUser),  handleAsync(ctrl.updateUser));
+router.post('/:id/avatar', requireSelfParam('id'),
+                           avatarUpload.single('avatar'),                   handleAsync(ctrl.uploadAvatar));
+router.put('/:id/status',  requireAdmin, validate(s.updateStatus),          handleAsync(ctrl.updateStatus));
+router.put('/:id/approve', requireAdmin,                                    handleAsync(ctrl.approveUser));
+router.put('/:id/onboard', requireSelfParam('id'), validate(s.onboardUser), handleAsync(ctrl.onboardUser));
+router.put('/:id/profile', requireSelfParam('id'), validate(s.updateProfile), handleAsync(ctrl.updateProfile));
 
 module.exports = router;
