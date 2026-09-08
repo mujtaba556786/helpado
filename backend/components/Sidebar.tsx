@@ -2,15 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { ICONS } from '../constants';
 import { apiService } from '../services/api';
-import { UserRole } from '../types';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  userRole?: UserRole;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   // Was a hardcoded green "Live Gateway" pulse that stayed green while the API
   // was down. Now polls /api/health; null = still checking.
   const [healthy, setHealthy] = useState<boolean | null>(null);
@@ -22,7 +20,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
     return () => { alive = false; clearInterval(t); };
   }, []);
 
-  const adminItems = [
+  // Admin only. The panel used to carry a second, customer/provider marketplace
+  // (Find Services, My Inquiries, Worker Dashboard) inherited from the template
+  // it started life as. It duplicated the real UI5 app, was reachable only after
+  // typing the admin password, and its screens called endpoints with no token —
+  // so they broke outright once the API started verifying one.
+  const menuItems = [
     { id: 'dashboard', label: 'Overview', icon: ICONS.Dashboard },
     { id: 'users', label: 'Moderation Queue', icon: ICONS.Users },
     { id: 'reviews', label: 'Reviews', icon: ICONS.Reviews },
@@ -30,21 +33,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
     { id: 'bookings', label: 'Audit Log', icon: ICONS.Bookings },
     { id: 'revenue', label: 'Ad Performance', icon: ICONS.Analytics },
   ];
-
-  const userItems = [
-    { id: 'browser', label: 'Find Services', icon: ICONS.Services },
-    { id: 'my-bookings', label: 'My Inquiries', icon: ICONS.Chat },
-    { id: 'profile', label: 'My Profile', icon: ICONS.Provider },
-  ];
-
-  const providerItems = [
-    { id: 'provider-dashboard', label: 'Worker Dashboard', icon: ICONS.Dashboard },
-    { id: 'my-bookings', label: 'Inbound Chats', icon: ICONS.Chat },
-    { id: 'profile', label: 'Work Profile', icon: ICONS.Provider },
-  ];
-
-  const menuItems = userRole === UserRole.ADMIN ? adminItems : 
-                   userRole === UserRole.PROVIDER ? providerItems : userItems;
 
   return (
     <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col h-full shadow-2xl z-20">
@@ -55,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userRole }) 
           </div>
           <div>
             <span className="text-xl font-black text-white tracking-tighter italic block leading-none">Helpado</span>
-            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">{userRole === UserRole.ADMIN ? 'Admin Console' : 'Marketplace'}</span>
+            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Admin Console</span>
           </div>
         </div>
 

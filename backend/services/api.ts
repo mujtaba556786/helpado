@@ -50,20 +50,6 @@ export const apiService = {
         return false;
     },
 
-    async createUser(userData: Partial<User>): Promise<User | null> {
-        try {
-            const res = await fetch(`${BASE_URL}/users`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
-            });
-            if (res.ok) return await res.json();
-        } catch (e) {
-            console.warn('User creation request failed', e);
-        }
-        return null;
-    },
-
     async updateUser(id: string, userData: Partial<User>): Promise<boolean> {
         try {
             const res = await fetch(`${BASE_URL}/users/${id}`, {
@@ -75,20 +61,6 @@ export const apiService = {
         } catch {
             return false;
         }
-    },
-
-    async completeOnboarding(id: string, name: string, role: string, bio?: string) {
-        try {
-            const res = await fetch(`${BASE_URL}/users/${id}/onboard`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
-                body: JSON.stringify({ name, role, bio })
-            });
-            if (res.ok) return await res.json();
-        } catch (e) {
-            console.warn("Backend unreachable.");
-        }
-        return { success: false };
     },
 
     async approveUser(id: string) {
@@ -135,49 +107,6 @@ export const apiService = {
         } catch {
             return false;
         }
-    },
-
-    async updateProfile(id: string, data: { name: string, bio: string, avatar: string }) {
-        try {
-            await fetch(`${BASE_URL}/users/${id}/profile`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
-                body: JSON.stringify(data)
-            });
-            return true;
-        } catch { return false; }
-    },
-
-    async createService(service: Service) {
-        try {
-            await fetch(`${BASE_URL}/services`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
-                body: JSON.stringify(service)
-            });
-            return true;
-        } catch { return false; }
-    },
-
-    async updateService(id: string, data: Partial<Service>): Promise<boolean> {
-        try {
-            const res = await fetch(`${BASE_URL}/services/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
-                body: JSON.stringify(data)
-            });
-            return res.ok;
-        } catch { return false; }
-    },
-
-    async deleteService(id: string): Promise<boolean> {
-        try {
-            const res = await fetch(`${BASE_URL}/services/${id}`, {
-                method: 'DELETE',
-                headers: { 'x-admin-token': adminToken }
-            });
-            return res.ok;
-        } catch { return false; }
     },
 
     async getUsers(): Promise<User[]> {
