@@ -8,19 +8,11 @@
         verticalScrolling="true"
         stretch="true">
 
-        <!-- Safety actions live behind an overflow menu rather than sitting at the
-             bottom of every profile. They stay one tap away, but the page no longer
-             frames each helper as a potential threat. -->
         <customHeader>
             <Bar>
                 <contentMiddle>
                     <Title text="{appData>/selectedProfile/name}" level="H4"/>
                 </contentMiddle>
-                <contentRight>
-                    <Button id="profileOverflowBtn" icon="sap-icon://overflow" type="Transparent"
-                        tooltip="{i18n>moreOptions}" press="onProfileOverflow"
-                        visible="{appData>/isOtherProfile}"/>
-                </contentRight>
             </Bar>
         </customHeader>
 
@@ -132,16 +124,21 @@
                         visible="{appData>/canRateSelectedProfile}"/>
                 </VBox>
 
-                <!-- The overflow menu alone was not discoverable: nobody thinks to
-                     tap three dots to block someone. This repeats the same sheet at
-                     the foot of the profile, where people actually look for it,
-                     without letting safety actions compete with Book and Message at
-                     the top. Both entry points open the same ActionSheet. -->
-                <Button text="{i18n>reportOrBlock}" icon="sap-icon://shield"
-                    type="Transparent" width="100%"
-                    class="sapUiSmallMarginTop sapUiSmallMarginBottom"
-                    press="onProfileOverflow"
-                    visible="{appData>/isOtherProfile}"/>
+                <!-- Safety actions, named and reachable in one tap.
+                     They were behind a ⋯ overflow menu, which nobody thinks to tap
+                     to block someone, and which needed an ActionSheet — and that
+                     sheet's cancel button was the pink one that kept looking wrong.
+                     Two plain links remove the menu, the sheet and a whole tap.
+                     They sit last on the page and stay muted so they do not compete
+                     with Book and Message: findable, without framing every helper as
+                     a suspect. Each opens its own dialog directly. -->
+                <VBox class="sapUiSmallMarginTop sapUiSmallMarginBottom"
+                    visible="{appData>/isOtherProfile}">
+                    <Button text="{i18n>reportThisHelper}" icon="sap-icon://flag"
+                        type="Transparent" width="100%" press="onReportUser"/>
+                    <Button text="{i18n>blockThisHelper}" icon="sap-icon://cancel"
+                        type="Transparent" width="100%" press="onBlockUser"/>
+                </VBox>
 
 
             </VBox>
