@@ -13,7 +13,6 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
   const [activeView, setActiveView] = useState<'ALL' | 'PENDING'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState<Partial<User>>({
     name: '',
     email: '',
@@ -48,27 +47,9 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
     setFormData({ ...user });
   };
 
-  const openAddModal = () => {
-    setIsAdding(true);
-    setFormData({
-        name: '',
-        email: '',
-        role: UserRole.CUSTOMER,
-        status: UserStatus.ACTIVE,
-        bio: ''
-    });
-  };
-
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isAdding) {
-        const newUser = await apiService.createUser(formData);
-        if (newUser) {
-            setUsers(prev => [newUser, ...prev]);
-            setSearchTerm(''); // Clear search so the new user is visible
-            setActiveView('ALL'); // Switch to directory
-        }
-    } else if (editingUser) {
+    if (editingUser) {
         const success = await apiService.updateUser(editingUser.id, formData);
         if (success) {
             setUsers(prev => prev.map(u => u.id === editingUser.id ? { ...u, ...formData } as User : u));
@@ -79,7 +60,6 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
 
   const closeModal = () => {
     setEditingUser(null);
-    setIsAdding(false);
   };
 
   return (
@@ -100,15 +80,8 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
         <div className="flex items-center space-x-4">
             <div className="relative w-64">
                <ICONS.Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-               <input placeholder="Search users..." className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+               <input placeholder="Search users..." className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#4FB584]" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>
-            <button 
-                onClick={openAddModal}
-                className="bg-indigo-600 text-white px-6 py-2.5 rounded-2xl font-black shadow-lg shadow-indigo-600/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center space-x-2"
-            >
-                <ICONS.Plus className="w-5 h-5" />
-                <span>New User</span>
-            </button>
         </div>
       </div>
 
@@ -178,16 +151,16 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
       </div>
 
       {/* Orchestration Modal (Add/Edit) */}
-      {(editingUser || isAdding) && (
+      {editingUser && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
             <div className="bg-white w-full max-w-xl rounded-[3rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in duration-300">
                 <div className="bg-indigo-600 p-10 text-white flex justify-between items-center relative overflow-hidden">
                     <div className="relative z-10">
                         <h3 className="text-3xl font-black italic tracking-tighter">
-                            {isAdding ? 'Onboard Account' : 'Account Audit'}
+                            Account Audit
                         </h3>
                         <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest mt-1">
-                            {isAdding ? 'Marketplace Gateway' : `UID: ${editingUser?.id}`}
+                            {`UID: ${editingUser?.id}`}
                         </p>
                     </div>
                     <button onClick={closeModal} className="relative z-10 p-3 bg-white/10 hover:bg-white/20 rounded-2xl backdrop-blur-md transition-colors">
@@ -202,7 +175,7 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Legal Name</label>
                             <input 
                                 required
-                                className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all"
+                                className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-[#4FB584]/10 focus:border-indigo-600 transition-all"
                                 value={formData.name}
                                 onChange={e => setFormData({...formData, name: e.target.value})}
                                 placeholder="Full Name"
@@ -213,7 +186,7 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
                             <input 
                                 required
                                 type="email"
-                                className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all"
+                                className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-[#4FB584]/10 focus:border-indigo-600 transition-all"
                                 value={formData.email}
                                 onChange={e => setFormData({...formData, email: e.target.value})}
                                 placeholder="email@domain.com"
@@ -225,7 +198,7 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
                         <div className="space-y-1.5">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Access Level</label>
                             <select 
-                                className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer"
+                                className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-[#4FB584]/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer"
                                 value={formData.role}
                                 onChange={e => setFormData({...formData, role: e.target.value as UserRole})}
                             >
@@ -237,7 +210,7 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
                         <div className="space-y-1.5">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Lifecycle Status</label>
                             <select 
-                                className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer"
+                                className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-[#4FB584]/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer"
                                 value={formData.status}
                                 onChange={e => setFormData({...formData, status: e.target.value as UserStatus})}
                             >
@@ -252,7 +225,7 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
                     <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Professional Bio / Notes</label>
                         <textarea 
-                            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-medium text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all h-28"
+                            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-medium text-slate-700 outline-none focus:ring-4 focus:ring-[#4FB584]/10 focus:border-indigo-600 transition-all h-28"
                             value={formData.bio}
                             onChange={e => setFormData({...formData, bio: e.target.value})}
                             placeholder="User biography or internal admin notes..."
@@ -262,7 +235,7 @@ const UserManagementView: React.FC<UserManagementProps> = ({ users, setUsers }) 
                     <div className="grid grid-cols-2 gap-4 pt-6">
                         <button type="button" onClick={closeModal} className="w-full py-5 bg-slate-100 text-slate-600 rounded-[1.5rem] font-black hover:bg-slate-200 transition-all">Cancel</button>
                         <button type="submit" className="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black shadow-xl shadow-indigo-600/30 hover:scale-[1.02] active:scale-95 transition-all">
-                            {isAdding ? 'Launch User' : 'Sync Changes'}
+                            Sync Changes
                         </button>
                     </div>
                 </form>
