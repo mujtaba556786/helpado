@@ -15,7 +15,7 @@
                     <Title text="{appData>/currentDmOtherName}"/>
                 </contentMiddle>
                 <contentRight>
-                    <Button icon="sap-icon://decline" tooltip="Close" type="Transparent" press="onCloseDmChat"/>
+                    <Button icon="sap-icon://decline" tooltip="{i18n>close}" type="Transparent" press="onCloseDmChat"/>
                 </contentRight>
             </Bar>
         </customHeader>

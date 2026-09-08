@@ -73,22 +73,22 @@
                 <List showSeparators="Inner" class="sapUiSmallMarginBottom">
                     <StandardListItem
                         icon="sap-icon://money-bills"
-                        title="Rate"
+                        title="{i18n>bookingRate}"
                         info="{appData>/selectedProfile/rateDisplay}"
                         type="Inactive"/>
                     <StandardListItem
                         icon="sap-icon://history"
-                        title="Experience"
+                        title="{i18n>profileExperience}"
                         info="{= ${appData>/selectedProfile/years} ? ${appData>/selectedProfile/years} + ' years' : '—'}"
                         type="Inactive"/>
                     <StandardListItem
                         icon="sap-icon://world"
-                        title="Language"
+                        title="{i18n>profileLanguage}"
                         info="{= ${appData>/selectedProfile/languages} || '—'}"
                         type="Inactive"/>
                     <StandardListItem
                         icon="sap-icon://map"
-                        title="Location"
+                        title="{i18n>location}"
                         info="{= ${appData>/selectedProfile/city} || '—'}"
                         type="Inactive"
                         wrapping="true"/>
@@ -96,7 +96,7 @@
 
                 <!-- ── Bio ── -->
                 <VBox class="sapUiMediumMarginBeginEnd sapUiSmallMarginTop sapUiSmallMarginBottom">
-                    <Title text="About" level="H5" class="sapUiTinyMarginBottom"/>
+                    <Title text="{i18n>profileAbout}" level="H5" class="sapUiTinyMarginBottom"/>
                     <Text text="{= ${appData>/selectedProfile/bio} || 'No bio added yet.'}" wrapping="true"/>
                 </VBox>
 

@@ -71,7 +71,7 @@
                         <VBox alignItems="Center" class="sapUiSmallMargin">
                             <Title text="Helpado" level="H4" class="sapUiTinyMarginBottom"/>
                             <Text text="{i18n>aboutTagline}" wrapping="true" class="grayText textCenter"/>
-                            <ObjectStatus text="Version 2.44" state="Success" class="sapUiTinyMarginTop"/>
+                            <ObjectStatus text="{appData>/appVersionLabel}" state="Success" class="sapUiTinyMarginTop"/>
                         </VBox>
                     </content>
                 </Panel>

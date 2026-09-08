@@ -19,8 +19,8 @@
                 <!-- Step 0: Session check — shown on every app open while token is verified -->
                 <VBox id="stepProcessing" visible="{appData>/magicLinkProcessing}" alignItems="Center" class="sapUiMediumMargin">
                     <core:Icon src="sap-icon://locked" size="3rem" color="#4FB584" class="sapUiSmallMarginBottom"/>
-                    <Title text="Resuming your session…" level="H3" class="sapUiSmallMarginBottom"/>
-                    <Text text="Please wait a moment." class="grayText textCenter sapUiSmallMarginBottom"/>
+                    <Title text="{i18n>loginResuming}" level="H3" class="sapUiSmallMarginBottom"/>
+                    <Text text="{i18n>loginResumingHint}" class="grayText textCenter sapUiSmallMarginBottom"/>
                     <BusyIndicator size="2rem"/>
                 </VBox>
 
