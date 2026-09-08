@@ -1,5 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.helpado.app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.helpmate.app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <!-- The widget id is the Android/iOS package identity, not branding. It stays
+         com.helpmate.app: the Firebase project (helpmate-app) registers that package
+         in google-services.json, and changing it makes an installed app unable to
+         upgrade — it installs as a second, separate app. Same reasoning as the UI5
+         namespace and the localStorage keys. Only <name> is the brand. -->
     <name>Helpado</name>
     <description>Community Help Marketplace</description>
     <author email="support@helpado.app" href="https://helpado.app">
