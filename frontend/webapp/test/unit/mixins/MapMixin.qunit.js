@@ -119,18 +119,31 @@ sap.ui.define([
 
     QUnit.module("MapMixin — formatPriceDisplay");
 
-    QUnit.test("formats rate with currency", function (assert) {
+    // These asserted "EUR25/hr" and a "$" default, which predates the currency
+    // symbol map in MapMixin — the app has shown symbols and defaulted to EUR
+    // since then, so the tests were stale, not the code.
+    QUnit.test("formats rate with the currency symbol", function (assert) {
         var result = MapMixin.formatPriceDisplay({ currency: "EUR", rate: 25 });
-        assert.strictEqual(result, "EUR25/hr", "returns EUR25/hr");
+        assert.strictEqual(result, "\u20ac25/hr", "EUR renders as \u20ac25/hr");
     });
 
-    QUnit.test("defaults to $ when currency missing", function (assert) {
+    QUnit.test("USD renders with its own symbol", function (assert) {
+        var result = MapMixin.formatPriceDisplay({ currency: "USD", rate: 40 });
+        assert.strictEqual(result, "$40/hr", "USD renders as $40/hr");
+    });
+
+    QUnit.test("defaults to EUR when currency missing", function (assert) {
         var result = MapMixin.formatPriceDisplay({ rate: 30 });
-        assert.strictEqual(result, "$30/hr", "defaults to $");
+        assert.strictEqual(result, "\u20ac30/hr", "defaults to \u20ac30/hr");
     });
 
     QUnit.test("returns empty string for null provider", function (assert) {
-        assert.strictEqual(MapMixin.formatPriceDisplay(null), "", "null → empty string");
+        assert.strictEqual(MapMixin.formatPriceDisplay(null), "", "null \u2192 empty string");
+    });
+
+    QUnit.test("shows a dash for a provider with no rate set", function (assert) {
+        assert.strictEqual(MapMixin.formatPriceDisplay({ rate: 0 }), "\u2014",
+            "no rate \u2192 em dash, not \u20ac0/hr");
     });
 
     // ── formatAvailabilityStatus / formatAvailabilityState ────────────────────

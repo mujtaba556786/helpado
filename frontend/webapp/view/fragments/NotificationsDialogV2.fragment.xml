@@ -16,7 +16,7 @@
                     <Title text="{i18n>notifications}"/>
                 </contentLeft>
                 <contentRight>
-                    <Button text="Mark all read" type="Transparent" press="onMarkAllRead"
+                    <Button text="{i18n>markAllRead}" type="Transparent" press="onMarkAllRead"
                         visible="{= ${appData>/unreadCount} > 0}"/>
                     <Button icon="sap-icon://decline" type="Transparent" press="onCloseNotifications"/>
                 </contentRight>
@@ -27,16 +27,16 @@
             <VBox>
                 <!-- Filter chips -->
                 <HBox alignItems="Center" class="sapUiTinyMarginBeginEnd sapUiTinyMarginTopBottom" wrap="Wrap">
-                    <Button text="All"       type="{= ${appData>/notifFilter} === 'all'       ? 'Emphasized' : 'Default'}" press="onNotifFilter" class="sapUiTinyMarginEnd">
+                    <Button text="{i18n>notifAll}" type="{= ${appData>/notifFilter} === 'all'       ? 'Emphasized' : 'Default'}" press="onNotifFilter" class="sapUiTinyMarginEnd">
                         <customData><core:CustomData key="filter" value="all"/></customData>
                     </Button>
-                    <Button text="Today"     type="{= ${appData>/notifFilter} === 'today'     ? 'Emphasized' : 'Default'}" press="onNotifFilter" class="sapUiTinyMarginEnd">
+                    <Button text="{i18n>notifToday}" type="{= ${appData>/notifFilter} === 'today'     ? 'Emphasized' : 'Default'}" press="onNotifFilter" class="sapUiTinyMarginEnd">
                         <customData><core:CustomData key="filter" value="today"/></customData>
                     </Button>
-                    <Button text="Yesterday" type="{= ${appData>/notifFilter} === 'yesterday' ? 'Emphasized' : 'Default'}" press="onNotifFilter" class="sapUiTinyMarginEnd">
+                    <Button text="{i18n>notifYesterday}" type="{= ${appData>/notifFilter} === 'yesterday' ? 'Emphasized' : 'Default'}" press="onNotifFilter" class="sapUiTinyMarginEnd">
                         <customData><core:CustomData key="filter" value="yesterday"/></customData>
                     </Button>
-                    <Button text="Earlier"   type="{= ${appData>/notifFilter} === 'earlier'   ? 'Emphasized' : 'Default'}" press="onNotifFilter" class="sapUiTinyMarginEnd">
+                    <Button text="{i18n>notifEarlier}" type="{= ${appData>/notifFilter} === 'earlier'   ? 'Emphasized' : 'Default'}" press="onNotifFilter" class="sapUiTinyMarginEnd">
                         <customData><core:CustomData key="filter" value="earlier"/></customData>
                     </Button>
                 </HBox>
@@ -71,7 +71,7 @@
                             <Button
                                 icon="sap-icon://accept"
                                 type="Transparent"
-                                tooltip="Mark as read"
+                                tooltip="{i18n>markAsRead}"
                                 visible="{= !${appData>is_read}}"
                                 press="onNotifMarkOneRead"/>
                         </HBox>

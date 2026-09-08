@@ -43,7 +43,10 @@
          boots. Bump _HH_BUILD whenever JS files change to force a fresh fetch. -->
     <script>
         (function () {
-            var _HH_BUILD = '3.11';
+            var _HH_BUILD = '3.12';
+            // Exposed so the Settings > About panel shows the real build instead of
+            // a hand-typed version string (it had drifted to 2.44).
+            window._HH_BUILD = _HH_BUILD;
             var _desc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
             Object.defineProperty(HTMLScriptElement.prototype, 'src', {
                 get: _desc.get,

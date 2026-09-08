@@ -3,44 +3,44 @@
     xmlns:core="sap.ui.core">
 
     <Dialog id="reportDialog"
-        title="Submit a Report"
+        title="{i18n>reportTitle}"
         contentWidth="420px"
         verticalScrolling="true"
         stretch="{device>/system/phone}">
 
         <content>
             <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
-                <Label text="What are you reporting?" class="sapUiTinyMarginBottom"/>
+                <Label text="{i18n>reportWhat}" class="sapUiTinyMarginBottom"/>
                 <Select id="reportCategorySelect"
                     selectedKey="{appData>/report/category}"
                     width="100%"
                     class="sapUiSmallMarginBottom">
                     <items>
-                        <core:Item key=""                       text="— Select a category —"/>
-                        <core:Item key="spam"                   text="Spam"/>
-                        <core:Item key="harassment"             text="Harassment"/>
-                        <core:Item key="scam_fraud"             text="Scam / Fraud"/>
-                        <core:Item key="inappropriate_content"  text="Inappropriate Content"/>
-                        <core:Item key="fake_profile"           text="Fake Profile"/>
-                        <core:Item key="other"                  text="Other"/>
+                        <core:Item key=""                       text="{i18n>reportSelectCategory}"/>
+                        <core:Item key="spam"                   text="{i18n>reportSpam}"/>
+                        <core:Item key="harassment"             text="{i18n>reportHarassment}"/>
+                        <core:Item key="scam_fraud"             text="{i18n>reportScam}"/>
+                        <core:Item key="inappropriate_content"  text="{i18n>reportInappropriate}"/>
+                        <core:Item key="fake_profile"           text="{i18n>reportFakeProfile}"/>
+                        <core:Item key="other"                  text="{i18n>reportOther}"/>
                     </items>
                 </Select>
-                <Label text="Description (optional)" class="sapUiTinyMarginBottom"/>
+                <Label text="{i18n>reportDescription}" class="sapUiTinyMarginBottom"/>
                 <TextArea value="{appData>/report/description}"
                     rows="4"
                     width="100%"
-                    placeholder="Describe the issue in more detail..."
+                    placeholder="{i18n>reportDescPlaceholder}"
                     class="sapUiSmallMarginBottom"/>
-                <Text text="Reports are anonymous and reviewed by our moderation team."
+                <Text text="{i18n>reportAnonymousNote}"
                     class="smallText grayText" wrapping="true"/>
             </VBox>
         </content>
 
         <beginButton>
-            <Button text="Submit Report" type="Emphasized" press="onSubmitReport"/>
+            <Button text="{i18n>reportSubmitBtn}" type="Emphasized" press="onSubmitReport"/>
         </beginButton>
         <endButton>
-            <Button text="Cancel" press="onCloseReport"/>
+            <Button text="{i18n>cancel}" press="onCloseReport"/>
         </endButton>
 
     </Dialog>

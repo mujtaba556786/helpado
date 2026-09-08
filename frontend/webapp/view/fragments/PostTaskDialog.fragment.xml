@@ -17,7 +17,7 @@
                     <core:ListItem key="{appData>name}" text="{appData>label}" icon="{appData>icon}"/>
                 </Select>
                 <Label text="{i18n>budgetEur}"/>
-                <Input value="{appData>/taskForm/budget}" type="Number" placeholder="e.g. 50" width="100%" class="sapUiTinyMarginBottom"/>
+                <Input value="{appData>/taskForm/budget}" type="Number" placeholder="{i18n>budgetPlaceholder}" width="100%" class="sapUiTinyMarginBottom"/>
                 <Label text="{i18n>when}"/>
                 <DatePicker value="{appData>/taskForm/task_date}" minDate="{appData>/today}" valueFormat="yyyy-MM-dd" displayFormat="MMM dd, yyyy" width="100%" class="sapUiTinyMarginBottom"/>
                 <Label text="{i18n>location}"/>

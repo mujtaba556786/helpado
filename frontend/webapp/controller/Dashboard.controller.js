@@ -69,6 +69,9 @@ sap.ui.define([
             this._loadProvidersFromApi();
             this._initServicesFromConstants();
             this._applyInterestOrder();
+            this._oModel.setProperty("/appVersionLabel",
+                this.getOwnerComponent().getModel("i18n").getResourceBundle()
+                    .getText("versionLabel", [window._HH_BUILD || "dev"]));
             this._loadSchedule();
             this._loadFavorites();
             this._loadUnreadDmCount();
@@ -304,15 +307,22 @@ sap.ui.define([
         },
 
         _loadHomeActivity: function() {
-            var oModel = this.getModel("appData");
+            var oModel  = this.getModel("appData");
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             fetch(API_BASE + "/api/home/activity")
                 .then(function(r) { return r.json(); })
                 .then(function(oData) {
                     if (oData.success) {
+                        var aRecent = oData.recent || [];
+                        var sCity   = aRecent[0] && aRecent[0].city;
                         oModel.setProperty("/homeActivity", {
                             helpers: oData.helpers || 0,
                             requests: oData.requests || 0,
-                            recent: oData.recent || []
+                            recent: aRecent,
+                            // Built here rather than concatenated in the view: an i18n
+                            // string cannot wrap a binding inside an XML attribute, and
+                            // word order differs by language.
+                            activeInLabel: sCity ? oBundle.getText("activeIn", [sCity]) : ""
                         });
                     }
                 })
@@ -320,13 +330,17 @@ sap.ui.define([
         },
 
         _loadSubscriptionStatus: function() {
-            var oModel = this.getModel("appData");
-            var sRole = oModel.getProperty("/user/role");
+            var oModel  = this.getModel("appData");
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            var sRole   = oModel.getProperty("/user/role");
             if (sRole !== "provider") { return; }
             this.apiFetch(API_BASE + "/api/subscription/status")
                 .then(function(oData) {
                     if (oData.success) {
-                        oModel.setProperty("/subscriptionStatus", oData);
+                        oModel.setProperty("/subscriptionStatus", Object.assign({}, oData, {
+                            earnedLabel: oBundle.getText("earnedThisMonth",
+                                [oData.monthly_booking_value || 0])
+                        }));
                     }
                 })
                 .catch(function() { /* non-critical */ });

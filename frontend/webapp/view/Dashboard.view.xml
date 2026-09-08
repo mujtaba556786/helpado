@@ -56,13 +56,13 @@ xmlns:l="sap.ui.layout"
                             <HBox alignItems="Center" class="fiActivityItem"
                                 visible="{= !!${appData>/homeActivity/recent/0/city}}">
                                 <core:Icon src="sap-icon://accept" class="fiActivityIcon"/>
-                                <Text text="Active in {appData>/homeActivity/recent/0/city}" class="fiActivityText"/>
+                                <Text text="{appData>/homeActivity/activeInLabel}" class="fiActivityText"/>
                             </HBox>
                         </HBox>
 
                         <!-- Primary CTA: shifts app from directory to marketplace -->
                         <VBox id="primaryCta" class="fiPrimaryCta" alignItems="Stretch">
-                            <Button text="Post a Task" type="Emphasized" icon="sap-icon://add"
+                            <Button text="{i18n>postATask}" type="Emphasized" icon="sap-icon://add"
                                 press="onOpenPostTask" width="100%" class="fiCtaBtn"/>
                         </VBox>
 
@@ -78,7 +78,7 @@ xmlns:l="sap.ui.layout"
                                              hardcoded is_hero flag, and claiming it on 3 of 10 tiles with
                                              two live providers is social proof we cannot substantiate.
                                              Restore by putting the is_hero binding back on visible. -->
-                                        <ObjectStatus text="Popular" state="Success"
+                                        <ObjectStatus text="{i18n>popularBadge}" state="Success"
                                             visible="false"
                                             class="fiHeroBadge"/>
                                     </VBox>
@@ -94,20 +94,20 @@ xmlns:l="sap.ui.layout"
                                 <!-- ── Top bar: underline tabs + Filter icon + Post Task ── -->
                                 <HBox justifyContent="SpaceBetween" alignItems="Center" class="hhTasksTopBar">
                                     <HBox alignItems="Center" class="hhUnderlineTabs">
-                                        <Button text="Browse"
+                                        <Button text="{i18n>browse}"
                                             type="{= ${appData>/taskViewMode} === 'browse' ? 'Emphasized' : 'Transparent'}"
                                             press="onToggleTaskView"
                                             class="hhUTab">
                                             <customData><core:CustomData key="mode" value="browse"/></customData>
                                         </Button>
-                                        <Button text="My Tasks"
+                                        <Button text="{i18n>myTasks}"
                                             type="{= ${appData>/taskViewMode} === 'mine' ? 'Emphasized' : 'Transparent'}"
                                             press="onToggleTaskView"
                                             class="hhUTab">
                                             <customData><core:CustomData key="mode" value="mine"/></customData>
                                         </Button>
                                     </HBox>
-                                    <Button text="Post Task" icon="sap-icon://add" type="Emphasized" press="onOpenPostTask" class="hhPostTaskBtn"/>
+                                    <Button text="{i18n>postTaskBtn}" icon="sap-icon://add" type="Emphasized" press="onOpenPostTask" class="hhPostTaskBtn"/>
                                 </HBox>
 
                                 <!-- ══ BROWSE VIEW ══════════════════════════════════ -->
@@ -116,7 +116,7 @@ xmlns:l="sap.ui.layout"
                                     <!-- Search -->
                                     <VBox class="hhTasksSearchWrap">
                                         <SearchField id="taskSearch"
-                                            placeholder="Search tasks..."
+                                            placeholder="{i18n>searchTasksPlaceholder}"
                                             search="onTaskSearch"
                                             liveChange="onTaskSearch"
                                             width="100%"
@@ -370,7 +370,7 @@ xmlns:l="sap.ui.layout"
                                         <Title text="{i18n>yourBookings}" level="H4" class="fiScheduleTitle"/>
                                         <!-- Monthly earnings chip: visible to providers only -->
                                         <ObjectStatus
-                                            text="€{appData>/subscriptionStatus/monthly_booking_value} earned"
+                                            text="{appData>/subscriptionStatus/earnedLabel}"
                                             state="{= parseFloat(${appData>/subscriptionStatus/monthly_booking_value}) > 300 ? 'Warning' : 'None'}"
                                             visible="{= ${appData>/user/role} === 'provider'}"
                                             class="fiEarningsChip"/>
@@ -647,7 +647,7 @@ xmlns:l="sap.ui.layout"
 
                                 <!-- Row 2: Tags (trust + exp + language + plan badges) -->
                                 <HBox wrap="Wrap" alignItems="Center" class="hhExpertTags">
-                                    <ObjectStatus text="Sponsored" state="Warning" icon="sap-icon://favorite"
+                                    <ObjectStatus text="{i18n>sponsoredBadge}" state="Warning" icon="sap-icon://favorite"
                                         visible="{= !!${appData>featured_until}}"
                                         class="hhExpertTag fiSponsoredBadge"/>
                                     <ObjectStatus text="PRO" state="Success"
