@@ -3,6 +3,60 @@ sap.ui.define([
 ], function (BookingMixin) {
     "use strict";
 
+    // ── formatCanRespond / formatCanCancel ────────────────────────────────────
+    //
+    // These replaced inline expression bindings that compared
+    // String(${appData>/user/id}) with String(${appData>provider_id}). Mixing an
+    // absolute path into a list row's relative context meant that while
+    // auto-login was still in flight both ids were undefined, and
+    // String(undefined) === String(undefined) is true — so BOTH the provider's
+    // Accept/Decline pair and the customer's Cancel button showed on the same
+    // booking. The empty-user cases below are the ones that mattered.
+
+    QUnit.module("BookingMixin — booking action visibility");
+
+    QUnit.test("provider sees accept/decline on their own pending booking", function (assert) {
+        assert.strictEqual(BookingMixin.formatCanRespond("pending", "P1", "P1"), true);
+    });
+
+    QUnit.test("customer does not see accept/decline on their booking", function (assert) {
+        assert.strictEqual(BookingMixin.formatCanRespond("pending", "P1", "C1"), false);
+    });
+
+    QUnit.test("customer sees cancel on their own pending booking", function (assert) {
+        assert.strictEqual(BookingMixin.formatCanCancel("pending", "C1", "C1"), true);
+    });
+
+    QUnit.test("provider does not see cancel on a booking they received", function (assert) {
+        assert.strictEqual(BookingMixin.formatCanCancel("pending", "C1", "P1"), false);
+    });
+
+    QUnit.test("neither action shows before the user id is known", function (assert) {
+        ["", null, undefined].forEach(function (vUser) {
+            assert.strictEqual(BookingMixin.formatCanRespond("pending", "P1", vUser), false,
+                "no accept/decline for user id " + JSON.stringify(vUser));
+            assert.strictEqual(BookingMixin.formatCanCancel("pending", "C1", vUser), false,
+                "no cancel for user id " + JSON.stringify(vUser));
+        });
+    });
+
+    QUnit.test("the two actions are never both offered on one booking", function (assert) {
+        [["P1", "C1", "P1"], ["P1", "C1", "C1"], ["P1", "C1", "X9"],
+         ["P1", "C1", ""],   ["P1", "C1", undefined]].forEach(function (a) {
+            var bRespond = BookingMixin.formatCanRespond("pending", a[0], a[2]);
+            var bCancel  = BookingMixin.formatCanCancel("pending", a[1], a[2]);
+            assert.notOk(bRespond && bCancel,
+                "provider=" + a[0] + " customer=" + a[1] + " viewer=" + JSON.stringify(a[2]));
+        });
+    });
+
+    QUnit.test("nothing is offered once a booking is no longer pending", function (assert) {
+        ["confirmed", "completed", "declined", "cancelled"].forEach(function (s) {
+            assert.strictEqual(BookingMixin.formatCanRespond(s, "P1", "P1"), false, s + " → no respond");
+            assert.strictEqual(BookingMixin.formatCanCancel(s, "C1", "C1"), false, s + " → no cancel");
+        });
+    });
+
     // ── formatBookingDate ─────────────────────────────────────────────────────
 
     QUnit.module("BookingMixin — formatBookingDate");

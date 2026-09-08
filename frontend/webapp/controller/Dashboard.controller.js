@@ -109,6 +109,12 @@ sap.ui.define([
             var oProfile = oModel.getProperty("/selectedProfile");
             if (oProfile) {
                 oModel.setProperty("/selectedProfile/rateDisplay", this.formatPriceDisplay(oProfile));
+                // Was an inline expression that concatenated String(rating) with
+                // ' / 5' and fell back to the literal 'No rating' — the last
+                // untranslated string in the views.
+                var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+                oModel.setProperty("/selectedProfile/ratingLabel",
+                    oProfile.rating ? oProfile.rating + " / 5" : oBundle.getText("noRating"));
             }
 
             // Whose profile is this? The fragment used

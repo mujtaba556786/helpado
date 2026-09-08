@@ -400,7 +400,7 @@ xmlns:l="sap.ui.layout"
                                                     <Button text="{i18n>profile}" icon="sap-icon://person-placeholder" type="Transparent" press="onViewBookingProfile" class="hhNotifChip"/>
                                                 </HBox>
                                                 <!-- Provider actions: accept / decline -->
-                                                <HBox wrap="Wrap" class="fiBookingActions" visible="{= ${appData>status} === 'pending' &amp;&amp; String(${appData>/user/id}) === String(${appData>provider_id})}">
+                                                <HBox wrap="Wrap" class="fiBookingActions" visible="{appData>canRespond}">
                                                     <Button text="{i18n>accept}" icon="sap-icon://accept" type="Accept" press="onAcceptBooking"/>
                                                     <Button text="{i18n>decline}" icon="sap-icon://decline" type="Reject" press="onDeclineBooking"/>
                                                 </HBox>
@@ -413,7 +413,7 @@ xmlns:l="sap.ui.layout"
                                                     <Button text="{i18n>markCompleted}" icon="sap-icon://complete" type="Accept" press="onMarkBookingCompleted"/>
                                                 </HBox>
                                                 <!-- Customer action: cancel -->
-                                                <HBox wrap="Wrap" class="fiBookingActions" visible="{= ${appData>status} === 'pending' &amp;&amp; String(${appData>/user/id}) === String(${appData>customer_id})}">
+                                                <HBox wrap="Wrap" class="fiBookingActions" visible="{appData>canCancel}">
                                                     <Button text="{i18n>cancelBooking}" icon="sap-icon://sys-cancel-2" type="Reject" press="onCancelBooking"/>
                                                 </HBox>
                                                 <Text text="{appData>message}" class="smallText grayText" visible="{= !!${appData>message}}"/>

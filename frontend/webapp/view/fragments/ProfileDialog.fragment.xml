@@ -39,7 +39,7 @@
                         <Text text="{appData>/selectedProfile/serviceType}" class="smallText"/>
                         <HBox alignItems="Center" class="sapUiTinyMarginTop">
                             <RatingIndicator value="{appData>/selectedProfile/rating}" maxValue="5" visualMode="Half" displayOnly="true" class="sapUiTinyMarginEnd"/>
-                            <Text text="{= ${appData>/selectedProfile/rating} ? String(${appData>/selectedProfile/rating}) + ' / 5' : 'No rating'}" class="smallText"/>
+                            <Text text="{appData>/selectedProfile/ratingLabel}" class="smallText"/>
                         </HBox>
                         <ObjectStatus
                             text="{= ${appData>/selectedProfile/trust_level} === 'trusted_user' ? 'Trusted User' : ${appData>/selectedProfile/trust_level} === 'verified_user' ? 'Verified User' : 'New User' }"
