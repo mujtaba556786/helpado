@@ -234,6 +234,21 @@ sap.ui.define([
                             Opa5.assert.ok(bLocalised,
                                 "Both labels resolve through the i18n bundle (got: " +
                                 aBtns.map(function (b) { return b.getText(); }).join(", ") + ")");
+
+                            // sap.m.ActionSheet hardcodes type Reject on the cancel
+                            // button it builds, which this theme paints filled pink —
+                            // the one harmless action styled as the destructive one.
+                            // style.css neutralises it; a CSS override that silently
+                            // stops applying is exactly the failure this codebase has
+                            // hit before, so assert the painted result, not the rule.
+                            var oCancel = document.querySelector(
+                                ".sapMActionSheetCancelButton .sapMBtnInner");
+                            if (oCancel) {
+                                var sBg = window.getComputedStyle(oCancel).backgroundColor;
+                                Opa5.assert.notStrictEqual(sBg, "rgb(255, 214, 233)",
+                                    "Cancel is not painted with the theme's Reject pink (got " +
+                                    sBg + ")");
+                            }
                         },
                         errorMessage: "Safety ActionSheet did not open"
                     });

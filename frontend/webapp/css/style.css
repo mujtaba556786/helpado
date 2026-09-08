@@ -775,3 +775,51 @@ section { -webkit-overflow-scrolling: touch; }
     border-radius: 10px !important;
     background: rgba(0, 112, 243, 0.08) !important;
 }
+
+/* ── ActionSheet cancel button ────────────────────────────────────────────────
+ * sap.m.ActionSheet hardcodes type: ButtonType.Reject on the cancel button it
+ * creates (ActionSheet.js _createCancelButton), and offers no property to change
+ * it — cancelButtonText is the only hook the API gives. In this theme Reject is a
+ * filled pink (--sapButton_Reject_Background: #ffd6e9), so the one harmless,
+ * dismissive action in the sheet was the only thing painted as destructive,
+ * sitting right under "Block User". UI5 itself adds sapMBtnTransparent and
+ * sapMBtnInverted to that button, so a neutral look is the intended one; those
+ * classes just lose to the theme's Reject rule.
+ *
+ * Scoped to .sapMActionSheetCancelButton, the class UI5 puts there for exactly
+ * this purpose, so Reject stays red everywhere it means danger — Block, Decline,
+ * Cancel Booking. Three classes beats the theme's two, so this wins on
+ * specificity and does not depend on stylesheet order (library.css loads after
+ * this file).
+ */
+.sapMActionSheetCancelButton .sapMBtnInner.sapMBtnReject {
+    background-image: none;
+    background-color: var(--sapButton_Background);
+    border-color: var(--sapButton_BorderColor);
+}
+
+/* Every item in the sheet, cancel included, drew its text in the theme's light
+ * green #4bb87d on white — 2.48:1, well under the 4.5:1 WCAG AA needs at this
+ * 14px weight. #2F855A measures 4.54:1 and is the same green already used for
+ * the bottom navigation, so the sheet stays on palette while being readable. */
+.sapMActionSheet .sapMBtnInner,
+.sapMActionSheet .sapMBtnInner .sapMBtnContent,
+.sapMActionSheetCancelButton .sapMBtnInner.sapMBtnReject {
+    color: #2F855A;
+}
+
+.sapMActionSheet .sapMBtnInner .sapUiIcon {
+    color: #2F855A;
+}
+
+.sapMActionSheetCancelButton .sapMBtnInner.sapMBtnReject:hover {
+    background-color: var(--sapButton_Hover_Background);
+    border-color: var(--sapButton_BorderColor);
+}
+
+.sapMActionSheetCancelButton .sapMBtnInner.sapMBtnReject:active,
+.sapMActionSheetCancelButton .sapMBtnInner.sapMBtnReject.sapMBtnActive {
+    background-color: var(--sapButton_Active_Background);
+    border-color: var(--sapButton_BorderColor);
+    color: #2F855A;
+}
