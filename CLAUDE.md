@@ -10,7 +10,33 @@ This file is read automatically by Claude on every session. All rules below are
 - Create a new Git branch **before touching any file**.
 - Branch naming: `fix/<short-description>` or `feat/<short-description>`.
 - **Never commit directly to `main`.**
-- Only merge to `main` after tests pass and the plan has been approved.
+
+---
+
+## 1a. Merging and Deploying Need Their Own Approval
+
+**Being asked to do a piece of work is NOT approval to merge it or ship it.**
+Approval to write the code and approval to put it in front of users are two
+separate decisions, and only the user makes the second one.
+
+`main` auto-deploys to Railway, so **merging IS deploying** — there is no gate
+between the two. Once it is pushed the choice has been made for the user.
+
+The loop for every change:
+
+1. Branch, implement, run **both** suites (unit + OPA5), commit **on the feature
+   branch**.
+2. Report what changed and the test results. **Then stop.**
+3. Merge to `main` and push only when the user says so **for that specific
+   change**.
+
+- "Do X", "fix X", "yes" mean *write the code*. They do not mean merge or deploy.
+- "Push it", "merge it", "deploy it" mean exactly that — but wait to be told.
+- Approval for one change never carries over to the next one.
+
+This matters more here than on most projects: a bad deploy can lock the owner out
+of their own app (see the API auth work), and the shipped APK cannot be
+hot-fixed — it has to be rebuilt and reinstalled by hand.
 
 ---
 
@@ -25,11 +51,16 @@ Before writing or modifying any code:
    - Risks and side effects
 4. **Wait for explicit user approval before making any changes.**
 
+Approving the plan approves the *coding*. Shipping it is a separate ask — see
+rule 1a.
+
 ---
 
 ## 3. Testing Requirements
 
-- **Always run existing tests before finishing work.**
+- **Always run BOTH suites before finishing work** — the OPA5 integration tests
+  *and* the QUnit unit tests (`test/unit/unitTests.qunit.html`). Running only
+  OPA5 has let unit failures sit unnoticed.
 - If a new feature or bug-fix is added, **add or update the corresponding OPA5
   integration test** in `frontend/webapp/test/integration/journeys/`.
 - Tests live next to the feature they cover — a feature without a test is
@@ -152,6 +183,8 @@ Before every PR / merge:
 - [ ] New branch created (not on `main`)
 - [ ] Root cause identified (not just symptom)
 - [ ] Plan approved by user before coding started
+- [ ] Work committed **on the feature branch**, and the user asked before it was
+      merged to `main` (which deploys it) — rule 1a
 - [ ] `_HH_BUILD` bumped in `index.html`
 - [ ] All i18n locale files updated with new keys
 - [ ] OPA5 test added or updated for the changed behaviour
