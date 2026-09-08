@@ -140,6 +140,28 @@ sap.ui.define([
         },
 
         /**
+         * Whether this booking's provider may accept or decline it.
+         *
+         * Was an inline expression binding comparing String(${appData>/user/id})
+         * with String(${appData>provider_id}). That mixes an absolute path into a
+         * list row's relative context, and when the row renders before auto-login
+         * has populated /user/id, String(undefined) === String(undefined) is true —
+         * the same latch that made Edit Profile appear on strangers' profiles. Here
+         * it would have shown the customer an Accept/Decline pair on their own
+         * booking. Computed per row instead, from an id with a storage fallback.
+         */
+        formatCanRespond: function (sStatus, sProviderId, sUserId) {
+            return String(sStatus) === "pending" &&
+                   !!sUserId && String(sProviderId) === String(sUserId);
+        },
+
+        /** Whether this booking's customer may still cancel it. */
+        formatCanCancel: function (sStatus, sCustomerId, sUserId) {
+            return String(sStatus) === "pending" &&
+                   !!sUserId && String(sCustomerId) === String(sUserId);
+        },
+
+        /**
          * Customer confirms the work actually happened. This is the only path that
          * moves a booking to 'completed', which in turn is what unlocks reviewing
          * that helper — before this existed no booking had ever reached that state,
@@ -283,7 +305,9 @@ sap.ui.define([
                 return Object.assign({}, b, {
                     canMarkCompleted: this.formatCanMarkCompleted(
                         b.status, b.customer_id, b.scheduled_date, sUserId
-                    )
+                    ),
+                    canRespond: this.formatCanRespond(b.status, b.provider_id, sUserId),
+                    canCancel:  this.formatCanCancel(b.status, b.customer_id, sUserId)
                 });
             }.bind(this));
 
