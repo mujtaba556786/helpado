@@ -104,6 +104,26 @@ sap.ui.define([
          * of silent binding failure as the mark-completed button). Computing the
          * string in JS and binding a plain property is the pattern that works.
          */
+        /**
+         * Who owns the task being viewed. The fragment gated its action row on
+         *   visible="{= ${appData>/selectedTask/poster_id} !== ${appData>/user/id}}"
+         * and the applicants list on the inverse. This dialog is pre-warmed at
+         * startup, before /user/id exists, and undefined !== undefined is false —
+         * the same latch that showed Edit Profile on strangers' profiles. Effect
+         * here: no Apply button on someone else's task, and an Applicants heading
+         * that is not yours. Computed on every open instead.
+         */
+        _refreshTaskOwnership: function() {
+            var oModel = this.getModel("appData");
+            var oTask  = oModel.getProperty("/selectedTask");
+            var sUser  = oModel.getProperty("/user/id") ||
+                         localStorage.getItem("helpmate_user_id");
+            var bOwn   = !!(oTask && oTask.poster_id) && !!sUser &&
+                         String(oTask.poster_id) === String(sUser);
+            oModel.setProperty("/isOwnTask",   bOwn);
+            oModel.setProperty("/isOtherTask", !!(oTask && oTask.poster_id) && !bOwn);
+        },
+
         _refreshRateDisplay: function() {
             var oModel = this.getModel("appData");
             var oProfile = oModel.getProperty("/selectedProfile");
@@ -214,6 +234,7 @@ sap.ui.define([
                     controller: this
                 }).then(function(oDialog) {
                     this.getView().addDependent(oDialog);
+                    oDialog.attachBeforeOpen(this._refreshTaskOwnership, this);
                     return oDialog;
                 }.bind(this));
             }
@@ -705,7 +726,7 @@ sap.ui.define([
             var that = this;
 
             if (oFile.size > 5 * 1024 * 1024) {
-                MessageToast.show("Image must be smaller than 5 MB.");
+                MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("avatarTooLarge"));
                 return;
             }
 
@@ -717,7 +738,7 @@ sap.ui.define([
             oReader.readAsDataURL(oFile);
 
             var sUserId = that.getModel("appData").getProperty("/user/id");
-            if (!sUserId) { MessageToast.show("Please log in again to upload a photo."); return; }
+            if (!sUserId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("avatarErrLogin")); return; }
 
             var oForm = new FormData();
             oForm.append("avatar", oFile);
@@ -735,12 +756,13 @@ sap.ui.define([
                     var sUrl = oData.avatarUrl || "";
                     if (sUrl && !/^https?:\/\//i.test(sUrl)) { sUrl = API_BASE + sUrl; }
                     that.getModel("appData").setProperty("/user/photo", sUrl);
-                    MessageToast.show("Profile photo updated.");
+                    MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle().getText("avatarUpdated"));
                 } else {
-                    MessageToast.show("Upload failed: " + (oData.error || "Unknown error"));
+                    MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle()
+                        .getText("avatarUploadFailed", [oData.error || ""]));
                 }
             })
-            .catch(function() { MessageToast.show("Could not reach the server."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
         },
 
         onTabToTasks: function() {
@@ -788,7 +810,7 @@ sap.ui.define([
             oModel.setProperty("/validation", oVal);
 
             if (!bValid) {
-                MessageToast.show("Please fill in all required fields correctly.");
+                MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("profileErrFields"));
                 return;
             }
 
@@ -797,7 +819,7 @@ sap.ui.define([
                 window.HelpHubStorage.get("helpmate_user_id", function(sid) {
                     if (sid) { oModel.setProperty("/user/id", sid); }
                 });
-                MessageToast.show("Session expired. Please log in again."); return;
+                MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("sessionExpired")); return;
             }
 
             this.apiFetch(API_BASE + "/api/users/" + encodeURIComponent(sUserId), {
@@ -821,7 +843,7 @@ sap.ui.define([
             })
             .then(function(oData) {
                 if (oData.success) {
-                    MessageToast.show("Profile saved successfully.");
+                    MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("profileSaved"));
 
                     var sUserId    = oUser.id;
                     var aProviders = (oModel.getProperty("/providers") || []).slice();
@@ -847,10 +869,11 @@ sap.ui.define([
 
                     this.onNavBack();
                 } else {
-                    MessageToast.show("Save failed: " + (oData.error || "Unknown error"));
+                    MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle()
+                        .getText("profileSaveFailed", [oData.error || ""]));
                 }
             }.bind(this))
-            .catch(function() { MessageToast.show("Could not reach the server."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
         }
 
     });

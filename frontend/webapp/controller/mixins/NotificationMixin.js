@@ -75,7 +75,7 @@ sap.ui.define([
         onShowNotifications: function (oEvent) {
             var oModel  = this.getModel("appData");
             var sUserId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
-            if (!sUserId) { MessageToast.show("Please log in first."); return; }
+            if (!sUserId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errLoginFirst")); return; }
 
             var oSource = oEvent.getSource(); // bell button — Popover anchors here
 
@@ -241,7 +241,7 @@ sap.ui.define([
                         oModel.setProperty("/" + sKey, aList);
                     });
                     oModel.setProperty("/unreadCount", 0);
-                    MessageToast.show("All notifications marked as read.");
+                    MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("notifAllRead"));
                 }
             }.bind(this))
             .catch(function () { /* silent */ });

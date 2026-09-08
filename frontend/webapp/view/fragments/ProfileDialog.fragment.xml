@@ -42,7 +42,7 @@
                             <Text text="{appData>/selectedProfile/ratingLabel}" class="smallText"/>
                         </HBox>
                         <ObjectStatus
-                            text="{= ${appData>/selectedProfile/trust_level} === 'trusted_user' ? 'Trusted User' : ${appData>/selectedProfile/trust_level} === 'verified_user' ? 'Verified User' : 'New User' }"
+                            text="{path:'appData>/selectedProfile/trust_level', formatter:'.formatTrustLabel'}"
                             state="{= ${appData>/selectedProfile/trust_level} === 'trusted_user' ? 'Success' : ${appData>/selectedProfile/trust_level} === 'verified_user' ? 'Information' : 'None' }"
                             visible="{= !!${appData>/selectedProfile/trust_level} }"
                             class="sapUiTinyMarginTop"/>
@@ -97,7 +97,7 @@
                 <!-- ── Bio ── -->
                 <VBox class="sapUiMediumMarginBeginEnd sapUiSmallMarginTop sapUiSmallMarginBottom">
                     <Title text="{i18n>profileAbout}" level="H5" class="sapUiTinyMarginBottom"/>
-                    <Text text="{= ${appData>/selectedProfile/bio} || 'No bio added yet.'}" wrapping="true"/>
+                    <Text text="{path:'appData>/selectedProfile/bio', formatter:'.formatBio'}" wrapping="true"/>
                 </VBox>
 
                 <!-- ── Reviews ── -->

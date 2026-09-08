@@ -127,14 +127,57 @@ sap.ui.define([
             this._getPostTaskDialog().then(function(d) { d.open(); }.bind(this));
         },
 
+        // ── Inline label formatters ──────────────────────────────────────────
+        // These strings used to sit as English literals inside {= } expression
+        // bindings in the views ('Open budget', 'Flexible', 'OPEN', 'Posted by '
+        // + name). Literals inside an expression are invisible to a grep for
+        // hardcoded text and to the i18n coverage test, which is how they
+        // survived the sweep. Concatenating a name is also wrong in any language
+        // whose word order differs, so it goes through a {0} placeholder.
+        formatTaskStatusLabel: function (sStatus) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            if (sStatus === "open")     { return oBundle.getText("taskStatusOpen"); }
+            if (sStatus === "assigned") { return oBundle.getText("taskStatusAssigned"); }
+            return oBundle.getText("taskStatusClosed");
+        },
+
+        formatTaskBudget: function (vBudget) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            return vBudget ? this.formatCurrency(vBudget) : oBundle.getText("taskOpenBudget");
+        },
+
+        formatTaskDate: function (sDate) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            return sDate || oBundle.getText("taskFlexible");
+        },
+
+        formatTaskLocation: function (sLocation) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            return sLocation || oBundle.getText("taskNotSpecified");
+        },
+
+        formatPostedBy: function (sName) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            return oBundle.getText("taskPostedBy", [sName || ""]);
+        },
+
+        formatTaskCategoryFilter: function (sCategory) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            // The ✕ signals "tap to clear" and stays out of the bundle so
+            // translators cannot lose it.
+            return sCategory
+                ? oBundle.getText("taskFilterCategoryPrefix", [sCategory]) + " \u2715"
+                : oBundle.getText("taskFilterCategory");
+        },
+
         onConfirmPostTask: function() {
             var oModel  = this.getModel("appData");
             var oForm   = oModel.getProperty("/taskForm");
             var sUserId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
 
-            if (!oForm.title || !oForm.title.trim()) { MessageToast.show("Please enter a title."); return; }
-            if (!oForm.category) { MessageToast.show("Please select a category."); return; }
-            if (!sUserId) { MessageToast.show("Please log in first."); return; }
+            if (!oForm.title || !oForm.title.trim()) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskErrNoTitle")); return; }
+            if (!oForm.category) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskErrNoCategory")); return; }
+            if (!sUserId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errLoginFirst")); return; }
 
             var that     = this;
             var oUserLoc = oModel.getProperty("/user/location");
@@ -157,14 +200,15 @@ sap.ui.define([
             .then(function(oData) {
                 if (oData.success) {
                     that._getPostTaskDialog().then(function(d) { d.close(); });
-                    MessageToast.show("Task posted!");
+                    MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskPosted"));
                     that._loadTasksFeed();
                     that._loadMyTasks();
                 } else {
-                    MessageToast.show("Failed: " + (oData.error || "Unknown error"));
+                    MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle()
+                        .getText("errFailed", [oData.error || ""]));
                 }
             })
-            .catch(function() { MessageToast.show("Could not reach the server."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
         },
 
         onClosePostTask: function() {
@@ -197,7 +241,7 @@ sap.ui.define([
             var sTaskId = oModel.getProperty("/selectedTask/id");
             var sUserId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
 
-            if (!sUserId) { MessageToast.show("Please log in first."); return; }
+            if (!sUserId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errLoginFirst")); return; }
 
             var that = this;
             fetch(API_BASE + "/api/tasks/" + encodeURIComponent(sTaskId) + "/apply", {
@@ -208,14 +252,14 @@ sap.ui.define([
             .then(function(r) { return r.json(); })
             .then(function(oData) {
                 if (oData.success) {
-                    MessageToast.show("Applied! The poster will review your application.");
+                    MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskApplied"));
                     that._getTaskDetailDialog().then(function(d) { d.close(); });
                     that._loadTasksFeed();
                 } else {
                     MessageToast.show(oData.error || "Could not apply.");
                 }
             })
-            .catch(function() { MessageToast.show("Could not reach the server."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
         },
 
         onAssignProvider: function(oEvent) {
@@ -234,13 +278,13 @@ sap.ui.define([
             .then(function(r) { return r.json(); })
             .then(function(oData) {
                 if (oData.success) {
-                    MessageToast.show("Provider assigned!");
+                    MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskAssigned"));
                     that._getTaskDetailDialog().then(function(d) { d.close(); });
                     that._loadTasksFeed();
                     that._loadMyTasks();
                 }
             })
-            .catch(function() { MessageToast.show("Could not assign provider."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskAssignFailed")); });
         },
 
         onCompleteTask: function() {
@@ -256,13 +300,13 @@ sap.ui.define([
             .then(function(r) { return r.json(); })
             .then(function(oData) {
                 if (oData.success) {
-                    MessageToast.show("Task completed!");
+                    MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskCompleted"));
                     that._getTaskDetailDialog().then(function(d) { d.close(); });
                     that._loadTasksFeed();
                     that._loadMyTasks();
                 }
             })
-            .catch(function() { MessageToast.show("Could not update task."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskUpdateFailed")); });
         },
 
         onDeleteTask: function() {
@@ -271,11 +315,11 @@ sap.ui.define([
             var sUserId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
             var sTitle  = oModel.getProperty("/selectedTask/title") || "this task";
 
-            if (!sUserId) { MessageToast.show("Please log in first."); return; }
+            if (!sUserId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errLoginFirst")); return; }
 
             var that = this;
-            MessageBox.confirm("Delete \"" + sTitle + "\"? This cannot be undone.", {
-                title: "Delete Task",
+            MessageBox.confirm(oBundle.getText("taskDeleteConfirm", [sTitle]), {
+                title: oBundle.getText("taskDeleteTitle"),
                 onClose: function(sAction) {
                     if (sAction !== MessageBox.Action.OK) return;
                     fetch(API_BASE + "/api/tasks/" + encodeURIComponent(sTaskId), {
@@ -286,7 +330,7 @@ sap.ui.define([
                     .then(function(r) { return r.json(); })
                     .then(function(oData) {
                         if (oData.success) {
-                            MessageToast.show("Task deleted.");
+                            MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskDeleted"));
                             that._getTaskDetailDialog().then(function(d) { d.close(); });
                             that._loadTasksFeed();
                             that._loadMyTasks();
@@ -294,7 +338,7 @@ sap.ui.define([
                             MessageToast.show(oData.error || "Could not delete task.");
                         }
                     })
-                    .catch(function() { MessageToast.show("Could not reach the server."); });
+                    .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
                 }
             });
         },
@@ -309,8 +353,8 @@ sap.ui.define([
             var sPosterId   = oModel.getProperty("/selectedTask/poster_id");
             var sPosterName = oModel.getProperty("/selectedTask/poster_name") || "Task Poster";
 
-            if (!sUserId) { MessageToast.show("Please log in first."); return; }
-            if (sUserId === sPosterId) { MessageToast.show("This is your own task."); return; }
+            if (!sUserId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errLoginFirst")); return; }
+            if (sUserId === sPosterId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskOwnTask")); return; }
 
             var that = this;
             this._getTaskDetailDialog().then(function(d) { d.close(); }.bind(this));
@@ -328,7 +372,7 @@ sap.ui.define([
                     that._openDmChatForConversation(oData.conversation.id, sPosterName);
                 }
             })
-            .catch(function() { MessageToast.show("Could not start conversation."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("dmStartFailed")); });
         },
 
         onMessageApplicant: function(oEvent) {
@@ -340,7 +384,7 @@ sap.ui.define([
             var sProviderId   = oApplicant.provider_id;
             var sProviderName = oApplicant.provider_name || "Applicant";
 
-            if (!sUserId) { MessageToast.show("Please log in first."); return; }
+            if (!sUserId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errLoginFirst")); return; }
 
             var that = this;
             this._getTaskDetailDialog().then(function(d) { d.close(); }.bind(this));
@@ -358,7 +402,7 @@ sap.ui.define([
                     that._openDmChatForConversation(oData.conversation.id, sProviderName);
                 }
             })
-            .catch(function() { MessageToast.show("Could not start conversation."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("dmStartFailed")); });
         },
 
         formatTaskState: function(sStatus) {

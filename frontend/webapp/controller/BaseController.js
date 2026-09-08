@@ -68,8 +68,26 @@ sap.ui.define([
          * @param {object} [oOptions] - Standard fetch options (method, body, headers, etc.)
          * @returns {Promise<object>} Parsed JSON response
          */
+        /**
+         * Login.controller.js has always called this — on the main path, right
+         * after the magic link is sent — but it was never defined, so it threw
+         * and the .catch() below it reported "Could not reach the server." on a
+         * send that had actually succeeded.
+         */
+        getResourceBundle: function () {
+            return this.getOwnerComponent().getModel("i18n").getResourceBundle();
+        },
+
         apiFetch: function (sUrl, oOptions) {
             var oRouter = this.getRouter();
+            var that    = this;
+            // Resolved lazily, and only on the expired-session path: `this` is not
+            // the controller inside the callbacks below, and looking the bundle up
+            // eagerly would make every API call depend on a component being
+            // present — which it is not in the unit tests.
+            function sessionExpiredText() {
+                return that.getResourceBundle().getText("sessionExpiredShort");
+            }
             oOptions = oOptions || {};
 
             function doFetch(sToken) {
@@ -88,7 +106,7 @@ sap.ui.define([
                             window.HelpHubStorage.get("helphub_refresh_token", function (sRefresh) {
                                 if (!sRefresh) {
                                     window.HelpHubStorage.clear();
-                                    sap.m.MessageToast.show("Session expired — please sign in");
+                                    sap.m.MessageToast.show(sessionExpiredText());
                                     oRouter.navTo("login", {}, true);
                                     return reject(new Error("Session expired"));
                                 }
@@ -104,7 +122,7 @@ sap.ui.define([
                                         return doFetch(d.accessToken).then(function (r2) { resolve(r2.json()); });
                                     }
                                     window.HelpHubStorage.clear();
-                                    sap.m.MessageToast.show("Session expired — please sign in");
+                                    sap.m.MessageToast.show(sessionExpiredText());
                                     oRouter.navTo("login", {}, true);
                                     reject(new Error("Refresh failed"));
                                 })

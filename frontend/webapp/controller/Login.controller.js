@@ -11,7 +11,7 @@ sap.ui.define([
     return BaseController.extend("helphub.controller.Login", {
 
         onInit: function () {
-            this._oBusyDialog = new BusyDialog({ title: "Please wait…" });
+            this._oBusyDialog = new BusyDialog({ title: this.getResourceBundle().getText("pleaseWait") });
         },
 
         // ── Apply session data from backend response ────────────────────────────
@@ -64,7 +64,7 @@ sap.ui.define([
 
             oModel.setProperty("/isLoggedIn", true);
 
-            MessageToast.show("Welcome, " + (oUser.name || "User") + "!");
+            MessageToast.show(this.getResourceBundle().getText("loginWelcome", [oUser.name || ""]));
             // Replace (not push) so the Back button can't return to the login page.
             this.navTo("dashboard", {}, true);
         },
@@ -73,7 +73,7 @@ sap.ui.define([
         onSendMagicLink: function () {
             var sEmail = this.byId("emailInput").getValue().trim();
             if (!sEmail) {
-                MessageToast.show("Please enter your email address.");
+                MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("loginErrNoEmail"));
                 return;
             }
 
@@ -164,7 +164,7 @@ sap.ui.define([
             })
             .catch(function() {
                 that._oBusyDialog.close();
-                MessageToast.show("Could not reach the server.");
+                MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer"));
             });
         }
     });
