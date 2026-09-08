@@ -127,7 +127,7 @@ xmlns:l="sap.ui.layout"
                                     <HBox class="hhCatDropWrap">
                                         <Button
                                             id="taskCatBtn"
-                                            text="{= ${appData>/taskCategoryFilter} === '' ? 'Filter by Category ▾' : 'Category: ' + ${appData>/taskCategoryFilter} + ' ✕'}"
+                                            text="{path:'appData>/taskCategoryFilter', formatter:'.formatTaskCategoryFilter'}"
                                             type="{= ${appData>/taskCategoryFilter} === '' ? 'Default' : 'Emphasized'}"
                                             press="onTaskCategoryMore"
                                             class="hhCatDropBtn"/>
@@ -142,14 +142,14 @@ xmlns:l="sap.ui.layout"
                                                     <HBox justifyContent="SpaceBetween" alignItems="Start" class="hhTaskCardTop">
                                                         <Title text="{appData>title}" level="H4" class="hhTaskTitle"/>
                                                         <ObjectStatus
-                                                            text="{= ${appData>status} === 'open' ? 'OPEN' : ${appData>status} === 'assigned' ? 'ASSIGNED' : 'CLOSED'}"
+                                                            text="{path:'appData>status', formatter:'.formatTaskStatusLabel'}"
                                                             state="{path:'appData>status', formatter:'.formatTaskState'}"
                                                             class="hhTaskStatusBadge"/>
                                                     </HBox>
                                                     <!-- Budget + time row -->
                                                     <HBox alignItems="Center" class="hhTaskBudgetRow">
                                                         <core:Icon src="sap-icon://money-bills" class="hhBudgetIcon"/>
-                                                        <Text text="{= ${appData>budget} ? '€' + ${appData>budget} : 'Open budget'}" class="hhBudgetText"/>
+                                                        <Text text="{path:'appData>budget', formatter:'.formatTaskBudget'}" class="hhBudgetText"/>
                                                         <Text text=" · " class="hhMetaDot"/>
                                                         <core:Icon src="sap-icon://history" class="hhTimeIcon"/>
                                                         <Text text="{path:'appData>created_at', formatter:'.formatPostedTime'}" class="hhTimeText"/>
@@ -189,13 +189,13 @@ xmlns:l="sap.ui.layout"
                                                     <HBox justifyContent="SpaceBetween" alignItems="Start" class="hhTaskCardTop">
                                                         <Title text="{appData>title}" level="H4" class="hhTaskTitle"/>
                                                         <ObjectStatus
-                                                            text="{= ${appData>status} === 'open' ? 'OPEN' : ${appData>status} === 'assigned' ? 'ASSIGNED' : 'CLOSED'}"
+                                                            text="{path:'appData>status', formatter:'.formatTaskStatusLabel'}"
                                                             state="{path:'appData>status', formatter:'.formatTaskState'}"
                                                             class="hhTaskStatusBadge"/>
                                                     </HBox>
                                                     <HBox alignItems="Center" class="hhTaskBudgetRow">
                                                         <core:Icon src="sap-icon://money-bills" class="hhBudgetIcon"/>
-                                                        <Text text="{= ${appData>budget} ? '€' + ${appData>budget} : 'Open budget'}" class="hhBudgetText"/>
+                                                        <Text text="{path:'appData>budget', formatter:'.formatTaskBudget'}" class="hhBudgetText"/>
                                                         <Text text=" · " class="hhMetaDot"/>
                                                         <core:Icon src="sap-icon://history" class="hhTimeIcon"/>
                                                         <Text text="{path:'appData>created_at', formatter:'.formatPostedTime'}" class="hhTimeText"/>
@@ -393,7 +393,7 @@ xmlns:l="sap.ui.layout"
                                                         <Text text="{appData>provider_name}" class="grayText smallText"/>
                                                         <Text text="{path:'appData>scheduled_date', formatter:'.formatBookingDate'} {appData>scheduled_time}" class="smallText blueText"/>
                                                     </VBox>
-                                                    <ObjectStatus text="{appData>status}" state="{path:'appData>status', formatter:'.formatBookingState'}"/>
+                                                    <ObjectStatus text="{path:'appData>status', formatter:'.formatStatusLabel'}" state="{path:'appData>status', formatter:'.formatBookingState'}"/>
                                                 </HBox>
                                                 <!-- View provider profile -->
                                                 <HBox>

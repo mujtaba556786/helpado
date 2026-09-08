@@ -126,11 +126,13 @@ sap.ui.define([
             viewName: "helphub.view.Dashboard",
             success: function (oList) {
                 var aItems = oList.getItems();
+                // Read the status off the binding context, not the badge text: the
+                // badge now shows a translated label ("Confirmed"), while the filter
+                // works on the raw value. Asserting on the label would tie this test
+                // to the English bundle.
                 var bAllConfirmed = aItems.every(function (oItem) {
-                    var aStatuses = oItem.findAggregatedObjects(true, function (o) {
-                        return o.isA("sap.m.ObjectStatus");
-                    });
-                    return aStatuses.some(function (s) { return s.getText() === "confirmed"; });
+                    var oCtx = oItem.getBindingContext("appData");
+                    return !!oCtx && oCtx.getObject().status === "confirmed";
                 });
                 Opa5.assert.ok(bAllConfirmed,
                     "After 'confirmed' filter all visible bookings have status 'confirmed'");
@@ -154,11 +156,13 @@ sap.ui.define([
             viewName: "helphub.view.Dashboard",
             success: function (oList) {
                 var aItems = oList.getItems();
+                // Read the status off the binding context, not the badge text: the
+                // badge now shows a translated label ("Confirmed"), while the filter
+                // works on the raw value. Asserting on the label would tie this test
+                // to the English bundle.
                 var bAllPending = aItems.every(function (oItem) {
-                    var aStatuses = oItem.findAggregatedObjects(true, function (o) {
-                        return o.isA("sap.m.ObjectStatus");
-                    });
-                    return aStatuses.some(function (s) { return s.getText() === "pending"; });
+                    var oCtx = oItem.getBindingContext("appData");
+                    return !!oCtx && oCtx.getObject().status === "pending";
                 });
                 Opa5.assert.ok(bAllPending,
                     "After 'pending' filter all visible bookings have status 'pending'");

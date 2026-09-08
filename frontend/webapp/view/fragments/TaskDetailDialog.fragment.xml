@@ -6,7 +6,7 @@
         class="hhDialogWithSubHeader"
         contentWidth="92%"
         verticalScrolling="true"
-        stretch="true">
+        stretch="{device>/system/phone}">
 
         <!-- Task title pinned below header — never hidden -->
         <subHeader>
@@ -23,8 +23,8 @@
                 <!-- Status + budget row -->
                 <HBox alignItems="Center" class="sapUiTinyMarginBottom" wrap="Wrap">
                     <ObjectStatus text="{appData>/selectedTask/category}" state="Information" class="sapUiTinyMarginEnd"/>
-                    <ObjectStatus text="{appData>/selectedTask/status}" state="{path:'appData>/selectedTask/status', formatter:'.formatTaskState'}" class="sapUiTinyMarginEnd"/>
-                    <Text text="{= ${appData>/selectedTask/budget} ? '€' + ${appData>/selectedTask/budget} : 'Open budget'}" class="fontBold"/>
+                    <ObjectStatus text="{path:'appData>/selectedTask/status', formatter:'.formatTaskStatusLabel'}" state="{path:'appData>/selectedTask/status', formatter:'.formatTaskState'}" class="sapUiTinyMarginEnd"/>
+                    <Text text="{path:'appData>/selectedTask/budget', formatter:'.formatTaskBudget'}" class="fontBold"/>
                 </HBox>
 
                 <!-- Description -->
@@ -33,30 +33,30 @@
                 <!-- Date -->
                 <HBox alignItems="Center" class="sapUiTinyMarginBottom">
                     <core:Icon src="sap-icon://date-time" class="sapUiTinyMarginEnd"/>
-                    <Text text="{= ${appData>/selectedTask/task_date} || 'Flexible'}" class="smallText"/>
+                    <Text text="{path:'appData>/selectedTask/task_date', formatter:'.formatTaskDate'}" class="smallText"/>
                 </HBox>
 
                 <!-- Location -->
                 <HBox alignItems="Center" class="sapUiSmallMarginBottom">
                     <core:Icon src="sap-icon://map" class="sapUiTinyMarginEnd"/>
-                    <Text text="{= ${appData>/selectedTask/location} || 'Not specified'}" class="smallText"/>
+                    <Text text="{path:'appData>/selectedTask/location', formatter:'.formatTaskLocation'}" class="smallText"/>
                 </HBox>
 
                 <!-- Posted by -->
                 <HBox alignItems="Center" class="sapUiSmallMarginBottom">
                     <Avatar displaySize="XS" src="{appData>/selectedTask/poster_avatar}" initials="P" backgroundColor="Accent3" class="sapUiTinyMarginEnd"/>
-                    <Text text="{= 'Posted by ' + ${appData>/selectedTask/poster_name}}" class="smallText grayText"/>
+                    <Text text="{path:'appData>/selectedTask/poster_name', formatter:'.formatPostedBy'}" class="smallText grayText"/>
                 </HBox>
 
                 <!-- Action buttons (providers viewing others' tasks) -->
-                <HBox visible="{= ${appData>/selectedTask/poster_id} !== ${appData>/user/id}}" class="sapUiSmallMarginBottom" wrap="Wrap">
+                <HBox visible="{appData>/isOtherTask}" class="sapUiSmallMarginBottom" wrap="Wrap">
                     <Button text="{i18n>applyForTask}" icon="sap-icon://paper-plane" type="Emphasized" press="onApplyToTask" class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
                         visible="{= ${appData>/selectedTask/status} === 'open'}"/>
                     <Button text="{i18n>messagePoster}" icon="sap-icon://discussion" type="Default" press="onMessageTaskPoster" class="sapUiTinyMarginBottom"/>
                 </HBox>
 
                 <!-- Applicants (visible to poster) -->
-                <VBox visible="{= ${appData>/selectedTask/poster_id} === ${appData>/user/id} &amp;&amp; ${appData>/taskApplications}.length > 0}">
+                <VBox visible="{= ${appData>/isOwnTask} &amp;&amp; ${appData>/taskApplications}.length > 0}">
                     <Title text="{i18n>applicants}" level="H4" class="sapUiSmallMarginBottom"/>
                     <List id="taskApplicantsList" items="{appData>/taskApplications}" noDataText="{i18n>noApplicantsYet}">
                         <CustomListItem>
@@ -84,12 +84,12 @@
                 <!-- Complete task (poster, when assigned) -->
                 <Button text="{i18n>markAsCompleted}" icon="sap-icon://accept" type="Accept" press="onCompleteTask"
                     class="sapUiSmallMarginTop"
-                    visible="{= ${appData>/selectedTask/status} === 'assigned' &amp;&amp; ${appData>/selectedTask/poster_id} === ${appData>/user/id}}"/>
+                    visible="{= ${appData>/selectedTask/status} === 'assigned' &amp;&amp; ${appData>/isOwnTask}}"/>
 
                 <!-- Delete task (poster only) -->
                 <Button text="{i18n>deleteTask}" icon="sap-icon://delete" type="Reject" press="onDeleteTask"
                     class="sapUiSmallMarginTop"
-                    visible="{= ${appData>/selectedTask/poster_id} === ${appData>/user/id}}"/>
+                    visible="{appData>/isOwnTask}"/>
 
             </VBox>
         </content>

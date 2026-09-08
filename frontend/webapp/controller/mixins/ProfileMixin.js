@@ -123,7 +123,7 @@ sap.ui.define([
             var iStars   = oStars ? oStars.getValue() : 0;
 
             if (!iStars || iStars < 1) {
-                MessageToast.show("Please select at least 1 star.");
+                MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("ratingErrNoStars"));
                 return;
             }
 
@@ -146,7 +146,7 @@ sap.ui.define([
             .then(function(r) { return r.json(); })
             .then(function(oData) {
                 if (oData.success) {
-                    MessageToast.show("Your review has been submitted and is pending approval.");
+                    MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("ratingSubmitted"));
                     if (oStars)   oStars.setValue(0);
                     if (oComment) oComment.setValue("");
                     this.onCloseRatingDialog();
@@ -157,7 +157,7 @@ sap.ui.define([
                     MessageToast.show(oData.error || "Could not submit rating.");
                 }
             }.bind(this))
-            .catch(function() { MessageToast.show("Could not reach the server."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
         },
 
         onOpenMyProfile: function() {
@@ -208,7 +208,7 @@ sap.ui.define([
             if (!oCtx) return;
             var oBooking = oCtx.getObject();
             var sProviderId = oBooking.provider_id;
-            if (!sProviderId) { MessageToast.show("Provider not found."); return; }
+            if (!sProviderId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("providerNotFound")); return; }
 
             var oModel = this.getModel("appData");
             // If the user is the provider of this booking, open their own profile
@@ -250,6 +250,18 @@ sap.ui.define([
         },
 
         // ── Profile overflow (safety actions) ─────────────────────────────
+        formatTrustLabel: function (sLevel) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            if (sLevel === "trusted_user")  { return oBundle.getText("trustTrusted"); }
+            if (sLevel === "verified_user") { return oBundle.getText("trustVerified"); }
+            return oBundle.getText("trustNew");
+        },
+
+        formatBio: function (sBio) {
+            return sBio || this.getOwnerComponent().getModel("i18n")
+                .getResourceBundle().getText("profileNoBio");
+        },
+
         onProfileOverflow: function (oEvent) {
             var oSource = oEvent.getSource();
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();

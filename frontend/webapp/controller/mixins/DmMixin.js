@@ -47,8 +47,8 @@ sap.ui.define([
             var sProviderId = oModel.getProperty("/selectedProfile/id");
             var sProviderName = oModel.getProperty("/selectedProfile/name") || "Helper";
 
-            if (!sUserId) { MessageToast.show("Please log in first."); return; }
-            if (sUserId === sProviderId) { MessageToast.show("You can't message yourself."); return; }
+            if (!sUserId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errLoginFirst")); return; }
+            if (sUserId === sProviderId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("dmSelfMessage")); return; }
 
             var that = this;
             fetch(API_BASE + "/api/conversations", {
@@ -66,7 +66,7 @@ sap.ui.define([
                         that._openDmChatForConversation(oData.conversation.id, sProviderName);
                     }
                 })
-                .catch(function () { MessageToast.show("Could not start conversation."); });
+                .catch(function () { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("dmStartFailed")); });
         },
 
         onOpenDmChat: function (oEvent) {
@@ -194,10 +194,10 @@ sap.ui.define([
                 .then(function (r) { return r.json(); })
                 .then(function (oData) {
                     if (!oData.success) {
-                        MessageToast.show("Message failed to send.");
+                        MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("dmSendFailed"));
                     }
                 })
-                .catch(function () { MessageToast.show("Could not reach the server."); });
+                .catch(function () { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
         },
 
         onDmQuickReply: function (oEvent) {

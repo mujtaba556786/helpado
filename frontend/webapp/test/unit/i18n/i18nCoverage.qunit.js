@@ -71,6 +71,44 @@ sap.ui.define([], function () {
         });
     });
 
+    /**
+     * Controllers speak to the user through MessageToast and MessageBox, and every
+     * one of those strings was hardcoded English until 2026-09-08 — 53 of them, so
+     * a German user got English for essentially every message the app sent. The
+     * view-only checks above could not see any of it.
+     */
+    QUnit.test("no controller passes a bare string literal to a toast or message box", function (assert) {
+        var done = assert.async();
+        var CONTROLLERS = [
+            "controller/BaseController.js", "controller/Login.controller.js",
+            "controller/Dashboard.controller.js",
+            "controller/mixins/BookingMixin.js", "controller/mixins/DmMixin.js",
+            "controller/mixins/FilterMixin.js", "controller/mixins/MapMixin.js",
+            "controller/mixins/NotificationMixin.js",
+            "controller/mixins/OnboardingFavoritesMixin.js",
+            "controller/mixins/ProfileMixin.js", "controller/mixins/TaskMixin.js",
+            "controller/mixins/TrustSafetyMixin.js", "controller/mixins/AiChatMixin.js"
+        ];
+        Promise.all(CONTROLLERS.map(fetchText)).then(function (aTexts) {
+            var aBad = [], iScanned = 0;
+            CONTROLLERS.forEach(function (sFile, i) {
+                var sJs = aTexts[i];
+                if (!sJs) { return; }
+                iScanned++;
+                var re = /(?:MessageToast\.show|MessageBox\.(?:show|alert|confirm|success|error|warning))\(\s*"([^"]{2,})"/g,
+                    m;
+                while ((m = re.exec(sJs)) !== null) {
+                    aBad.push(sFile.split("/").pop() + ': "' + m[1].slice(0, 40) + '"');
+                }
+            });
+            assert.ok(iScanned > 8, iScanned + " controllers scanned");
+            assert.deepEqual(aBad, [],
+                "every user-facing message resolves through the i18n bundle" +
+                (aBad.length ? " — hardcoded: " + aBad.join("; ") : ""));
+            done();
+        });
+    });
+
     QUnit.test("every {i18n>key} used in a view exists in the bundle", function (assert) {
         var done = assert.async();
         Promise.all([fetchText("i18n/i18n.properties")].concat(VIEWS.map(fetchText)))

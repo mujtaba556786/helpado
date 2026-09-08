@@ -27,6 +27,25 @@ sap.ui.define([
             this._getBookingDialog().then(function(d) { d.close(); }.bind(this));
         },
 
+        /**
+         * Booking status was rendered straight from the database column, so the
+         * schedule showed the English words "pending" / "confirmed" in every
+         * language, and the status toast read "Booking confirmed." regardless of
+         * locale.
+         */
+        formatStatusLabel: function (sStatus) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            var mKeys = {
+                pending:   "statusPending",
+                confirmed: "statusConfirmed",
+                completed: "statusCompleted",
+                declined:  "statusDeclined",
+                cancelled: "statusCancelled"
+            };
+            var sKey = mKeys[String(sStatus).toLowerCase()];
+            return sKey ? oBundle.getText(sKey) : (sStatus || "");
+        },
+
         onConfirmBooking: function() {
             var oModel      = this.getModel("appData");
             var sDate       = oModel.getProperty("/bookingForm/date");
@@ -97,7 +116,7 @@ sap.ui.define([
             var that = this;
 
             // Use explicit actions so sAction reliably equals MessageBox.Action.OK on confirm
-            MessageBox.confirm("Are you sure you want to cancel this booking?", {
+            MessageBox.confirm(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("bookingCancelConfirm"), {
                 title: "Cancel Booking",
                 actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
                 emphasizedAction: MessageBox.Action.CANCEL,
@@ -111,7 +130,7 @@ sap.ui.define([
                     .then(function(r) { return r.json(); })
                     .then(function(oData) {
                         if (oData.success) {
-                            MessageToast.show("Booking cancelled.");
+                            MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle().getText("bookingCancelled"));
                             that._loadSchedule();
                         } else {
                             MessageToast.show(oData.error || "Could not cancel booking.");
@@ -179,8 +198,8 @@ sap.ui.define([
             var that       = this;
 
             MessageBox.confirm(
-                "Confirm that " + (oBooking.provider_name || "this helper") +
-                " completed this booking? You will then be able to leave a review.", {
+                oBundle.getText("markCompletedConfirm",
+                    [oBooking.provider_name || oBundle.getText("bookingTheHelper")]), {
                 title: oBundle.getText("markCompleted"),
                 actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
                 emphasizedAction: MessageBox.Action.OK,
@@ -200,7 +219,7 @@ sap.ui.define([
                             MessageToast.show(oData.error || "Could not update this booking.");
                         }
                     })
-                    .catch(function () { MessageToast.show("Could not reach the server."); });
+                    .catch(function () { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
                 }
             });
         },
@@ -219,11 +238,12 @@ sap.ui.define([
             .then(function(r) { return r.json(); })
             .then(function(oData) {
                 if (oData.success) {
-                    MessageToast.show("Booking " + sStatus + ".");
+                    MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle()
+                        .getText("bookingStatusChanged", [that.formatStatusLabel(sStatus)]));
                     this._loadSchedule();
                 }
             }.bind(this))
-            .catch(function() { MessageToast.show("Could not update booking."); });
+            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("bookingUpdateFailed")); });
         },
 
         // Status options for the filter popover — order + icons mirror the old chip row.
