@@ -1,9 +1,7 @@
 sap.ui.define([
     "sap/m/MessageToast",
-    "sap/m/ActionSheet",
-    "sap/m/Button",
     "helphub/config"
-], function(MessageToast, ActionSheet, Button, Config) {
+], function(MessageToast, Config) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -260,38 +258,6 @@ sap.ui.define([
         formatBio: function (sBio) {
             return sBio || this.getOwnerComponent().getModel("i18n")
                 .getResourceBundle().getText("profileNoBio");
-        },
-
-        onProfileOverflow: function (oEvent) {
-            var oSource = oEvent.getSource();
-            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-
-            if (!this._pProfileSheet) {
-                // Both actions are Transparent so the sheet reads as one uniform
-                // menu. "Block" was type:"Reject", which in this theme paints a
-                // pink fill; combined with the focus ring UI5 puts on the first
-                // item when the sheet opens, it rendered as a red-bordered box
-                // that looked like a text input rather than a menu entry.
-                // Severity ascends: report first, block last.
-                this._oProfileSheet = new ActionSheet({
-                    title: oBundle.getText("safetyOptions"),
-                    buttons: [
-                        new Button({
-                            text: oBundle.getText("reportUser"),
-                            icon: "sap-icon://flag", type: "Transparent",
-                            press: this.onReportUser.bind(this)
-                        }),
-                        new Button({
-                            text: oBundle.getText("blockUser"),
-                            icon: "sap-icon://cancel", type: "Transparent",
-                            press: this.onBlockUser.bind(this)
-                        })
-                    ]
-                });
-                this.getView().addDependent(this._oProfileSheet);
-                this._pProfileSheet = true;
-            }
-            this._oProfileSheet.openBy(oSource);
         },
 
         // ── Focused rating dialog ─────────────────────────────────────────

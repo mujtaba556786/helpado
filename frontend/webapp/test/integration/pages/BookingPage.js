@@ -62,18 +62,6 @@ sap.ui.define([
                     });
                 },
 
-                iPressProfileOverflow: function () {
-                    return this.waitFor({
-                        controlType: "sap.m.Button",
-                        searchOpenDialogs: true,
-                        matchers: function (oBtn) {
-                            return oBtn.getIcon() === "sap-icon://overflow" && oBtn.getVisible();
-                        },
-                        actions: new Press(),
-                        errorMessage: "Overflow button not found in the profile dialog"
-                    });
-                },
-
                 iPressOnboardingNext: function () {
                     return this.waitFor({
                         controlType: "sap.m.Dialog",
@@ -200,90 +188,47 @@ sap.ui.define([
                 },
 
                 /**
-                 * The safety sheet rendered "Block User" as type "Reject", which in
-                 * this theme paints a pink fill; with the focus ring UI5 puts on the
-                 * first item it looked like a text input, not a menu entry. Both
-                 * items must stay Transparent, and both must be localised — they
-                 * were hardcoded English.
+                 * Safety used to hide behind a ⋯ overflow menu that opened an
+                 * ActionSheet. Both are gone: the two actions are named links at the
+                 * foot of the profile, each opening its own dialog in one tap.
                  */
-                iSeeAUniformSafetySheet: function () {
+                iSeeTwoDirectSafetyLinks: function () {
                     return this.waitFor({
-                        controlType: "sap.m.ActionSheet",
-                        searchOpenDialogs: true,
-                        success: function (aSheets) {
-                            var aBtns = aSheets[0].getButtons();
-                            Opa5.assert.strictEqual(aBtns.length, 2,
-                                "Safety sheet offers exactly two actions");
+                        controlType: "sap.m.Dialog",
+                        matchers: function (oDialog) { return oDialog.getId().indexOf("profileDialog") >= 0; },
+                        success: function (aDialogs) {
+                            var oDialog = aDialogs[0];
 
-                            var bUniform = aBtns.every(function (b) {
-                                return b.getType() === "Transparent";
+                            var aOverflow = [];
+                            var aSafety   = [];
+                            oDialog.findAggregatedObjects(true, function (c) {
+                                if (!c.isA || !c.isA("sap.m.Button")) { return false; }
+                                if (c.getIcon() === "sap-icon://overflow") { aOverflow.push(c); }
+                                var sText = c.getText();
+                                if (sText && /report|block|melden|blockieren|bildir|engelle/i.test(sText)) {
+                                    aSafety.push(c);
+                                }
+                                return false;
                             });
-                            Opa5.assert.ok(bUniform,
-                                "Both actions are Transparent — no Reject fill, so the sheet " +
-                                "reads as one menu (types: " +
-                                aBtns.map(function (b) { return b.getType(); }).join(", ") + ")");
 
-                            var bIcons = aBtns.every(function (b) { return !!b.getIcon(); });
-                            Opa5.assert.ok(bIcons, "Both actions carry an icon");
+                            Opa5.assert.strictEqual(aOverflow.length, 0,
+                                "No overflow (⋯) button remains on the profile");
+                            Opa5.assert.strictEqual(aSafety.length, 2,
+                                "Report and Block are two separate named links (found " +
+                                aSafety.map(function (b) { return b.getText(); }).join(", ") + ")");
 
-                            // A missing i18n key resolves to the key name itself.
-                            var bLocalised = aBtns.every(function (b) {
+                            var bLabelled = aSafety.every(function (b) {
                                 var t = b.getText();
-                                return t && t !== "blockUser" && t !== "reportUser";
+                                return t && t !== "reportThisHelper" && t !== "blockThisHelper";
                             });
-                            Opa5.assert.ok(bLocalised,
-                                "Both labels resolve through the i18n bundle (got: " +
-                                aBtns.map(function (b) { return b.getText(); }).join(", ") + ")");
-
-                            // sap.m.ActionSheet hardcodes type Reject on the cancel
-                            // button it builds, which this theme paints filled pink —
-                            // the one harmless action styled as the destructive one.
-                            // style.css neutralises it; a CSS override that silently
-                            // stops applying is exactly the failure this codebase has
-                            // hit before, so assert the painted result, not the rule.
-                            var oCancel = document.querySelector(
-                                ".sapMActionSheetCancelButton .sapMBtnInner");
-                            if (oCancel) {
-                                var sBg = window.getComputedStyle(oCancel).backgroundColor;
-                                Opa5.assert.notStrictEqual(sBg, "rgb(255, 214, 233)",
-                                    "Cancel is not painted with the theme's Reject pink (got " +
-                                    sBg + ")");
-                            }
+                            Opa5.assert.ok(bLabelled, "Both links resolve through the i18n bundle");
+                            Opa5.assert.ok(aSafety.every(function (b) { return b.getType() === "Transparent"; }),
+                                "Both stay muted, so they do not compete with Book and Message");
                         },
-                        errorMessage: "Safety ActionSheet did not open"
+                        errorMessage: "Profile dialog not open"
                     });
                 },
 
-                /**
-                 * The overflow menu was the only way in, and nobody thinks to tap
-                 * three dots to block someone. There must also be a plainly worded
-                 * entry point in the profile body.
-                 */
-                iSeeADiscoverableSafetyEntry: function () {
-                    return this.waitFor({
-                        controlType: "sap.m.Button",
-                        searchOpenDialogs: true,
-                        matchers: function (oBtn) {
-                            return oBtn.getIcon() === "sap-icon://shield" && oBtn.getVisible();
-                        },
-                        success: function (aBtns) {
-                            var sText = aBtns[0].getText();
-                            Opa5.assert.ok(sText && sText !== "reportOrBlock",
-                                "Profile body has a labelled safety entry point, " +
-                                "not just the overflow icon (got: '" + sText + "')");
-                        },
-                        errorMessage: "No safety entry point found in the profile body — " +
-                            "the overflow menu would be the only way to block or report"
-                    });
-                },
-
-                /**
-                 * Book/Message and Edit Profile are mutually exclusive, but both
-                 * rendered at once: the String(...) === String(...) expression ran
-                 * while the dialog was pre-warmed and both ids were undefined, so it
-                 * latched true. You could book and message yourself, and Edit Profile
-                 * appeared on strangers.
-                 */
                 iSeeOnlyTheRightProfileActions: function () {
                     return this.waitFor({
                         controlType: "sap.m.Dialog",
