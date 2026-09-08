@@ -26,7 +26,7 @@
     "int-test": "fiori run --open \"test/integration/opaTests.qunit.html\"",
     "// Cordova Setup": "",
     "cordova:init": "cd mobile && cordova platform add android ios",
-    "cordova:prepare": "cp config.xml mobile/config.xml && mkdir -p mobile/res && cp -r res/. mobile/res/ && cp mobile/google-services.json mobile/platforms/android/app/google-services.json 2>/dev/null || true && mkdir -p mobile/platforms/android/app/src/main/res/xml && cp res/android/network_security_config.xml mobile/platforms/android/app/src/main/res/xml/network_security_config.xml && rm -rf mobile/www && cp -r dist mobile/www && npm run patch:manifest",
+    "cordova:prepare": "cp config.xml mobile/config.xml && mkdir -p mobile/res && cp -r res/. mobile/res/ && cp mobile/google-services.json mobile/platforms/android/app/google-services.json 2>/dev/null || true && mkdir -p mobile/platforms/android/app/src/main/res/xml && cp res/android/network_security_config.xml mobile/platforms/android/app/src/main/res/xml/network_security_config.xml && cp res/android/build-extras.gradle mobile/platforms/android/app/build-extras.gradle && rm -rf mobile/www && cp -r dist mobile/www && npm run patch:manifest",
     "patch:manifest": "python3 -c \"import re; f=open('mobile/platforms/android/app/src/main/AndroidManifest.xml','r+'); c=f.read(); c=re.sub(r' android:usesCleartextTraffic=\\\"true\\\"','',c); c=re.sub(r' android:networkSecurityConfig=\\\"@xml/network_security_config\\\"','',c); c=c.replace('<application','<application android:usesCleartextTraffic=\\\"true\\\" android:networkSecurityConfig=\\\"@xml/network_security_config\\\"',1); f.seek(0); f.write(c); f.truncate(); f.close()\"",
     "// Cordova Build": "",
     "cordova:build:android": "cd mobile && cordova build android",
