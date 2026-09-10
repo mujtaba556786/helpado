@@ -51,7 +51,7 @@ sap.ui.define([
                     // Open the popover, then press the matching status list item.
                     this.iOpenBookingStatusMenu();
                     return this.waitFor({
-                        controlType: "sap.m.StandardListItem",
+                        controlType: "sap.m.CustomListItem",
                         // Popover content is not inside the view — search globally by custom data.
                         matchers: function (oItem) {
                             var oData = oItem.data("status");
@@ -136,12 +136,24 @@ sap.ui.define([
                     });
                     aStatuses.forEach(function (sStatus) {
                         that.waitFor({
-                            controlType: "sap.m.StandardListItem",
+                            controlType: "sap.m.CustomListItem",
                             matchers: function (oItem) {
                                 return oItem.data("status") === sStatus;
                             },
-                            success: function () {
-                                Opa5.assert.ok(true, "Status filter option '" + sStatus + "' exists in popover");
+                            success: function (aItems) {
+                                // Assert the row actually carries a sized icon and a
+                                // label — the bug was the glyph rendering clipped, so
+                                // "the item exists" alone would not have caught it.
+                                var oIcon, oText;
+                                aItems[0].findAggregatedObjects(true, function (oCtrl) {
+                                    if (!oIcon && oCtrl.isA("sap.ui.core.Icon")) { oIcon = oCtrl; }
+                                    if (!oText && oCtrl.isA("sap.m.Text"))       { oText = oCtrl; }
+                                    return false;
+                                });
+                                Opa5.assert.ok(oIcon && oIcon.getSrc() && oIcon.getWidth(),
+                                    "Status option '" + sStatus + "' has an icon with an explicit width");
+                                Opa5.assert.ok(oText && oText.getText(),
+                                    "Status option '" + sStatus + "' has a label");
                             },
                             errorMessage: "Status filter option '" + sStatus + "' not found in popover"
                         });

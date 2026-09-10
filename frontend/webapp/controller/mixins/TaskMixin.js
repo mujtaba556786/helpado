@@ -113,13 +113,18 @@ sap.ui.define([
                 // consistent using nothing but the controls' own API.
                 items: aCategories.map(function(cat) {
                     var bImage = String(cat.icon || "").indexOf("sap-icon://") !== 0;
+                    // Both graphic types get the SAME box width so every label starts
+                    // on one vertical line. They resolve rem differently on device
+                    // (a font glyph scales with the system font, an <img> does not),
+                    // so the shared value is the one that matters, not the unit.
                     var oGraphic = bImage
-                        ? new Image({ src: cat.icon, width: "1.25rem", height: "1.25rem",
+                        ? new Image({ src: cat.icon, width: "1.75rem", height: "1.25rem",
                                       densityAware: false, decorative: true })
-                        // width as well as size: a glyph's natural width varies
-                        // (the filter icon is 18px against 20px for the wrench),
-                        // which shifted the labels by a couple of pixels.
-                        : new Icon({ src: cat.icon, size: "1.25rem", width: "1.25rem" });
+                        // The custom SVGs are drawn in the brand green; without this
+                        // the font glyphs stayed near-black and the list read as two
+                        // different icon sets stacked together.
+                        : new Icon({ src: cat.icon, size: "1.25rem", width: "1.75rem",
+                                     color: "#2E8B57" });
                     oGraphic.addStyleClass("sapUiTinyMarginEnd");
 
                     var oLI = new CustomListItem({
