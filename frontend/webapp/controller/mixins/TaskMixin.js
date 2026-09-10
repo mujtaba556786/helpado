@@ -84,7 +84,7 @@ sap.ui.define([
             var aCategories = [
                 { label: oBundle.getText("serviceAllTasks"), value: "", icon: "sap-icon://filter" }
             ].concat(aServices.map(function(svc) {
-                return { label: svc.label, value: svc.name, icon: svc.icon };
+                return { label: svc.label, value: svc.name, icon: svc.display || svc.icon };
             }));
 
             var oList = new List({

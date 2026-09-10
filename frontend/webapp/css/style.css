@@ -51,6 +51,31 @@ header .sapMBar .sapMFlexItem {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   CATEGORY ROWS — drawn artwork beside icon-font glyphs
+   ══════════════════════════════════════════════════════════════ */
+/* Six categories ship drawn SVGs because the SAP font cannot express them.
+   sap.m.StandardListItem treats an <img> as a THUMBNAIL: it renders at 48x48,
+   adds .sapMSLIThumbnail and grows the row to 80px, while a font glyph sits in
+   a 44x44 box in a 44px row and is pulled left by -12px. Side by side the two
+   were different sizes with labels 12px out of line.
+   Measured in the task category filter; these three declarations make an image
+   row identical to a glyph row — box 44x44, icon at x=16, label at x=60, row 44.
+   Only img.sapMSLIImg is targeted: .sapMSLIImgIcon is also on FONT icons, and
+   forcing a height on a glyph clips it. */
+.sapMSLI img.sapMSLIImg {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    padding: 0.6875rem !important;
+    margin: 0 0 0 -0.75rem !important;
+    box-sizing: border-box !important;
+    border-radius: 0 !important;
+}
+.sapMSLI.sapMSLIThumbnail {
+    height: 2.75rem !important;
+    min-height: 2.75rem !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
    SAFE AREA — notch + home indicator
    ══════════════════════════════════════════════════════════════ */
 .sapMPage > header,

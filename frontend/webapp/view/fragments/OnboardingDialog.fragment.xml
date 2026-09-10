@@ -99,7 +99,7 @@
         <VBox visible="{= ${appData>/onboarding/step} === 3}" class="sapUiMediumMargin">
             <Text text="{i18n>onboardSelectInterests}" class="grayText sapUiSmallMarginBottom" wrapping="true"/>
             <FlexBox wrap="Wrap" class="sapUiTinyMarginTop" items="{appData>/services}">
-                <Button icon="{appData>icon}" text="{appData>label}"
+                <Button icon="{appData>display}" text="{appData>label}"
                     press="onToggleInterest"
                     class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
                     <customData>

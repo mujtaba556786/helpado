@@ -43,8 +43,11 @@ sap.ui.define([], function () {
 
         // Quality SegmentedButton (All / Top rated / Budget) — reads the chosen item key.
         onPriceCategorySelect: function (oEvent) {
-            var oItem = oEvent.getParameter("item");
-            this.getModel("appData").setProperty("/filters/priceCategory", oItem.getKey());
+            // RadioButtonGroup reports a selectedIndex; the SegmentedButton it
+            // replaced reported the item itself.
+            var iIndex = oEvent.getParameter("selectedIndex");
+            var sKey = ["all", "top", "budget"][iIndex] || "all";
+            this.getModel("appData").setProperty("/filters/priceCategory", sKey);
             this._updateActiveFilterCount();
             this._refreshCurrentFilters();
         },

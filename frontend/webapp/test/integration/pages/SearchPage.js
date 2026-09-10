@@ -153,15 +153,40 @@ sap.ui.define([
                 },
 
                 iSeeFilterPopoverControls: function () {
-                    // The popover holds availability + quality: a Switch and a SegmentedButton.
-                    // searchOpenDialogs reaches controls rendered in the popover's static area.
+                    // Availability is a Switch; rating/price is a RadioButtonGroup.
+                    // It replaced a SegmentedButton whose three labels shared one row
+                    // and truncated to "Top r..." at larger system font sizes, and whose
+                    // heading never said that one option filters on RATING and the other
+                    // on PRICE. searchOpenDialogs reaches the popover's static area.
                     this.waitFor({
                         searchOpenDialogs: true,
-                        controlType: "sap.m.SegmentedButton",
-                        success: function () {
-                            Opa5.assert.ok(true, "Quality SegmentedButton is present inside the filter popover");
+                        controlType: "sap.m.RadioButtonGroup",
+                        success: function (aGroups) {
+                            var aButtons = aGroups[0].getButtons();
+                            Opa5.assert.strictEqual(aButtons.length, 3,
+                                "Rating & price offers three options, one per row");
+
+                            var aTexts = aButtons.map(function (b) { return b.getText(); });
+                            Opa5.assert.ok(aTexts.every(function (s) { return s && s.indexOf("filter") !== 0; }),
+                                "option labels resolve from i18n (" + aTexts.join(" / ") + ")");
+
+                            // The whole point of the change: the thresholds are stated
+                            // rather than left for the user to guess.
+                            Opa5.assert.ok(/4\.8/.test(aTexts[1]),
+                                "the rating option names its threshold");
+                            Opa5.assert.ok(/25/.test(aTexts[2]),
+                                "the price option names its threshold");
+
+                            // No label may be clipped — that was the reported symptom.
+                            aButtons.forEach(function (b) {
+                                var oDom = b.getDomRef();
+                                if (!oDom) { return; }
+                                var oLabel = oDom.querySelector("label") || oDom;
+                                Opa5.assert.ok(oLabel.scrollWidth <= oLabel.clientWidth + 1,
+                                    b.getText() + " is not truncated");
+                            });
                         },
-                        errorMessage: "SegmentedButton not found inside the filter popover"
+                        errorMessage: "Rating & price options not found inside the filter popover"
                     });
                     return this.waitFor({
                         searchOpenDialogs: true,
