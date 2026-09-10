@@ -18,16 +18,32 @@
     align-items: center;
     padding-right: 4px;
 }
-/* Bell button — enforce 44px touch target */
-.hhNotifBtnWrap .sapMBtn {
+/* The header bar inherits line-height 57.2px, so UI5's flex-item wrappers are
+   sized by that line box rather than their content, and the inline-block
+   children (buttons, avatar, wordmark) sit on its BASELINE instead of being
+   centred. Measured on device: the bar centres at 22, but the wordmark sat at
+   11, bell and globe at 15 and the avatar at 13 — four different heights.
+   Resetting the line box and centring the wrapper puts all four on 22. */
+header .sapMBar .sapMFlexBox,
+header .sapMBar .sapMFlexItem {
+    line-height: normal !important;
+}
+header .sapMBar .sapMFlexItem {
+    display: flex !important;
+    align-items: center !important;
+}
+/* Header icon buttons — one 44px touch target each. The bell was pinned to 44px
+   but the language globe was left at UI5's default 36px, so the two sat on a
+   different rhythm. */
+.hhHeaderRight .sapMBtn {
     width: 44px !important;
     height: 44px !important;
     padding: 0 !important;
 }
-/* Avatar in header — 44px touch target via wrapper */
+/* Avatar in header. The old margin-left made the globe->avatar gap 6px while
+   bell->globe was 4px; the flex gap already spaces these evenly. */
 .hhHeaderAvatar {
     cursor: pointer;
-    margin-left: 2px;
 }
 .hhHeaderAvatar.sapFAvatar {
     width: 32px !important;
