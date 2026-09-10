@@ -40,11 +40,15 @@
                             <RatingIndicator value="{appData>/selectedProfile/rating}" maxValue="5" visualMode="Half" displayOnly="true" class="sapUiTinyMarginEnd"/>
                             <Text text="{appData>/selectedProfile/ratingLabel}" class="smallText"/>
                         </HBox>
-                        <ObjectStatus
-                            text="{path:'appData>/selectedProfile/trust_level', formatter:'.formatTrustLabel'}"
-                            state="{= ${appData>/selectedProfile/trust_level} === 'trusted_user' ? 'Success' : ${appData>/selectedProfile/trust_level} === 'verified_user' ? 'Information' : 'None' }"
-                            visible="{= !!${appData>/selectedProfile/trust_level} }"
-                            class="sapUiTinyMarginTop"/>
+                        <!-- Facts, not a badge. This slot used to show
+                             "Verified User" from an internal moderation score;
+                             nothing in the product verifies identity. -->
+                        <Text text="{path:'appData>/selectedProfile/created_at', formatter:'.formatMemberSince'}"
+                            visible="{= !!${appData>/selectedProfile/created_at} }"
+                            class="smallText grayText sapUiTinyMarginTop"/>
+                        <Text text="{path:'appData>/selectedProfile/completed_jobs', formatter:'.formatJobsCompleted'}"
+                            visible="{= ${appData>/selectedProfile/completed_jobs} > 0 }"
+                            class="smallText grayText"/>
                     </VBox>
                 </HBox>
 

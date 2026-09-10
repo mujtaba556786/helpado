@@ -24,6 +24,11 @@
                 <Panel headerText="{i18n>faqTaskQ}" expandable="true" expanded="false" class="sapUiTinyMarginBottom">
                     <Text text="{i18n>faqTaskA}"/>
                 </Panel>
+                <!-- States the limits of what is checked, in the place a user
+                     looks for answers — rather than only in the Terms. -->
+                <Panel headerText="{i18n>faqChecksQ}" expandable="true" expanded="false" class="sapUiTinyMarginBottom">
+                    <Text text="{i18n>faqChecksA}"/>
+                </Panel>
                 <Panel headerText="{i18n>faqSafetyQ}" expandable="true" expanded="false" class="sapUiTinyMarginBottom">
                     <Text text="{i18n>faqSafetyA}"/>
                 </Panel>

@@ -144,9 +144,19 @@ const HERO_CATEGORY = 'Cleaning';
 
 async function getProviders(category) {
     // Select monetization columns alongside existing fields
+    // created_at and completed_jobs back the two facts shown on a provider card.
+    // They replaced a "Verified" badge that claimed an identity check nobody
+    // performs — these are things the database can actually prove.
+    // NB: trust_level is deliberately NOT selected. It is an internal moderation
+    // score (account age + activity + absence of reports), not a verification,
+    // and must not be surfaced to users as one.
     let sql = `SELECT id, name, avatar, bio, rating, rate, city, state, country,
                       lat, lng, languages, years, availability, service_categories, phone,
-                      subscription_plan, featured_until, featured_category, monthly_booking_value
+                      subscription_plan, featured_until, featured_category, monthly_booking_value,
+                      created_at,
+                      (SELECT COUNT(*) FROM bookings b
+                        WHERE b.provider_id = users.id
+                          AND b.status = 'completed') AS completed_jobs
                FROM users
                WHERE service_categories IS NOT NULL
                  AND service_categories != ''
