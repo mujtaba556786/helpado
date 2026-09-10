@@ -7,12 +7,15 @@
 
     <script id="sap-ui-bootstrap"
         src="/resources/sap-ui-core.js"
-        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-theme="helpmate"
+        data-sap-ui-theme-roots='{"helpmate":"../../themes/"}'
         data-sap-ui-libs="sap.m,sap.ui.layout"
         data-sap-ui-resourceroots='{
             "helphub":      "../../",
             "helphub/test": "../../test/"
         }'
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-bindingSyntax="complex"
         data-sap-ui-async="true"
         data-sap-ui-oninit="module:helphub/test/integration/AllJourneys">
     </script>
@@ -21,7 +24,7 @@
     <script src="/resources/sap/ui/thirdparty/qunit-2.js"></script>
     <script src="/resources/sap/ui/qunit/qunit-junit.js"></script>
 </head>
-<body class="sapUiBody">
+<body class="sapUiBody sapUiSizeCozy">
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
 </body>

@@ -222,6 +222,28 @@ sap.ui.define([], function () {
             featured_until: null,
             featured_category: null,
             monthly_booking_value: 410
+        },
+        {
+            id: "p8",
+            name: "Grace Okafor",
+            photo: "https://randomuser.me/api/portraits/women/32.jpg",
+            bio: "Elder care assistant \u2014 companionship, mobility support and daily routines.",
+            rating: 4.8,
+            rate: 30,
+            currency: "EUR",
+            city: "Berlin",
+            lat: 52.5185,
+            lng: 13.4020,
+            languages: "EN, DE",
+            years: 6,
+            availability: "all_day",
+            serviceType: "Elder Care",
+            service_categories: "Elder Care",
+            phone: "+491705550188",
+            subscription_plan: "free",
+            featured_until: null,
+            featured_category: null,
+            monthly_booking_value: 260
         }
     ];
 
