@@ -1,7 +1,7 @@
 <!-- Cleaning: bucket with suds. Was sap-icon://home-share — a house with a
      share arrow. Two spray-bottle attempts read as a blob and then as a tube at
      26px; a bucket is fewer, bolder shapes and survives the tile size. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cleaning">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="14" height="14" role="img" aria-label="Cleaning">
     <g fill="#2E8B57">
         <!-- suds -->
         <circle cx="46" cy="10" r="5"/>

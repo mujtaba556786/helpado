@@ -1,6 +1,6 @@
 <!-- Groceries: a shopping bag with produce. Was sap-icon://basket — closest of
      the five, but abstract; a bag with a leaf reads as food shopping. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Groceries">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="14" height="14" role="img" aria-label="Groceries">
     <g fill="#2E8B57">
         <!-- handles -->
         <path d="M23 24v-4a9 9 0 0 1 18 0v4h-6v-4a3 3 0 0 0-6 0v4z"/>

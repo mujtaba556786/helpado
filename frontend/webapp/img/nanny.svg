@@ -1,7 +1,7 @@
 <!-- Nanny: a pram. Was sap-icon://family-care, which draws three ADULTS and
      reads as a group rather than childcare. The canopy is ONE path — drawing it
      as two left a white seam that made it look like a wheelbarrow. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nanny">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="14" height="14" role="img" aria-label="Nanny">
     <g fill="#2E8B57">
         <!-- hood: a single solid dome -->
         <path d="M8 36a21 21 0 0 1 42 0z"/>

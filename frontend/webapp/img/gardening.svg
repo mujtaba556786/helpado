@@ -1,6 +1,6 @@
 <!-- Gardening: potted plant. Was sap-icon://tree, which in SAP's font is an
      ORG CHART (boxes and connectors), not a plant. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Gardening">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="14" height="14" role="img" aria-label="Gardening">
     <g fill="#2E8B57">
         <!-- leaves -->
         <path d="M30 30c-12 0-19-6-19-15 11-2 19 3 19 15z"/>

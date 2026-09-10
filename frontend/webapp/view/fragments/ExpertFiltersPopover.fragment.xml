@@ -24,16 +24,20 @@
 
             <!-- Show (quality) -->
             <Label text="{i18n>filterShow}" design="Bold" class="sapUiTinyMarginBottom"/>
-            <SegmentedButton width="100%"
-                selectedKey="{appData>/filters/priceCategory}"
-                selectionChange="onPriceCategorySelect"
+            <!-- Was a three-item SegmentedButton labelled All / Top rated / Budget.
+                 Two problems: the labels shared one row, so they truncated to
+                 "Top r..." at larger system font sizes, and the heading "Show"
+                 never said what the options do — one filters on RATING (>= 4.8),
+                 the other on PRICE (<= EUR 25/h), which are not alternatives to
+                 each other in any obvious way. One row each, thresholds stated. -->
+            <RadioButtonGroup columns="1"
+                selectedIndex="{= ${appData>/filters/priceCategory} === 'top' ? 1 : ${appData>/filters/priceCategory} === 'budget' ? 2 : 0 }"
+                select="onPriceCategorySelect"
                 class="sapUiSmallMarginBottom">
-                <items>
-                    <SegmentedButtonItem key="all"    text="{i18n>all}"/>
-                    <SegmentedButtonItem key="top"    text="{i18n>topRated}"/>
-                    <SegmentedButtonItem key="budget" text="{i18n>budgetFilter}"/>
-                </items>
-            </SegmentedButton>
+                <RadioButton text="{i18n>filterOptionAll}"/>
+                <RadioButton text="{i18n>filterOptionTop}"/>
+                <RadioButton text="{i18n>filterOptionBudget}"/>
+            </RadioButtonGroup>
 
             <!-- Reset -->
             <Button text="{i18n>resetFilters}"

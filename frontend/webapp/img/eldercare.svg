@@ -1,7 +1,7 @@
 <!-- Elder Care: a person with a walking cane. Was sap-icon://heart, which reads
      as favourites or health generally, not care for an older person. The cane
      sits against the figure so the two read as one subject at 26px. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Elder Care">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="14" height="14" role="img" aria-label="Elder Care">
     <g fill="#2E8B57">
         <circle cx="25" cy="13" r="8.5"/>
         <!-- torso and legs -->
