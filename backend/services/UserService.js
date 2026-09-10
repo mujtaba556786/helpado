@@ -200,7 +200,14 @@ async function getProviders(category) {
         subscription_plan: u.subscription_plan || 'free',
         featured_until: u.featured_until || null,
         featured_category: u.featured_category || null,
-        monthly_booking_value: parseFloat(u.monthly_booking_value) || 0
+        monthly_booking_value: parseFloat(u.monthly_booking_value) || 0,
+        // This map is an allowlist, not a passthrough — selecting a column is
+        // not enough, it has to be copied here too. Adding created_at and
+        // completed_jobs to the SELECT alone left both undefined on the client,
+        // so the profile facts silently rendered blank in production.
+        // The allowlist is also why trust_level has never leaked; keep it that way.
+        created_at: u.created_at || null,
+        completed_jobs: Number(u.completed_jobs) || 0
     }));
 }
 
