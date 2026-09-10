@@ -4,8 +4,9 @@ sap.ui.define([
     "sap/m/Popover",
     "sap/m/List",
     "sap/m/StandardListItem",
-    "helphub/config"
-], function(MessageToast, MessageBox, Popover, List, StandardListItem, Config) {
+    "helphub/config",
+    "sap/ui/core/format/DateFormat"
+], function(MessageToast, MessageBox, Popover, List, StandardListItem, Config, DateFormat) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -146,9 +147,29 @@ sap.ui.define([
             return vBudget ? this.formatCurrency(vBudget) : oBundle.getText("taskOpenBudget");
         },
 
+        /**
+         * A stored task date is a calendar day, serialised as midnight UTC
+         * ("2026-08-01T00:00:00.000Z"). Building it from the Y-M-D parts rather
+         * than `new Date(iso)` keeps that day intact — parsing the full string
+         * gives a UTC instant, which renders as the PREVIOUS day for anyone west
+         * of Greenwich.
+         */
+        _toCalendarDate: function (vDate) {
+            if (vDate instanceof Date) { return isNaN(vDate.getTime()) ? null : vDate; }
+            var aParts = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(vDate));
+            if (aParts) { return new Date(+aParts[1], +aParts[2] - 1, +aParts[3]); }
+            var oDate = new Date(vDate);
+            return isNaN(oDate.getTime()) ? null : oDate;
+        },
+
         formatTaskDate: function (sDate) {
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-            return sDate || oBundle.getText("taskFlexible");
+            if (!sDate) { return oBundle.getText("taskFlexible"); }
+            // This used to return sDate untouched, so the task detail dialog
+            // printed the raw ISO string at the user.
+            var oDate = this._toCalendarDate(sDate);
+            if (!oDate) { return sDate; }
+            return DateFormat.getDateInstance({ style: "long" }).format(oDate);
         },
 
         formatTaskLocation: function (sLocation) {
@@ -428,15 +449,23 @@ sap.ui.define([
         },
 
         formatTaskDue: function(sDate) {
-            if (!sDate) return "";
-            var oNow  = new Date();
-            var oDue  = new Date(sDate);
-            var iDiff = Math.floor((oDue - oNow) / 86400000);
-            if (iDiff === 0)  return "Today";
-            if (iDiff === 1)  return "Tomorrow";
-            if (iDiff < 0)   return "Overdue";
-            if (iDiff < 7)   return "In " + iDiff + " days";
-            return oDue.toLocaleDateString([], { month: "short", day: "numeric" });
+            if (!sDate) { return ""; }
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            var oDue = this._toCalendarDate(sDate);
+            if (!oDue) { return sDate; }
+
+            // Compare whole days, not instants: "today" must stay today all day,
+            // and the old (oDue - oNow) subtraction flipped to "Overdue" the
+            // moment the clock passed midnight-relative-to-now.
+            var oToday = new Date();
+            oToday.setHours(0, 0, 0, 0);
+            var iDiff = Math.round((oDue - oToday) / 86400000);
+
+            if (iDiff === 0) { return oBundle.getText("taskDueToday"); }
+            if (iDiff === 1) { return oBundle.getText("taskDueTomorrow"); }
+            if (iDiff < 0)   { return oBundle.getText("taskDueOverdue"); }
+            if (iDiff < 7)   { return oBundle.getText("taskDueInDays", [iDiff]); }
+            return DateFormat.getDateInstance({ style: "medium" }).format(oDue);
         },
 
         onTaskFilterMenu: function(oEvent) {
