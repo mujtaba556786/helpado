@@ -19,6 +19,11 @@ sap.ui.define([
         // Today at midnight — used as minDate on date pickers so only today/future
         // dates can be picked (no past dates for tasks/bookings).
         today: new Date(new Date().setHours(0, 0, 0, 0)),
+        // Brand artwork. Resolved through the module path rather than written as a
+        // relative src in the view, because the view is also loaded from
+        // test/integration/, where "img/..." would resolve against the wrong folder.
+        logoUrl: sap.ui.require.toUrl("helphub/img/logo.svg"),
+        sceneUrl: sap.ui.require.toUrl("helphub/img/neighbourhood.svg"),
         user: {
             id: "",
             name: "",
