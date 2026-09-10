@@ -421,40 +421,21 @@ sap.ui.define([
                     icon:    svc.icon,           // sap-icon:// URI
                     label:   oBundle.getText(svc.key) || svc.name,  // localised label
                     color:   svc.color,
-                    is_hero: svc.is_hero
+                    is_hero: svc.is_hero,
+                    // Optional tile artwork for categories the icon font cannot
+                    // express. Resolved through the module path because a bare
+                    // "img/..." resolves against the wrong folder in the OPA harness.
+                    img:     svc.img ? sap.ui.require.toUrl("helphub/" + svc.img) : "",
+                    // What the compact surfaces render — the task category
+                    // filter, Post Task select, onboarding chips and a helper's
+                    // own picker. Prefers the drawn artwork, falls back to the
+                    // font glyph for categories that do not have any.
+                    display: svc.img ? sap.ui.require.toUrl("helphub/" + svc.img) : svc.icon
                 };
             });
 
             oModel.setProperty("/services", aServices);
             setTimeout(this._applyTileColors.bind(this), 150);
-        },
-
-        // ── Service card formatters ──────────────────────────────────────────────
-        // Kept for backward-compat with any provider card that still binds by name.
-        formatServiceIcon: function(sName) {
-            var oSvc = ServiceConstants.find(function(s) { return s.name === sName; });
-            return oSvc ? oSvc.icon : "sap-icon://activities";
-        },
-
-        formatServiceDesc: function(sName) {
-            var mDesc = {
-                "Babysitting":  "Trusted caregivers for your children",
-                "Elder Care":   "Experienced care for the elderly",
-                "Pet Care":     "Pet sitting, dog walking, and more",
-                "Cleaning":     "Professional home cleaning",
-                "Gardening":    "Lawn, plant care, and landscaping",
-                "Handyman":     "Repairs, maintenance, and fixes",
-                "IT Support":   "Technical help for computers",
-                "Math Tuition": "Tutoring for various math levels",
-                "Groceries":    "Grocery shopping and delivery",
-                "Transport":    "Rides and delivery services",
-                "Cooking":      "Personal chefs and meal prep",
-                "Massage":      "Relaxing at-home massage therapy",
-                "Driver":       "Professional driving services",
-                "Plumbing":     "Pipe repairs and installations",
-                "Electrician":  "Electrical repairs and wiring"
-            };
-            return mDesc[sName] || "Professional service near you";
         },
 
         onHeaderAvatarMenu: function() {

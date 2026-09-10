@@ -14,7 +14,7 @@
                 <TextArea value="{appData>/taskForm/description}" rows="3" width="100%" placeholder="{i18n>taskDescriptionPlaceholder}" class="sapUiTinyMarginBottom"/>
                 <Label text="{i18n>category}" required="true"/>
                 <Select id="taskCategorySelect" selectedKey="{appData>/taskForm/category}" width="100%" class="sapUiTinyMarginBottom" items="{appData>/services}">
-                    <core:ListItem key="{appData>name}" text="{appData>label}" icon="{appData>icon}"/>
+                    <core:ListItem key="{appData>name}" text="{appData>label}" icon="{appData>display}"/>
                 </Select>
                 <Label text="{i18n>budgetEur}"/>
                 <Input value="{appData>/taskForm/budget}" type="Number" placeholder="{i18n>budgetPlaceholder}" width="100%" class="sapUiTinyMarginBottom"/>

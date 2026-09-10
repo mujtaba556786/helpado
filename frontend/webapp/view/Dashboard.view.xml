@@ -71,7 +71,11 @@ xmlns:l="sap.ui.layout"
                                 <CustomListItem class="fiSvcCard" type="Active" press=".onServicePress">
                                     <VBox class="fiSvcCardInner" alignItems="Center" justifyContent="Center">
                                         <VBox class="fiSvcIconWrap" alignItems="Center" justifyContent="Center">
-                                            <core:Icon src="{appData>icon}" class="fiSvcIcon"/>
+                                            <core:Icon src="{appData>icon}" class="fiSvcIcon"
+                                                visible="{= !${appData>img} }"/>
+                                            <Image src="{appData>img}" visible="{= !!${appData>img} }"
+                                                width="26px" height="26px" densityAware="false"
+                                                decorative="true"/>
                                         </VBox>
                                         <Text text="{appData>label}" class="fiSvcName"/>
                                         <!-- "Popular" is hidden for now: nothing measures popularity, it is a
@@ -789,7 +793,7 @@ xmlns:l="sap.ui.layout"
 
                                         <Label text="{i18n>serviceCategories}"/>
                                         <MultiComboBox selectedKeys="{appData>/user/serviceCategories}" items="{appData>/services}">
-                                            <core:ListItem key="{appData>name}" text="{appData>label}" icon="{appData>icon}"/>
+                                            <core:ListItem key="{appData>name}" text="{appData>label}" icon="{appData>display}"/>
                                         </MultiComboBox>
 
                                         <Label text="{i18n>hourlyRate}"/>
