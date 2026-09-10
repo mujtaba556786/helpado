@@ -4,8 +4,9 @@ sap.ui.define([
     "sap/m/Popover",
     "sap/m/List",
     "sap/m/StandardListItem",
-    "helphub/config"
-], function(MessageToast, MessageBox, Popover, List, StandardListItem, Config) {
+    "helphub/config",
+    "sap/ui/core/format/DateFormat"
+], function(MessageToast, MessageBox, Popover, List, StandardListItem, Config, DateFormat) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -363,11 +364,14 @@ sap.ui.define([
         },
 
         formatBookingDate: function(sDate) {
-            if (!sDate) return "";
+            if (!sDate) { return ""; }
             try {
-                var d = new Date(sDate);
-                if (isNaN(d.getTime())) return sDate;
-                return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                // Was pinned to "en-US", so a German or Turkish user still saw
+                // "Aug 1, 2026". DateFormat follows the app's configured locale.
+                var aParts = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(sDate));
+                var d = aParts ? new Date(+aParts[1], +aParts[2] - 1, +aParts[3]) : new Date(sDate);
+                if (isNaN(d.getTime())) { return sDate; }
+                return DateFormat.getDateInstance({ style: "medium" }).format(d);
             } catch (e) { return sDate; }
         },
 
