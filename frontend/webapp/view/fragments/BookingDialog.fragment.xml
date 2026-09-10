@@ -4,8 +4,7 @@
 
     <Dialog id="bookingDialog"
         class="hhDialogWithSubHeader" title="{i18n>bookAHelper}"
-        contentWidth="90%"
-        stretch="{device>/system/phone}">
+        stretch="true">
 
         <!-- Helper name pinned below header, never hidden -->
         <subHeader>

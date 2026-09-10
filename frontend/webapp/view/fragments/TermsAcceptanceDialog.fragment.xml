@@ -4,10 +4,9 @@
 
     <Dialog id="termsAcceptanceDialog"
             title="{= ${appData>/user/termsUpdateRequired} ? ${i18n>termsUpdatedTitle} : ${i18n>termsWelcome}}"
-            contentWidth="480px"
-            stretch="{device>/system/phone}"
             verticalScrolling="true"
-            escapeHandler=".onTermsEscapeHandler">
+            escapeHandler=".onTermsEscapeHandler"
+        stretch="true">
 
         <beginButton>
             <Button text="{i18n>termsAgree}"

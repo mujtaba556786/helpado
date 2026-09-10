@@ -63,6 +63,17 @@
 body.hhDialogOpen .hhBottomNav.sapMBar {
     display: none !important;
 }
+/* A stretched dialog left a strip of background uncovered along the bottom.
+   Measured on a Galaxy S21 FE (SM-G990B, innerHeight 805): the dialog rendered
+   761px tall, so 44px showed through. SAP's own .sapMDialogStretched rule is
+   correct (top/bottom 0, height auto) — but UI5's JS writes an INLINE
+   max-height (805 - 88 = 717px) onto the element, and an inline style beats the
+   stylesheet. Only !important can win that, so this cannot be fixed from the
+   Dialog API. Verified on the device: bottom gap 44px -> 0.
+   Emulated viewports never reproduced it; the real WebView was needed. */
+.sapMDialog.sapMDialogStretched {
+    max-height: 100% !important;
+}
 /* SAP positions the dialog title bar (.sapMDialogTitleGroup) absolutely at top:0
    (~40px). The scrollable content had no matching top padding, so the title
    overlapped and hid the first field/label. Offset the content so it clears the title. */

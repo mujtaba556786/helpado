@@ -4,9 +4,8 @@
 
     <Dialog id="reportDialog"
         title="{i18n>reportTitle}"
-        contentWidth="420px"
         verticalScrolling="true"
-        stretch="{device>/system/phone}">
+        stretch="true">
 
         <content>
             <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">

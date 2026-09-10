@@ -18,6 +18,7 @@
  *  BookingJourney       — booking dialog rate + TimePicker, onboarding chips + Back button
  *  PolishJourney        — nav contrast, empty message/saved states, profile availability
  *  LoginJourney         — brand logo, subtitle, neighbourhood scene, Sign In contrast
+ *  HelpFaqJourney       — real FAQ content, settings section labels not duplicated
  */
 sap.ui.define([
     "helphub/test/integration/journeys/DashboardJourney",
@@ -31,7 +32,8 @@ sap.ui.define([
     "helphub/test/integration/journeys/AboutJourney",
     "helphub/test/integration/journeys/BookingJourney",
     "helphub/test/integration/journeys/PolishJourney",
-    "helphub/test/integration/journeys/LoginJourney"
+    "helphub/test/integration/journeys/LoginJourney",
+    "helphub/test/integration/journeys/HelpFaqJourney"
 ], function () {
     "use strict";
     QUnit.start();

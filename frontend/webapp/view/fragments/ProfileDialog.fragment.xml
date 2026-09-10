@@ -13,6 +13,13 @@
                 <contentMiddle>
                     <Title text="{appData>/selectedProfile/name}" level="H4"/>
                 </contentMiddle>
+                <!-- A customHeader replaces the default one, which took the close
+                     affordance with it — the only way out was a text link below all
+                     the content. Matches DmChatDialog / NotificationsDialogV2. -->
+                <contentRight>
+                    <Button icon="sap-icon://decline" tooltip="{i18n>close}"
+                        type="Transparent" press="onCloseProfile"/>
+                </contentRight>
             </Bar>
         </customHeader>
 

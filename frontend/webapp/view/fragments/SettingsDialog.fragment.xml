@@ -5,7 +5,6 @@
 
     <Dialog id="settingsDialog"
         title="{i18n>settingsTab}"
-        contentWidth="380px"
         verticalScrolling="true"
         stretch="true">
 
@@ -14,7 +13,7 @@
 
                 <!-- ── Language ── -->
                 <List showSeparators="None">
-                    <GroupHeaderListItem title="{i18n>changeLanguage}" upperCase="false"/>
+                    <GroupHeaderListItem title="{i18n>settingsLanguageSection}" upperCase="false"/>
                     <StandardListItem
                         title="{i18n>changeLanguage}"
                         icon="sap-icon://world"

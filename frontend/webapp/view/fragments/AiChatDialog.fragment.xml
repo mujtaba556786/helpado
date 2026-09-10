@@ -3,7 +3,6 @@
     xmlns:core="sap.ui.core">
 
     <Dialog id="chatDialog" title="{i18n>aiChat}"
-        contentHeight="65vh" contentWidth="92%"
         verticalScrolling="false"
         stretch="true">
 
