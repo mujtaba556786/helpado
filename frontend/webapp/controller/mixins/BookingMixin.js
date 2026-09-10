@@ -4,9 +4,14 @@ sap.ui.define([
     "sap/m/Popover",
     "sap/m/List",
     "sap/m/StandardListItem",
+    "sap/m/CustomListItem",
+    "sap/m/HBox",
+    "sap/m/Text",
+    "sap/ui/core/Icon",
     "helphub/config",
     "sap/ui/core/format/DateFormat"
-], function(MessageToast, MessageBox, Popover, List, StandardListItem, Config, DateFormat) {
+], function(MessageToast, MessageBox, Popover, List, StandardListItem, CustomListItem,
+            HBox, Text, Icon, Config, DateFormat) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -274,11 +279,25 @@ sap.ui.define([
                     that._applyBookingFilter();
                     oPopover.close();
                 },
+                // StandardListItem gives its icon a fixed 44px box but lets the
+                // glyph inherit the app's line-height, which scales with the
+                // system font. Measured on the test device at 1.3x: root font
+                // 20.8px, line-height 57.2px, glyph content 57px tall inside a
+                // 44px box — so the icons rendered clipped. Setting size and
+                // width on an Icon pins its own line box, which the inherited
+                // one can no longer override. Same fix as the category filter.
                 items: this._aBookingStatusOptions.map(function(opt) {
-                    var oLI = new StandardListItem({
-                        title:    oBundle.getText(opt.key),
-                        icon:     opt.icon,
-                        selected: opt.value === sCurrent
+                    var oIcon = new Icon({ src: opt.icon, size: "1.25rem", width: "1.75rem" });
+                    oIcon.addStyleClass("sapUiTinyMarginEnd");
+
+                    var oLI = new CustomListItem({
+                        selected: opt.value === sCurrent,
+                        content: [
+                            new HBox({
+                                alignItems: "Center",
+                                items: [oIcon, new Text({ text: oBundle.getText(opt.key) })]
+                            }).addStyleClass("sapUiSmallMarginBegin sapUiTinyMarginTopBottom")
+                        ]
                     });
                     oLI.data("status", opt.value);
                     return oLI;
