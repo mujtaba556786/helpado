@@ -662,11 +662,16 @@ xmlns:l="sap.ui.layout"
                                     <ObjectStatus text="PRO" state="Success"
                                         visible="{= ${appData>subscription_plan} === 'pro'}"
                                         class="hhExpertTag fiProBadge"/>
-                                    <ObjectStatus
-                                        text="{= ${appData>trust_level} === 'trusted_user' ? '✓ Trusted' : '✓ Verified' }"
-                                        state="{= ${appData>trust_level} === 'trusted_user' ? 'Success' : 'Information' }"
-                                        visible="{= ${appData>trust_level} === 'trusted_user' || ${appData>trust_level} === 'verified_user' }"
-                                        class="hhExpertTag"/>
+                                    <!-- Was a "✓ Verified" badge bound to trust_level, which no
+                                         endpoint returns — so it never rendered, and would have
+                                         claimed an identity check that does not exist. Replaced
+                                         with two facts the database can prove. -->
+                                    <Text text="{path:'appData>completed_jobs', formatter:'.formatJobsCompleted'}"
+                                        visible="{= ${appData>completed_jobs} > 0 }"
+                                        class="hhExpertTag hhExpertTagPlain"/>
+                                    <Text text="{path:'appData>created_at', formatter:'.formatMemberSince'}"
+                                        visible="{= !!${appData>created_at} }"
+                                        class="hhExpertTag hhExpertTagPlain"/>
                                     <Text text="{appData>years} yrs exp" class="hhExpertTag hhExpertTagPlain"/>
                                     <Text text="{appData>languages}"     class="hhExpertTag hhExpertTagPlain"/>
                                 </HBox>

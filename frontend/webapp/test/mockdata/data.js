@@ -71,6 +71,8 @@ sap.ui.define([], function () {
     var PROVIDERS = [
         {
             id: "p1",
+            created_at: new Date(Date.now() - 540*86400000).toISOString(),
+            completed_jobs: 12,
             name: "Sarah Martinez",
             photo: "https://randomuser.me/api/portraits/women/65.jpg",
             bio: "Urban gardening expert with 3 years experience.",
@@ -93,6 +95,8 @@ sap.ui.define([], function () {
         },
         {
             id: "p2",
+            created_at: new Date(Date.now() - 1200*86400000).toISOString(),
+            completed_jobs: 4,
             name: "Emma Johnson",
             photo: "https://randomuser.me/api/portraits/women/44.jpg",
             bio: "Certified childcare specialist, 5 years experience.",
@@ -115,6 +119,8 @@ sap.ui.define([], function () {
         },
         {
             id: "p3",
+            created_at: new Date(Date.now() - 210*86400000).toISOString(),
+            completed_jobs: 0,
             name: "Raj Patel",
             photo: "https://randomuser.me/api/portraits/men/29.jpg",
             bio: "Home chef specialising in Indian cuisine.",
@@ -137,6 +143,8 @@ sap.ui.define([], function () {
         },
         {
             id: "p4",
+            created_at: new Date(Date.now() - 780*86400000).toISOString(),
+            completed_jobs: 27,
             name: "Lisa Chen",
             photo: "https://randomuser.me/api/portraits/women/52.jpg",
             bio: "Professional home cleaner, eco-friendly products.",
@@ -159,6 +167,8 @@ sap.ui.define([], function () {
         },
         {
             id: "p5",
+            created_at: new Date(Date.now() - 390*86400000).toISOString(),
+            completed_jobs: 6,
             name: "Tom Walker",
             photo: "https://randomuser.me/api/portraits/men/41.jpg",
             bio: "Reliable home cleaner, flexible hours.",
@@ -181,6 +191,8 @@ sap.ui.define([], function () {
         },
         {
             id: "p6",
+            created_at: new Date(Date.now() - 90*86400000).toISOString(),
+            completed_jobs: 1,
             name: "Anna Schmidt",
             photo: "https://randomuser.me/api/portraits/women/30.jpg",
             bio: "Deep clean specialist, offices and homes.",
@@ -203,6 +215,8 @@ sap.ui.define([], function () {
         },
         {
             id: "p7",
+            created_at: new Date(Date.now() - 930*86400000).toISOString(),
+            completed_jobs: 15,
             name: "Marco Rossi",
             photo: "https://randomuser.me/api/portraits/men/55.jpg",
             bio: "Handyman — plumbing, electrics, general repairs.",
@@ -225,6 +239,8 @@ sap.ui.define([], function () {
         },
         {
             id: "p8",
+            created_at: new Date(Date.now() - 270*86400000).toISOString(),
+            completed_jobs: 3,
             name: "Grace Okafor",
             photo: "https://randomuser.me/api/portraits/women/32.jpg",
             bio: "Elder care assistant \u2014 companionship, mobility support and daily routines.",

@@ -37,7 +37,21 @@ sap.ui.define([
                 var aPanels = oDialog.findAggregatedObjects(true, function (c) {
                     return c.isA("sap.m.Panel");
                 });
-                Opa5.assert.ok(aPanels.length >= 6, "FAQ has " + aPanels.length + " questions");
+                Opa5.assert.ok(aPanels.length >= 7, "FAQ has " + aPanels.length + " questions");
+
+                // The app performs no identity check. The FAQ must say so, in
+                // the place users look for answers rather than only in Terms.
+                var aHeaders = aPanels.map(function (p) { return p.getHeaderText(); });
+                var iChecks = aHeaders.findIndex(function (s) { return /check/i.test(s); });
+                Opa5.assert.ok(iChecks >= 0, "FAQ explains how helpers are checked");
+                var aChecksText = aPanels[iChecks].findAggregatedObjects(true, function (c) {
+                    return c.isA("sap.m.Text");
+                });
+                var sAnswer = aChecksText.length ? aChecksText[0].getText() : "";
+                Opa5.assert.ok(/do not check/i.test(sAnswer),
+                    "the answer states plainly what is NOT checked");
+                Opa5.assert.ok(/email/i.test(sAnswer),
+                    "the answer names what IS confirmed (email)");
 
                 // Each question must actually carry an answer — an empty panel
                 // would repeat the original sin of promising help and giving none.

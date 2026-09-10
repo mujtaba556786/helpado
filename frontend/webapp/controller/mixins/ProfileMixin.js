@@ -1,7 +1,8 @@
 sap.ui.define([
     "sap/m/MessageToast",
-    "helphub/config"
-], function(MessageToast, Config) {
+    "helphub/config",
+    "sap/ui/core/format/DateFormat"
+], function(MessageToast, Config, DateFormat) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -248,11 +249,28 @@ sap.ui.define([
         },
 
         // ── Profile overflow (safety actions) ─────────────────────────────
-        formatTrustLabel: function (sLevel) {
+        /**
+         * Replaces formatTrustLabel, which printed "Verified User" for anyone
+         * whose internal moderation score passed 40 — a number made of account
+         * age, completed bookings, rating and absence of reports. No identity
+         * check exists anywhere in the product, so the label claimed something
+         * untrue at the exact moment a customer decides who to let into their
+         * home. These two formatters state only what the database can prove.
+         */
+        formatMemberSince: function (vCreatedAt) {
+            if (!vCreatedAt) { return ""; }
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-            if (sLevel === "trusted_user")  { return oBundle.getText("trustTrusted"); }
-            if (sLevel === "verified_user") { return oBundle.getText("trustVerified"); }
-            return oBundle.getText("trustNew");
+            var oDate = new Date(vCreatedAt);
+            if (isNaN(oDate.getTime())) { return ""; }
+            var sWhen = DateFormat.getDateInstance({ pattern: "MMMM yyyy" }).format(oDate);
+            return oBundle.getText("profileMemberSince", [sWhen]);
+        },
+
+        formatJobsCompleted: function (vCount) {
+            var iCount = parseInt(vCount, 10);
+            if (!iCount || iCount < 1) { return ""; }
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            return oBundle.getText("profileJobsCompleted", [iCount]);
         },
 
         formatBio: function (sBio) {
