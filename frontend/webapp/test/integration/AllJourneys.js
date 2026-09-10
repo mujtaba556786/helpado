@@ -20,6 +20,7 @@
  *  LoginJourney         — brand logo, subtitle, neighbourhood scene, Sign In contrast
  *  HelpFaqJourney       — real FAQ content, settings section labels not duplicated
  *  HeaderJourney        — header items centred on the bar, equal targets and gaps
+ *  BottomNavJourney     — one selected tab, even widths, readable labels both states
  */
 sap.ui.define([
     "helphub/test/integration/journeys/DashboardJourney",
@@ -35,7 +36,8 @@ sap.ui.define([
     "helphub/test/integration/journeys/PolishJourney",
     "helphub/test/integration/journeys/LoginJourney",
     "helphub/test/integration/journeys/HelpFaqJourney",
-    "helphub/test/integration/journeys/HeaderJourney"
+    "helphub/test/integration/journeys/HeaderJourney",
+    "helphub/test/integration/journeys/BottomNavJourney"
 ], function () {
     "use strict";
     QUnit.start();

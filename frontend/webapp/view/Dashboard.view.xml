@@ -494,17 +494,29 @@ xmlns:l="sap.ui.layout"
 
                             <!-- Find Help -->
                             <Button icon="sap-icon://search" text="{i18n>findHelp}" press="onBottomNavSelect"
-                                type="{= ${appData>/currentTab} === 'findHelp' ? 'Emphasized' : 'Transparent'}"
+                                type="Transparent"
                                 class="hhNavBtn">
-                                <customData><core:CustomData key="tab" value="findHelp"/></customData>
+                                <customData>
+                                    <core:CustomData key="tab" value="findHelp"/>
+                                    <!-- writeToDom renders data-hhsel; a class="{= }" binding
+                                         silently renders nothing in UI5. -->
+                                    <core:CustomData key="hhsel" writeToDom="true"
+                                        value="{= ${appData>/currentTab} === 'findHelp' ? 'true' : 'false' }"/>
+                                </customData>
                             </Button>
 
                             <!-- Tasks (with count badge) -->
                             <HBox width="100%" class="hhNavBtnWrap" alignItems="Center" justifyContent="Center">
                                 <Button icon="sap-icon://task" text="{i18n>tasks}" press="onBottomNavSelect"
-                                    type="{= ${appData>/currentTab} === 'tasks' ? 'Emphasized' : 'Transparent'}"
+                                    type="Transparent"
                                     class="hhNavBtn">
-                                    <customData><core:CustomData key="tab" value="tasks"/></customData>
+                                    <customData>
+                                    <core:CustomData key="tab" value="tasks"/>
+                                    <!-- writeToDom renders data-hhsel; a class="{= }" binding
+                                         silently renders nothing in UI5. -->
+                                    <core:CustomData key="hhsel" writeToDom="true"
+                                        value="{= ${appData>/currentTab} === 'tasks' ? 'true' : 'false' }"/>
+                                </customData>
                                 </Button>
                                 <core:HTML content="{= ${appData>/openTaskCount} > 0 ? '&lt;span class=&quot;hhNavBadge&quot;&gt;' + (${appData>/openTaskCount} > 9 ? &apos;9+&apos; : ${appData>/openTaskCount}) + '&lt;/span&gt;' : ''}"/>
                             </HBox>
@@ -512,25 +524,43 @@ xmlns:l="sap.ui.layout"
                             <!-- Messages (with unread badge) -->
                             <HBox width="100%" class="hhNavBtnWrap" alignItems="Center" justifyContent="Center">
                                 <Button icon="sap-icon://discussion" text="{i18n>messages}" press="onBottomNavSelect"
-                                    type="{= ${appData>/currentTab} === 'messages' ? 'Emphasized' : 'Transparent'}"
+                                    type="Transparent"
                                     class="hhNavBtn">
-                                    <customData><core:CustomData key="tab" value="messages"/></customData>
+                                    <customData>
+                                    <core:CustomData key="tab" value="messages"/>
+                                    <!-- writeToDom renders data-hhsel; a class="{= }" binding
+                                         silently renders nothing in UI5. -->
+                                    <core:CustomData key="hhsel" writeToDom="true"
+                                        value="{= ${appData>/currentTab} === 'messages' ? 'true' : 'false' }"/>
+                                </customData>
                                 </Button>
                                 <core:HTML content="{= ${appData>/unreadDmCount} > 0 ? '&lt;span class=&quot;hhNavBadge&quot;&gt;' + (${appData>/unreadDmCount} > 9 ? &apos;9+&apos; : ${appData>/unreadDmCount}) + '&lt;/span&gt;' : ''}"/>
                             </HBox>
 
                             <!-- Schedule -->
                             <Button icon="sap-icon://calendar" text="{i18n>mySchedule}" press="onBottomNavSelect"
-                                type="{= ${appData>/currentTab} === 'mySchedule' ? 'Emphasized' : 'Transparent'}"
+                                type="Transparent"
                                 class="hhNavBtn">
-                                <customData><core:CustomData key="tab" value="mySchedule"/></customData>
+                                <customData>
+                                    <core:CustomData key="tab" value="mySchedule"/>
+                                    <!-- writeToDom renders data-hhsel; a class="{= }" binding
+                                         silently renders nothing in UI5. -->
+                                    <core:CustomData key="hhsel" writeToDom="true"
+                                        value="{= ${appData>/currentTab} === 'mySchedule' ? 'true' : 'false' }"/>
+                                </customData>
                             </Button>
 
                             <!-- Saved -->
                             <Button icon="sap-icon://heart" text="{i18n>saved}" press="onBottomNavSelect"
-                                type="{= ${appData>/currentTab} === 'saved' ? 'Emphasized' : 'Transparent'}"
+                                type="Transparent"
                                 class="hhNavBtn">
-                                <customData><core:CustomData key="tab" value="saved"/></customData>
+                                <customData>
+                                    <core:CustomData key="tab" value="saved"/>
+                                    <!-- writeToDom renders data-hhsel; a class="{= }" binding
+                                         silently renders nothing in UI5. -->
+                                    <core:CustomData key="hhsel" writeToDom="true"
+                                        value="{= ${appData>/currentTab} === 'saved' ? 'true' : 'false' }"/>
+                                </customData>
                             </Button>
 
                         </HBox>
