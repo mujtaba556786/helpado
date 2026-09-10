@@ -1,33 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Helpado">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Helpado">
     <defs>
         <linearGradient id="hhTile" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#3FA96D"/>
+            <stop offset="0" stop-color="#43AE71"/>
             <stop offset="1" stop-color="#1C7449"/>
-        </linearGradient>
-        <linearGradient id="hhHeart" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#3FA96D"/>
-            <stop offset="1" stop-color="#227C4F"/>
         </linearGradient>
     </defs>
 
     <!-- Rounded app tile -->
     <rect width="512" height="512" rx="116" ry="116" fill="url(#hhTile)"/>
 
-    <!-- Ground ellipse the pin stands on -->
-    <ellipse cx="256" cy="416" rx="118" ry="34" fill="#FFFFFF" opacity="0.28"/>
-
-    <!-- Map pin: circular head with a tapered tip -->
-    <path d="M256 438
-             C256 438 140 330 140 250
-             a116 116 0 1 1 232 0
-             c0 80 -116 188 -116 188 Z"
+    <!-- House drawn as ONE white silhouette (roof + body), so the mark stays a
+         single closed shape and survives 48dp on the launcher. -->
+    <path d="M256 96 L444 254 a16 16 0 0 1 -10 28 L410 282 L410 400
+             a20 20 0 0 1 -20 20 L122 420 a20 20 0 0 1 -20 -20 L102 282
+             L78 282 a16 16 0 0 1 -10 -28 Z"
           fill="#FFFFFF"/>
 
-    <!-- Heart inside the pin -->
-    <path d="M256 306
-             c-62 -40 -84 -74 -60 -104
-             c15 -19 44 -18 60 4
-             c16 -22 45 -23 60 -4
-             c24 30 2 64 -60 104 Z"
-          fill="url(#hhHeart)"/>
+    <!-- Heart knocked out of the house in the tile green -->
+    <path d="M256 372
+             c-58 -38 -78 -70 -56 -98
+             c14 -18 41 -17 56 4
+             c15 -21 42 -22 56 -4
+             c22 28 2 60 -56 98 Z"
+          fill="url(#hhTile)"/>
 </svg>

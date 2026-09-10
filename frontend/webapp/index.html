@@ -25,9 +25,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Helpado">
 
-    <!-- App Icon — Helpado 'H' letterform, matching res/icon/* PNGs -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234FB584'/%3E%3Cg fill='%23fff'%3E%3Crect x='19.2' y='17.3' width='6.7' height='29.4' rx='3.35'/%3E%3Crect x='38.1' y='17.3' width='6.7' height='29.4' rx='3.35'/%3E%3Crect x='19.2' y='29.1' width='25.6' height='5.8' rx='2.9'/%3E%3C/g%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%234FB584'/%3E%3Cg fill='%23fff'%3E%3Crect x='54' y='48.6' width='18.9' height='82.8' rx='9.45'/%3E%3Crect x='107.1' y='48.6' width='18.9' height='82.8' rx='9.45'/%3E%3Crect x='54' y='81.9' width='72' height='16.2' rx='8.1'/%3E%3C/g%3E%3C/svg%3E">
+    <!-- App Icon — Helpado house-and-heart mark, matching res/icon/* PNGs -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27116%27%20fill%3D%27%232E8B57%27%2F%3E%3Cpath%20d%3D%27M256%2096%20L444%20254%20a16%2016%200%200%201%20-10%2028%20L410%20282%20L410%20400%20a20%2020%200%200%201%20-20%2020%20L122%20420%20a20%2020%200%200%201%20-20%20-20%20L102%20282%20L78%20282%20a16%2016%200%200%201%20-10%20-28%20Z%27%20fill%3D%27%23fff%27%2F%3E%3Cpath%20d%3D%27M256%20372%20c-58%20-38%20-78%20-70%20-56%20-98%20c14%20-18%2041%20-17%2056%204%20c15%20-21%2042%20-22%2056%20-4%20c22%2028%202%2060%20-56%2098%20Z%27%20fill%3D%27%232E8B57%27%2F%3E%3C%2Fsvg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27116%27%20fill%3D%27%232E8B57%27%2F%3E%3Cpath%20d%3D%27M256%2096%20L444%20254%20a16%2016%200%200%201%20-10%2028%20L410%20282%20L410%20400%20a20%2020%200%200%201%20-20%2020%20L122%20420%20a20%2020%200%200%201%20-20%20-20%20L102%20282%20L78%20282%20a16%2016%200%200%201%20-10%20-28%20Z%27%20fill%3D%27%23fff%27%2F%3E%3Cpath%20d%3D%27M256%20372%20c-58%20-38%20-78%20-70%20-56%20-98%20c14%20-18%2041%20-17%2056%204%20c15%20-21%2042%20-22%2056%20-4%20c22%2028%202%2060%20-56%2098%20Z%27%20fill%3D%27%232E8B57%27%2F%3E%3C%2Fsvg%3E">
 
 
     <style>
@@ -36,14 +36,14 @@
         }
     </style>
     <!-- App stylesheet — bump ?v= whenever style.css changes to bust browser cache -->
-    <link rel="stylesheet" href="css/style.css?v=3.18">
+    <link rel="stylesheet" href="css/style.css?v=3.19">
 
     <!-- Cache-bust helphub app JS modules — SAP UI5 loads controller/mixin files via
          <script> tags, so we intercept the HTMLScriptElement src setter before UI5
          boots. Bump _HH_BUILD whenever JS files change to force a fresh fetch. -->
     <script>
         (function () {
-            var _HH_BUILD = '3.18';
+            var _HH_BUILD = '3.19';
             // Exposed so the Settings > About panel shows the real build instead of
             // a hand-typed version string (it had drifted to 2.44).
             window._HH_BUILD = _HH_BUILD;
