@@ -4,9 +4,15 @@ sap.ui.define([
     "sap/m/Popover",
     "sap/m/List",
     "sap/m/StandardListItem",
+    "sap/m/CustomListItem",
+    "sap/m/HBox",
+    "sap/m/Text",
+    "sap/m/Image",
+    "sap/ui/core/Icon",
     "helphub/config",
     "sap/ui/core/format/DateFormat"
-], function(MessageToast, MessageBox, Popover, List, StandardListItem, Config, DateFormat) {
+], function(MessageToast, MessageBox, Popover, List, StandardListItem, CustomListItem,
+            HBox, Text, Image, Icon, Config, DateFormat) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -99,11 +105,31 @@ sap.ui.define([
                     that._loadTasksFeed();
                     oPopover.close();
                 },
+                // Built from standard controls rather than StandardListItem.
+                // StandardListItem treats an <img> as a thumbnail — 48x48 in an
+                // 80px row against 44x44 in a 44px row for a glyph — and the
+                // only way to reconcile that was overriding SAP's CSS. An Image
+                // and an Icon both take a plain size property, so the row is
+                // consistent using nothing but the controls' own API.
                 items: aCategories.map(function(cat) {
-                    var oLI = new StandardListItem({
-                        title: cat.label,
-                        icon:  cat.icon,
-                        selected: cat.value === sCurrent
+                    var bImage = String(cat.icon || "").indexOf("sap-icon://") !== 0;
+                    var oGraphic = bImage
+                        ? new Image({ src: cat.icon, width: "1.25rem", height: "1.25rem",
+                                      densityAware: false, decorative: true })
+                        // width as well as size: a glyph's natural width varies
+                        // (the filter icon is 18px against 20px for the wrench),
+                        // which shifted the labels by a couple of pixels.
+                        : new Icon({ src: cat.icon, size: "1.25rem", width: "1.25rem" });
+                    oGraphic.addStyleClass("sapUiTinyMarginEnd");
+
+                    var oLI = new CustomListItem({
+                        selected: cat.value === sCurrent,
+                        content: [
+                            new HBox({
+                                alignItems: "Center",
+                                items: [oGraphic, new Text({ text: cat.label })]
+                            }).addStyleClass("sapUiSmallMarginBegin sapUiTinyMarginTopBottom")
+                        ]
                     });
                     oLI.data("cat", cat.value);
                     return oLI;
