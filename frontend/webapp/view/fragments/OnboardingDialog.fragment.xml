@@ -3,8 +3,8 @@
     xmlns:core="sap.ui.core"
     xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 
-    <Dialog id="onboardingDialog" contentWidth="92%" verticalScrolling="true"
-        stretch="{device>/system/phone}">
+    <Dialog id="onboardingDialog" verticalScrolling="true"
+        stretch="true">
         <customHeader>
             <Bar>
                 <contentLeft>

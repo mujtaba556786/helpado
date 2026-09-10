@@ -7,8 +7,7 @@
          your own, and appeared on every profile. -->
     <Dialog id="ratingDialog"
         title="{i18n>rateThisHelper}"
-        contentWidth="92%"
-        stretch="{device>/system/phone}">
+        stretch="true">
 
         <content>
             <VBox class="sapUiMediumMargin">
