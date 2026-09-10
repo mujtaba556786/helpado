@@ -122,6 +122,51 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
     display: flex !important;
     justify-content: center !important;
 }
+/* Tasks and Messages sit inside an extra HBox (it anchors their badge), so they
+   were not direct flex children and sized to their label instead: measured
+   45px for "Tasks" against 79px for "Schedule". The selected pill therefore
+   changed width as you moved between tabs. */
+.hhBottomNav .hhNavBtnWrap {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+}
+/* UI5 wraps every HBox child in its own .sapMFlexItem, so the button inside the
+   badge wrapper sits one level deeper than the row rule reaches and collapsed to
+   its label width — 38px for "Tasks" beside 79px for "Schedule". */
+/* The badge <core:HTML> is a sibling of the button inside this wrapper, so an
+   even flex share gave the button only half the cell. The badge itself is
+   absolutely positioned and needs no width of its own. */
+.hhBottomNav .hhNavBtnWrap > .sapMFlexItem {
+    flex: 0 0 0 !important;
+    min-width: 0 !important;
+}
+.hhBottomNav .hhNavBtnWrap > .sapMFlexItem:first-child {
+    flex: 1 1 0 !important;
+}
+/* ── Selected tab ────────────────────────────────────────────────────────
+   Selection used type="Emphasized" — UI5's PRIMARY ACTION style, a solid
+   #5DBF8A fill with near-black text. In a nav bar that reads as a button
+   someone dropped in, not as the current tab. Now: a soft tint plus brand
+   green at a heavier weight, so selection is carried by colour, weight and
+   background together rather than by a slab of green.
+   Unselected was #4bb87d on white — 2.48:1, below WCAG AA. The polish pass
+   removed the old override expecting sapButton_TextColor to cover it, but
+   transparent buttons do not read that token, so the contrast fix regressed
+   here. #4A5568 measures 7.53:1. */
+.hhBottomNav .hhNavBtn .sapMBtnContent,
+.hhBottomNav .hhNavBtn .sapMBtnIcon.sapUiIcon {
+    color: #4A5568 !important;
+    transition: color 0.15s ease;
+}
+.hhBottomNav .hhNavBtn[data-hhsel="true"] .sapMBtnInner {
+    background: #E6F4EC !important;
+    border-color: transparent !important;
+}
+.hhBottomNav .hhNavBtn[data-hhsel="true"] .sapMBtnContent,
+.hhBottomNav .hhNavBtn[data-hhsel="true"] .sapMBtnIcon.sapUiIcon {
+    color: #1C7449 !important;   /* 5.08:1 on the tint */
+    font-weight: 600 !important;
+}
 /* Nav button outer — fills cell, no side effects */
 .hhNavBtn.sapMBtn {
     display: flex !important;
