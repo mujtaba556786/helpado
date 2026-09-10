@@ -154,6 +154,20 @@ sap.ui.define([
         },
 
         // ── FRAGMENT DIALOG FACTORIES ────────────────────────────────────────────
+        _getHelpFaqDialog: function() {
+            if (!this._pHelpFaqDialog) {
+                this._pHelpFaqDialog = Fragment.load({
+                    id: this.getView().getId(),
+                    name: "helphub.view.fragments.HelpFaqDialog",
+                    controller: this
+                }).then(function(oDialog) {
+                    this.getView().addDependent(oDialog);
+                    return oDialog;
+                }.bind(this));
+            }
+            return this._pHelpFaqDialog;
+        },
+
         _getProfileDialog: function() {
             if (!this._pProfileDialog) {
                 this._pProfileDialog = Fragment.load({
@@ -553,12 +567,30 @@ sap.ui.define([
             this._openLegalPage("Privacy Policy (GDPR)", "/legal/privacy.html");
         },
 
+        /**
+         * Help & FAQ opens the actual FAQ. It used to open an empty mail draft,
+         * which made the item's own description ("Answers to common questions")
+         * untrue, and made it a duplicate of Contact Support.
+         */
         onOpenHelp: function() {
-            window.location.href = "mailto:mujtabaahmed556@gmail.com?subject=Helpado%20Help%20%26%20FAQ";
+            this._getHelpFaqDialog().then(function(oDialog) { oDialog.open(); });
+        },
+
+        onCloseHelpFaq: function() {
+            this._getHelpFaqDialog().then(function(oDialog) { oDialog.close(); });
         },
 
         onContactSupport: function() {
-            window.location.href = "mailto:mujtabaahmed556@gmail.com?subject=Helpado%20Support%20Request";
+            var sUrl = "mailto:" + Config.SUPPORT_EMAIL +
+                       "?subject=" + encodeURIComponent("Helpado support request");
+            // "_system" hands the mailto: to the OS mail app. Assigning
+            // window.location.href inside the Cordova WebView can silently do
+            // nothing, which is how this looked broken on the phone.
+            if (window.cordova && window.cordova.InAppBrowser) {
+                window.cordova.InAppBrowser.open(sUrl, "_system");
+                return;
+            }
+            window.location.href = sUrl;
         },
 
         onLanguageMenu: function(oEvent) {

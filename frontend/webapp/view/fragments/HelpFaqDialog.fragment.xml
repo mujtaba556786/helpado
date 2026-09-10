@@ -1,0 +1,46 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+
+    <!-- A real FAQ. "Help & FAQ" previously opened an empty mail draft, so the
+         item's own description ("Answers to common questions") was untrue. -->
+    <Dialog id="helpFaqDialog"
+        title="{i18n>settingsHelpFaq}"
+        verticalScrolling="true"
+        stretch="true">
+
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <Panel headerText="{i18n>faqFindQ}" expandable="true" expanded="true" class="sapUiTinyMarginBottom">
+                    <Text text="{i18n>faqFindA}"/>
+                </Panel>
+                <Panel headerText="{i18n>faqBookQ}" expandable="true" expanded="false" class="sapUiTinyMarginBottom">
+                    <Text text="{i18n>faqBookA}"/>
+                </Panel>
+                <Panel headerText="{i18n>faqCostQ}" expandable="true" expanded="false" class="sapUiTinyMarginBottom">
+                    <Text text="{i18n>faqCostA}"/>
+                </Panel>
+                <Panel headerText="{i18n>faqTaskQ}" expandable="true" expanded="false" class="sapUiTinyMarginBottom">
+                    <Text text="{i18n>faqTaskA}"/>
+                </Panel>
+                <Panel headerText="{i18n>faqSafetyQ}" expandable="true" expanded="false" class="sapUiTinyMarginBottom">
+                    <Text text="{i18n>faqSafetyA}"/>
+                </Panel>
+                <Panel headerText="{i18n>faqDataQ}" expandable="true" expanded="false" class="sapUiTinyMarginBottom">
+                    <Text text="{i18n>faqDataA}"/>
+                </Panel>
+
+                <Text text="{i18n>faqStillStuck}" class="sapUiSmallMarginTop sapUiTinyMarginBottom"/>
+                <Button id="faqContactSupport" text="{i18n>settingsContactSupport}"
+                    icon="sap-icon://email" type="Emphasized" press="onContactSupport"/>
+            </VBox>
+        </content>
+
+        <endButton>
+            <Button text="{i18n>close}" press="onCloseHelpFaq"/>
+        </endButton>
+
+    </Dialog>
+
+</core:FragmentDefinition>

@@ -13,7 +13,7 @@
 
                 <!-- ── Language ── -->
                 <List showSeparators="None">
-                    <GroupHeaderListItem title="{i18n>changeLanguage}" upperCase="false"/>
+                    <GroupHeaderListItem title="{i18n>settingsLanguageSection}" upperCase="false"/>
                     <StandardListItem
                         title="{i18n>changeLanguage}"
                         icon="sap-icon://world"
