@@ -137,9 +137,21 @@ sap.ui.define([
                     return this.waitFor({
                         controlType: "sap.m.List",
                         viewName: DASHBOARD_VIEW,
-                        matchers: new AggregationFilled({ name: "items" }),
-                        success: function () { Opa5.assert.ok(true, "Provider list has items"); },
-                        errorMessage: "Provider list is empty"
+                        // Pin this to the results list. Matching any filled sap.m.List let the
+                        // assertion be satisfied by an unrelated rendered list, so an empty
+                        // provider result still passed — it hid the missing Elder Care fixture.
+                        matchers: [
+                            function (oList) {
+                                var oBinding = oList.getBinding("items");
+                                return !!oBinding && oBinding.getPath() === "/filteredProviders";
+                            },
+                            new AggregationFilled({ name: "items" })
+                        ],
+                        success: function (aLists) {
+                            Opa5.assert.ok(aLists[0].getItems().length > 0,
+                                "Provider results list has " + aLists[0].getItems().length + " provider(s)");
+                        },
+                        errorMessage: "Provider results list bound to /filteredProviders is empty"
                     });
                 }
             }

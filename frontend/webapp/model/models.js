@@ -247,6 +247,17 @@ sap.ui.define([
 
         // Direct Messaging
         conversations: [],
+        msgSearch: "",
+        msgPinned: [],
+        msgToday: [],
+        msgYesterday: [],
+        msgEarlier: [],
+        msgPinnedVisible: false,
+        msgTodayVisible: false,
+        msgYesterdayVisible: false,
+        msgEarlierVisible: false,
+        msgEmptyNoConvos: true,
+        msgEmptySearch: false,
         unreadDmCount: 0,
         dmMessages: [],
         currentConversation: null,

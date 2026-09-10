@@ -9,6 +9,8 @@ sap.ui.define([
     return {
 
         _loadConversations: function () {
+            // Keep empty groups hidden even before a response or after a failed refresh.
+            this._categorizeMsgConvos();
             var oModel = this.getModel("appData");
             var sUserId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
             if (!sUserId) return;

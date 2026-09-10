@@ -75,4 +75,14 @@ sap.ui.define([
         assert.ok(Array.isArray(oModel.getProperty("/upcomingBookings")), "upcomingBookings is array");
         assert.ok(Array.isArray(oModel.getProperty("/conversations")), "conversations is array");
     });
+    QUnit.test("Messages start with one empty state before any API response", function (assert) {
+        var model = models.createAppDataModel();
+        ["Pinned", "Today", "Yesterday", "Earlier"].forEach(function (group) {
+            assert.strictEqual(model.getProperty("/msg" + group + "Visible"), false, group + " starts hidden");
+            assert.deepEqual(model.getProperty("/msg" + group), [], group + " starts empty");
+        });
+        assert.strictEqual(model.getProperty("/msgEmptyNoConvos"), true, "Empty state is initialized");
+        assert.strictEqual(model.getProperty("/msgEmptySearch"), false, "Search empty state is not shown initially");
+        model.destroy();
+    });
 });

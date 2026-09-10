@@ -240,12 +240,12 @@ xmlns:l="sap.ui.layout"
                                     </VBox>
 
                                     <!-- ── Pinned section ── -->
-                                    <VBox visible="{appData>/msgPinnedVisible}">
+                                    <VBox id="msgPinnedGroup" visible="{appData>/msgPinnedVisible}">
                                         <HBox class="hhMsgSectionHdr" alignItems="Center">
-                                            <core:Icon src="sap-icon://bookmark" size="0.9rem" color="Highlight"/>
+                                            <core:Icon src="sap-icon://bookmark" size="0.9rem" color="Neutral"/>
                                             <Text text="{i18n>msgPinned}" class="hhMsgSectionLabel"/>
                                         </HBox>
-                                        <List items="{appData>/msgPinned}" showSeparators="None" class="hhMsgList">
+                                        <List items="{appData>/msgPinned}" showNoData="false" showSeparators="None" class="hhMsgList">
                                             <CustomListItem type="Active" press="onOpenDmChat" class="hhMsgItem">
                                                 <customData>
                                                     <core:CustomData key="hhunread" writeToDom="true"
@@ -269,9 +269,9 @@ xmlns:l="sap.ui.layout"
                                     </VBox>
 
                                     <!-- ── Today section ── -->
-                                    <VBox visible="{appData>/msgTodayVisible}">
+                                    <VBox id="msgTodayGroup" visible="{appData>/msgTodayVisible}">
                                         <Text text="{i18n>msgToday}" class="hhMsgSectionLabel hhMsgSectionLabelSpaced"/>
-                                        <List items="{appData>/msgToday}" showSeparators="None" class="hhMsgList">
+                                        <List items="{appData>/msgToday}" showNoData="false" showSeparators="None" class="hhMsgList">
                                             <CustomListItem type="Active" press="onOpenDmChat" class="hhMsgItem">
                                                 <customData>
                                                     <core:CustomData key="hhunread" writeToDom="true"
@@ -295,9 +295,9 @@ xmlns:l="sap.ui.layout"
                                     </VBox>
 
                                     <!-- ── Yesterday section ── -->
-                                    <VBox visible="{appData>/msgYesterdayVisible}">
+                                    <VBox id="msgYesterdayGroup" visible="{appData>/msgYesterdayVisible}">
                                         <Text text="{i18n>msgYesterday}" class="hhMsgSectionLabel hhMsgSectionLabelSpaced"/>
-                                        <List items="{appData>/msgYesterday}" showSeparators="None" class="hhMsgList">
+                                        <List items="{appData>/msgYesterday}" showNoData="false" showSeparators="None" class="hhMsgList">
                                             <CustomListItem type="Active" press="onOpenDmChat" class="hhMsgItem">
                                                 <customData>
                                                     <core:CustomData key="hhunread" writeToDom="true"
@@ -321,9 +321,9 @@ xmlns:l="sap.ui.layout"
                                     </VBox>
 
                                     <!-- ── Earlier section ── -->
-                                    <VBox visible="{appData>/msgEarlierVisible}">
+                                    <VBox id="msgEarlierGroup" visible="{appData>/msgEarlierVisible}">
                                         <Text text="{i18n>msgEarlier}" class="hhMsgSectionLabel hhMsgSectionLabelSpaced"/>
-                                        <List items="{appData>/msgEarlier}" showSeparators="None" class="hhMsgList">
+                                        <List items="{appData>/msgEarlier}" showNoData="false" showSeparators="None" class="hhMsgList">
                                             <CustomListItem type="Active" press="onOpenDmChat" class="hhMsgItem">
                                                 <customData>
                                                     <core:CustomData key="hhunread" writeToDom="true"
@@ -347,10 +347,13 @@ xmlns:l="sap.ui.layout"
                                     </VBox>
 
                                     <!-- ── Empty state: no conversations ── -->
-                                    <VBox visible="{appData>/msgEmptyNoConvos}" class="hhMsgEmpty" alignItems="Center">
+                                    <VBox id="messagesEmptyState" visible="{appData>/msgEmptyNoConvos}" class="sapUiLargeMarginTop sapUiSmallMarginBottom" alignItems="Center">
                                         <core:Icon src="sap-icon://discussion" size="3.25rem" class="hhMsgEmptyIcon"/>
-                                        <Title text="{i18n>noMessagesYet}" level="H5" class="textCenter sapUiSmallMarginTop"/>
-                                        <Text text="{i18n>msgEmptyHint}" class="grayText smallText textCenter sapUiTinyMarginTop" wrapping="true"/>
+                                        <Title text="{i18n>noMessagesYet}" level="H4" wrapping="true" class="sapUiSmallMarginTop"/>
+                                        <Text text="{i18n>msgEmptyHint}" textAlign="Center" class="sapUiTinyMarginTop sapUiSmallMarginBottom" wrapping="true"/>
+                                        <Button id="messagesFindHelp" text="{i18n>findHelpers}" type="Emphasized" press="onBottomNavSelect">
+                                            <customData><core:CustomData key="tab" value="findHelp"/></customData>
+                                        </Button>
                                     </VBox>
 
                                     <!-- ── Empty state: no search results ── -->
@@ -433,7 +436,7 @@ xmlns:l="sap.ui.layout"
                                          previously filled the top half and pushed the actual
                                          saved list below the fold. -->
                                     <Title text="{i18n>savedHelpers}" level="H4" class="sapUiSmallMarginTop sapUiSmallMarginBottom"/>
-                                    <List id="favoritesList" items="{appData>/favoriteProviders}" noDataText="{i18n>noSavedHelpers}" class="fiCardList">
+                                    <List id="favoritesList" visible="{= ${appData>/favoriteProviders}.length > 0 }" items="{appData>/favoriteProviders}" noDataText="{i18n>noSavedHelpers}" class="fiCardList">
                                         <CustomListItem class="fiPersonCard">
                                             <HBox class="fiPersonCardInner" justifyContent="SpaceBetween" alignItems="Center">
                                                 <HBox alignItems="Center">
@@ -454,9 +457,15 @@ xmlns:l="sap.ui.layout"
                                             </HBox>
                                         </CustomListItem>
                                     </List>
+                                    <VBox id="savedEmptyState" visible="{= ${appData>/favoriteProviders}.length === 0 }" alignItems="Center" class="sapUiLargeMarginTop sapUiMediumMarginBottom">
+                                        <Text text="{i18n>noSavedHelpers}" textAlign="Center" wrapping="true" class="sapUiSmallMarginBottom"/>
+                                        <Button id="savedFindHelp" text="{i18n>findHelpers}" type="Emphasized" press="onBottomNavSelect">
+                                            <customData><core:CustomData key="tab" value="findHelp"/></customData>
+                                        </Button>
+                                    </VBox>
                                     <!-- Recently Viewed -->
-                                    <Title text="{i18n>recentlyViewed}" level="H4" class="sapUiSmallMarginBottom"/>
-                                    <List id="recentlyViewedList" items="{appData>/recentlyViewed}" noDataText="{i18n>noHelpersViewed}" class="fiCardList">
+                                    <Title visible="{= ${appData>/recentlyViewed}.length > 0 }" text="{i18n>recentlyViewed}" level="H4" class="sapUiSmallMarginBottom"/>
+                                    <List id="recentlyViewedList" visible="{= ${appData>/recentlyViewed}.length > 0 }" items="{appData>/recentlyViewed}" noDataText="{i18n>noHelpersViewed}" class="fiCardList">
                                         <CustomListItem class="fiPersonCard">
                                             <HBox class="fiPersonCardInner" justifyContent="SpaceBetween" alignItems="Center">
                                                 <HBox alignItems="Center">
@@ -491,7 +500,7 @@ xmlns:l="sap.ui.layout"
                             </Button>
 
                             <!-- Tasks (with count badge) -->
-                            <HBox class="hhNavBtnWrap" alignItems="Center" justifyContent="Center">
+                            <HBox width="100%" class="hhNavBtnWrap" alignItems="Center" justifyContent="Center">
                                 <Button icon="sap-icon://task" text="{i18n>tasks}" press="onBottomNavSelect"
                                     type="{= ${appData>/currentTab} === 'tasks' ? 'Emphasized' : 'Transparent'}"
                                     class="hhNavBtn">
@@ -501,7 +510,7 @@ xmlns:l="sap.ui.layout"
                             </HBox>
 
                             <!-- Messages (with unread badge) -->
-                            <HBox class="hhNavBtnWrap" alignItems="Center" justifyContent="Center">
+                            <HBox width="100%" class="hhNavBtnWrap" alignItems="Center" justifyContent="Center">
                                 <Button icon="sap-icon://discussion" text="{i18n>messages}" press="onBottomNavSelect"
                                     type="{= ${appData>/currentTab} === 'messages' ? 'Emphasized' : 'Transparent'}"
                                     class="hhNavBtn">
@@ -720,7 +729,10 @@ xmlns:l="sap.ui.layout"
                         <Text id="photoError" text="" class="errorText" visible="false"/>
                     </VBox>
 
-                                    <f:SimpleForm editable="true" layout="ResponsiveGridLayout" columnsL="2" columnsM="2">
+                                    <f:SimpleForm id="profileForm" editable="true" layout="ResponsiveGridLayout"
+                                        columnsXL="1" columnsL="1" columnsM="1"
+                                        labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12"
+                                        adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0">
 
                                         <!-- Basic Info -->
                                         <core:Title text="{i18n>basicInfo}"/>
@@ -749,6 +761,7 @@ xmlns:l="sap.ui.layout"
                                         <Input value="{appData>/user/rate}" type="Number"/>
 
                                         <Label text="{i18n>availability}"/>
+                                        <VBox id="profileAvailability" width="100%">
                                         <!-- Quick picks row -->
                                         <FlexBox wrap="Wrap" class="sapUiTinyMarginBottom">
                                             <Button text="{i18n>allDay}" press="onAvailabilityToggle" type="{= ${appData>/user/availabilityFlags/all_day} ? 'Emphasized' : 'Default'}" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
@@ -790,6 +803,8 @@ xmlns:l="sap.ui.layout"
                                                 </customData>
                                             </Button>
                                         </FlexBox>
+
+                                        </VBox>
 
                                         <Label text="{i18n>yearsOfExperience}"/>
                                         <Input value="{appData>/user/years}" type="Number"/>

@@ -141,13 +141,6 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 }
 /* Higher specificity to beat SAP Bar theme hiding labels */
 .hhBottomNav .hhNavBtn .sapMBtnContent { display: block !important; }
-/* Nav label colour. The theme green #4BB87D on white measures 2.48:1 — well
-   under WCAG AA 4.5:1 — and at this size that is the primary navigation being
-   hard to read. #2F855A is the same hue darkened to ~4.5:1. */
-.hhBottomNav .hhNavBtn .sapMBtnContent,
-.hhBottomNav .hhNavBtn .sapMBtnIcon.sapUiIcon {
-    color: #2F855A !important;
-}
 /* Badge on Tasks / Messages */
 .hhNavBtnWrap {
     position: relative;

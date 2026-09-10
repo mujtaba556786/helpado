@@ -27,7 +27,8 @@ sap.ui.define([
     "helphub/test/integration/journeys/NotificationsJourney",
     "helphub/test/integration/journeys/NavigationJourney",
     "helphub/test/integration/journeys/AboutJourney",
-    "helphub/test/integration/journeys/BookingJourney"
+    "helphub/test/integration/journeys/BookingJourney",
+    "helphub/test/integration/journeys/PolishJourney"
 ], function () {
     "use strict";
     QUnit.start();
