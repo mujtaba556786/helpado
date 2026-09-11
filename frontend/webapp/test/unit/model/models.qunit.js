@@ -85,4 +85,48 @@ sap.ui.define([
         assert.strictEqual(model.getProperty("/msgEmptySearch"), false, "Search empty state is not shown initially");
         model.destroy();
     });
+
+    // The profile availability buttons highlight off these flags. The server sends
+    // a comma string, so a missed derivation shows every button unselected even
+    // though the selection was saved — which is exactly what happened on reopen.
+    QUnit.module("models.availabilityFlags");
+
+    QUnit.test("Derives flags from the comma string the server stores", function (assert) {
+        var oFlags = models.availabilityFlags("weekdays,morning,evening");
+        assert.strictEqual(oFlags.weekdays, true,  "weekdays is on");
+        assert.strictEqual(oFlags.morning,  true,  "morning is on");
+        assert.strictEqual(oFlags.evening,  true,  "evening is on");
+        assert.strictEqual(oFlags.weekends, false, "weekends stays off");
+        assert.strictEqual(oFlags.night,    false, "night stays off");
+        assert.strictEqual(oFlags.all_day,  false, "all_day stays off");
+    });
+
+    QUnit.test("Accepts the array form the model already holds", function (assert) {
+        var oFlags = models.availabilityFlags(["weekends", "night"]);
+        assert.strictEqual(oFlags.weekends, true,  "weekends is on");
+        assert.strictEqual(oFlags.night,    true,  "night is on");
+        assert.strictEqual(oFlags.morning,  false, "morning stays off");
+    });
+
+    QUnit.test("all_day round-trips, since the toggle stores it alongside the rest", function (assert) {
+        var oFlags = models.availabilityFlags("all_day,weekdays,weekends,morning,afternoon,evening,night");
+        Object.keys(oFlags).forEach(function (sKey) {
+            assert.strictEqual(oFlags[sKey], true, sKey + " is on");
+        });
+    });
+
+    QUnit.test("Empty, null and unknown keys yield all-false rather than throwing", function (assert) {
+        [undefined, null, "", [], "nonsense,keys"].forEach(function (vInput) {
+            var oFlags = models.availabilityFlags(vInput);
+            assert.strictEqual(Object.keys(oFlags).length, 7, "always returns all 7 flags");
+            var bAnyOn = Object.keys(oFlags).some(function (k) { return oFlags[k]; });
+            assert.strictEqual(bAnyOn, false, "nothing is switched on for " + JSON.stringify(vInput));
+        });
+    });
+
+    QUnit.test("Tolerates the spaces a hand-edited value can carry", function (assert) {
+        var oFlags = models.availabilityFlags("weekdays, morning");
+        assert.strictEqual(oFlags.weekdays, true, "weekdays is on");
+        assert.strictEqual(oFlags.morning,  true, "morning survives the leading space");
+    });
 });

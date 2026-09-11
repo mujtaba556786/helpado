@@ -320,6 +320,7 @@ sap.ui.define([
                 oAppData.setProperty("/user/years",    u.years     || 0);
                 oAppData.setProperty("/user/rate",     u.rate      || 0);
                 oAppData.setProperty("/user/availability",      (u.availability       || "").split(",").filter(Boolean));
+                oAppData.setProperty("/user/availabilityFlags", models.availabilityFlags(u.availability));
                 oAppData.setProperty("/user/serviceCategories", (u.service_categories || "").split(",").filter(Boolean));
                 oAppData.setProperty("/user/address/street",      u.street_name   || "");
                 oAppData.setProperty("/user/address/houseNumber", u.street_number || "");
