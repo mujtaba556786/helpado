@@ -192,6 +192,55 @@ sap.ui.define([
                  * ActionSheet. Both are gone: the two actions are named links at the
                  * foot of the profile, each opening its own dialog in one tap.
                  */
+                /**
+                 * The four fact rows (Rate / Experience / Language / Location) used
+                 * StandardListItem, which sizes its icon box but lets the glyph inherit
+                 * the app line-height — on a phone at 1.3x font scale that clipped every
+                 * one of them. It also let each glyph keep its own natural width, so the
+                 * icons did not start on a common vertical line.
+                 */
+                iSeeAlignedFactIcons: function () {
+                    return this.waitFor({
+                        controlType: "sap.m.Dialog",
+                        matchers: function (oDialog) { return oDialog.getId().indexOf("profileDialog") >= 0; },
+                        success: function (aDialogs) {
+                            var oList;
+                            aDialogs[0].findAggregatedObjects(true, function (c) {
+                                if (!oList && c.isA("sap.m.List")) { oList = c; }
+                                return false;
+                            });
+                            Opa5.assert.ok(oList, "The facts list is present");
+
+                            var aIcons = [];
+                            oList.findAggregatedObjects(true, function (c) {
+                                if (c.isA("sap.ui.core.Icon")) { aIcons.push(c); }
+                                return false;
+                            });
+                            Opa5.assert.strictEqual(aIcons.length, 4, "Four fact icons render");
+
+                            // A shared explicit width is what puts the glyphs on one line;
+                            // without it each icon falls back to its own natural width.
+                            var aWidths = aIcons.map(function (o) { return o.getWidth(); });
+                            var aUnique = aWidths.filter(function (w, i) { return aWidths.indexOf(w) === i; });
+                            Opa5.assert.strictEqual(aUnique.length, 1,
+                                "All four icons share one box width (" + aWidths.join(", ") + ")");
+                            Opa5.assert.ok(aUnique[0],
+                                "That width is set explicitly rather than left to the glyph");
+
+                            aIcons.forEach(function (oIcon) {
+                                Opa5.assert.strictEqual(oIcon.getColor(), "#2E8B57",
+                                    oIcon.getSrc() + " uses the brand green");
+                            });
+
+                            // The list used to run edge to edge while About/Reviews were
+                            // inset, so nothing in the dialog lined up.
+                            Opa5.assert.ok(oList.hasStyleClass("sapUiMediumMarginBeginEnd"),
+                                "The list carries the same side margin as the About block");
+                        },
+                        errorMessage: "Profile dialog facts list not found"
+                    });
+                },
+
                 iSeeTwoDirectSafetyLinks: function () {
                     return this.waitFor({
                         controlType: "sap.m.Dialog",
