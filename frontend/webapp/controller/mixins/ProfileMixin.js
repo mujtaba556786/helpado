@@ -105,21 +105,30 @@ sap.ui.define([
             oModel.setProperty("/selectedProfile", oProvider);
             this._trackRecentlyViewed(oProvider);
 
-            var oStars   = this.byId("newRatingStars");
-            var oComment = this.byId("newRatingComment");
-            if (oStars)   oStars.setValue(0);
-            if (oComment) oComment.setValue("");
+            this._resetRatingForm();
 
             this._setRatingEligibility();
             this._getProfileDialog().then(function(oDialog) { oDialog.open(); }.bind(this));
             this._loadProfileRatings(oProvider.id);
         },
 
+        // The star value lives in the model (see RatingDialog.fragment.xml); the
+        // comment is still read from the TextArea.
+        onPickRatingStar: function(oEvent) {
+            var iStar = parseInt(oEvent.getSource().data("star"), 10);
+            this.getModel("appData").setProperty("/newRating", iStar);
+        },
+
+        _resetRatingForm: function() {
+            this.getModel("appData").setProperty("/newRating", 0);
+            var oComment = this.byId("newRatingComment");
+            if (oComment) oComment.setValue("");
+        },
+
         onSubmitRating: function() {
             var oModel   = this.getModel("appData");
-            var oStars   = this.byId("newRatingStars");
             var oComment = this.byId("newRatingComment");
-            var iStars   = oStars ? oStars.getValue() : 0;
+            var iStars   = oModel.getProperty("/newRating") || 0;
 
             if (!iStars || iStars < 1) {
                 MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("ratingErrNoStars"));
@@ -146,8 +155,7 @@ sap.ui.define([
             .then(function(oData) {
                 if (oData.success) {
                     MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("ratingSubmitted"));
-                    if (oStars)   oStars.setValue(0);
-                    if (oComment) oComment.setValue("");
+                    this._resetRatingForm();
                     this.onCloseRatingDialog();
                     // Note: average and review list only update after admin approval
                     var sId = oModel.getProperty("/selectedProfile/id");
@@ -180,10 +188,7 @@ sap.ui.define([
 
             oModel.setProperty("/selectedProfile", oProfile);
 
-            var oStars   = this.byId("newRatingStars");
-            var oComment = this.byId("newRatingComment");
-            if (oStars)   oStars.setValue(0);
-            if (oComment) oComment.setValue("");
+            this._resetRatingForm();
 
             this._setRatingEligibility();
             this._getProfileDialog().then(function(oDialog) { oDialog.open(); }.bind(this));
@@ -238,10 +243,7 @@ sap.ui.define([
             oModel.setProperty("/selectedProfile", oProfile);
             this._trackRecentlyViewed(oProfile);
 
-            var oStars   = this.byId("newRatingStars");
-            var oComment = this.byId("newRatingComment");
-            if (oStars)   oStars.setValue(0);
-            if (oComment) oComment.setValue("");
+            this._resetRatingForm();
 
             this._setRatingEligibility();
             this._getProfileDialog().then(function(oDialog) { oDialog.open(); }.bind(this));

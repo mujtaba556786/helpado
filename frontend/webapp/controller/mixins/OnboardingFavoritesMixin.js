@@ -227,10 +227,7 @@ sap.ui.define([
             oModel.setProperty("/selectedProfile", oProvider);
             this._trackRecentlyViewed(oProvider);
 
-            var oStars   = this.byId("newRatingStars");
-            var oComment = this.byId("newRatingComment");
-            if (oStars)   oStars.setValue(0);
-            if (oComment) oComment.setValue("");
+            this._resetRatingForm();
 
             this._getProfileDialog().then(function(oDialog) { oDialog.open(); }.bind(this));
 

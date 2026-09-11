@@ -5,16 +5,51 @@
     <!-- Reviewing is its own focused task. It used to be an inline form beneath the
          existing reviews, which blurred reading someone else's opinion with writing
          your own, and appeared on every profile. -->
+    <!-- Not stretched, on purpose. This is a three-field form; full-screen left
+         ~70% of the phone blank with Submit pinned to the bottom edge, a screen
+         away from the comment just typed. Compact, the dialog wraps its content
+         and the buttons sit directly under it. -->
     <Dialog id="ratingDialog"
         title="{i18n>rateThisHelper}"
-        stretch="true">
+        contentWidth="26rem">
 
         <content>
             <VBox class="sapUiMediumMargin">
                 <Text text="{appData>/selectedProfile/name}" class="fontBold sapUiSmallMarginBottom"/>
 
                 <Label text="{i18n>yourRating}" required="true" class="sapUiTinyMarginBottom"/>
-                <RatingIndicator id="newRatingStars" maxValue="5" value="0" class="sapUiSmallMarginBottom"/>
+                <!-- Five tappable Icons, not sap.m.RatingIndicator — same reason as the
+                     profile page (see ProfileDialog.fragment.xml): RatingIndicator sizes
+                     each star slot from the unscaled iconSize, and the WebView's text
+                     zoom (1.3x on the test phone) then draws a bigger glyph into it, so
+                     every star was cut through the middle. No width is set on the icons
+                     so each is exactly as wide as it draws at any zoom. 2rem gives a
+                     ~42px tap target on the device.
+
+                     The chosen value lives in appData>/newRating so the fill state, the
+                     reset on open and the read on submit all share one source. -->
+                <HBox id="newRatingStars" alignItems="Center" class="sapUiSmallMarginBottom">
+                    <core:Icon src="{= ${appData>/newRating} >= 1 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                               size="2rem" color="#D27700" press="onPickRatingStar" class="sapUiTinyMarginEnd">
+                        <core:customData><core:CustomData key="star" value="1"/></core:customData>
+                    </core:Icon>
+                    <core:Icon src="{= ${appData>/newRating} >= 2 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                               size="2rem" color="#D27700" press="onPickRatingStar" class="sapUiTinyMarginEnd">
+                        <core:customData><core:CustomData key="star" value="2"/></core:customData>
+                    </core:Icon>
+                    <core:Icon src="{= ${appData>/newRating} >= 3 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                               size="2rem" color="#D27700" press="onPickRatingStar" class="sapUiTinyMarginEnd">
+                        <core:customData><core:CustomData key="star" value="3"/></core:customData>
+                    </core:Icon>
+                    <core:Icon src="{= ${appData>/newRating} >= 4 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                               size="2rem" color="#D27700" press="onPickRatingStar" class="sapUiTinyMarginEnd">
+                        <core:customData><core:CustomData key="star" value="4"/></core:customData>
+                    </core:Icon>
+                    <core:Icon src="{= ${appData>/newRating} >= 5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                               size="2rem" color="#D27700" press="onPickRatingStar">
+                        <core:customData><core:CustomData key="star" value="5"/></core:customData>
+                    </core:Icon>
+                </HBox>
 
                 <Label text="{i18n>yourComment}" class="sapUiTinyMarginBottom"/>
                 <TextArea id="newRatingComment" rows="4" width="100%"

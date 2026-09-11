@@ -21,6 +21,7 @@
  *  HelpFaqJourney       — real FAQ content, settings section labels not duplicated
  *  HeaderJourney        — header items centred on the bar, equal targets and gaps
  *  BottomNavJourney     — one selected tab, even widths, readable labels both states
+ *  RatingJourney        — tappable star icons write /newRating, empty submit refused, compact dialog
  */
 sap.ui.define([
     "helphub/test/integration/journeys/DashboardJourney",
@@ -37,7 +38,8 @@ sap.ui.define([
     "helphub/test/integration/journeys/LoginJourney",
     "helphub/test/integration/journeys/HelpFaqJourney",
     "helphub/test/integration/journeys/HeaderJourney",
-    "helphub/test/integration/journeys/BottomNavJourney"
+    "helphub/test/integration/journeys/BottomNavJourney",
+    "helphub/test/integration/journeys/RatingJourney"
 ], function () {
     "use strict";
     QUnit.start();
