@@ -99,11 +99,20 @@ sap.ui.define([
                 var aHeaders = oDialog.findAggregatedObjects(true, function (c) {
                     return c.isA("sap.m.GroupHeaderListItem");
                 });
+                // Rows are CustomListItems now, so the label is the first Text inside
+                // each one rather than a title property.
                 var aItems = oDialog.findAggregatedObjects(true, function (c) {
-                    return c.isA("sap.m.StandardListItem");
+                    return c.isA("sap.m.CustomListItem");
                 });
                 var aHeaderTitles = aHeaders.map(function (h) { return h.getTitle(); });
-                var aItemTitles = aItems.map(function (i) { return i.getTitle(); });
+                var aItemTitles = aItems.map(function (oItem) {
+                    var sLabel = "";
+                    oItem.findAggregatedObjects(true, function (c) {
+                        if (!sLabel && c.isA("sap.m.Text")) { sLabel = c.getText(); }
+                        return false;
+                    });
+                    return sLabel;
+                });
 
                 aHeaderTitles.forEach(function (sHeader) {
                     Opa5.assert.strictEqual(aItemTitles.indexOf(sHeader), -1,

@@ -11,65 +11,118 @@
         <content>
             <VBox>
 
-                <!-- ── Language ── -->
-                <List showSeparators="None">
+                <!-- ── Language ──
+                     Rows are CustomListItems, not StandardListItems. StandardListItem
+                     fixes its icon box at 44px but lets the glyph inherit the app's
+                     line-height, which scales with the Android system font: measured on
+                     device at 1.3x that was 57.2px of glyph in a 44px box, clipped on
+                     every row. It also offers no way to colour the icon, which is why
+                     these were the last slate icons in the app. -->
+                <List width="auto" showSeparators="None" class="sapUiSmallMarginBeginEnd">
                     <GroupHeaderListItem title="{i18n>settingsLanguageSection}" upperCase="false"/>
-                    <StandardListItem
-                        title="{i18n>changeLanguage}"
-                        icon="sap-icon://world"
-                       
-                        type="Active"
-                        info="{appData>/currentLanguageLabel}"
-                        press="onLanguageMenu"/>
+                    <CustomListItem type="Active" press="onLanguageMenu">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center" width="100%">
+                                <core:Icon src="sap-icon://world" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <VBox width="100%">
+                                    <Text text="{i18n>changeLanguage}"/>
+                                </VBox>
+                            </HBox>
+                            <Text text="{appData>/currentLanguageLabel}" wrapping="false" class="grayText"/>
+                        </HBox>
+                    </CustomListItem>
                 </List>
 
-                <!-- ── Legal ── -->
-                <List showSeparators="None">
+                <!-- ── Legal ──
+                     viewPrivacy used sap-icon://privacy, which is not in the icon font
+                     (checked against IconPool) — it rendered nothing at all, so that row
+                     had a blank where every other row had an icon. shield exists and
+                     reads distinctly against document-text on the row above. -->
+                <List width="auto" showSeparators="None" class="sapUiSmallMarginBeginEnd">
                     <GroupHeaderListItem title="{i18n>settingsLegalSection}" upperCase="false"/>
-                    <StandardListItem
-                        title="{i18n>viewTerms}"
-                        description="{i18n>aboutTermsDesc}"
-                        icon="sap-icon://document-text"
-                       
-                        type="Active"
-                        press="onViewTerms"/>
-                    <StandardListItem
-                        title="{i18n>viewPrivacy}"
-                        description="{i18n>aboutPrivacyDesc}"
-                        icon="sap-icon://privacy"
-                       
-                        type="Active"
-                        press="onViewPrivacy"/>
+                    <CustomListItem type="Active" press="onViewTerms">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center" width="100%">
+                                <core:Icon src="sap-icon://document-text" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <VBox width="100%">
+                                    <Text text="{i18n>viewTerms}"/>
+                                    <Text text="{i18n>aboutTermsDesc}" wrapping="true" class="grayText"/>
+                                </VBox>
+                            </HBox>
+                        </HBox>
+                    </CustomListItem>
+                    <CustomListItem type="Active" press="onViewPrivacy">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center" width="100%">
+                                <core:Icon src="sap-icon://shield" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <VBox width="100%">
+                                    <Text text="{i18n>viewPrivacy}"/>
+                                    <Text text="{i18n>aboutPrivacyDesc}" wrapping="true" class="grayText"/>
+                                </VBox>
+                            </HBox>
+                        </HBox>
+                    </CustomListItem>
                 </List>
 
                 <!-- ── Support ── -->
-                <List showSeparators="None">
+                <List width="auto" showSeparators="None" class="sapUiSmallMarginBeginEnd">
                     <GroupHeaderListItem title="{i18n>settingsSupportSection}" upperCase="false"/>
-                    <StandardListItem
-                        title="{i18n>settingsHelpFaq}"
-                        description="{i18n>aboutHelpDesc}"
-                        icon="sap-icon://sys-help-2"
-                       
-                        type="Active"
-                        press="onOpenHelp"/>
-                    <StandardListItem
-                        title="{i18n>settingsContactSupport}"
-                        description="{i18n>aboutContactDesc}"
-                        icon="sap-icon://email"
-                       
-                        type="Active"
-                        press="onContactSupport"/>
+                    <CustomListItem type="Active" press="onOpenHelp">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center" width="100%">
+                                <core:Icon src="sap-icon://sys-help-2" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <VBox width="100%">
+                                    <Text text="{i18n>settingsHelpFaq}"/>
+                                    <Text text="{i18n>aboutHelpDesc}" wrapping="true" class="grayText"/>
+                                </VBox>
+                            </HBox>
+                        </HBox>
+                    </CustomListItem>
+                    <CustomListItem type="Active" press="onContactSupport">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center" width="100%">
+                                <core:Icon src="sap-icon://email" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <VBox width="100%">
+                                    <Text text="{i18n>settingsContactSupport}"/>
+                                    <Text text="{i18n>aboutContactDesc}" wrapping="true" class="grayText"/>
+                                </VBox>
+                            </HBox>
+                        </HBox>
+                    </CustomListItem>
                 </List>
 
                 <!-- ── About ── -->
-                <List showSeparators="None">
+                <List width="auto" showSeparators="None" class="sapUiSmallMarginBeginEnd">
                     <GroupHeaderListItem title="{i18n>settingsAboutSection}" upperCase="false"/>
                 </List>
-                <Panel backgroundDesign="Solid" class="sapUiSmallMargin">
+                <!-- width="auto": Panel defaults to 100%, so sapUiSmallMargin added on top
+                     of a full-width box and pushed it past the dialog edge — measured 16..427
+                     inside a 411px dialog. Everything centred within it therefore centred on
+                     221 instead of the dialog's own centre of 205, which is why the version
+                     line looked off to one side.
+
+                     textAlign on the Text rather than a textCenter class: that class was not
+                     taking effect at all (computed text-align came back "left" on device), so
+                     the tagline's two lines sat left-aligned inside a centred column. -->
+                <Panel width="auto" backgroundDesign="Solid" class="sapUiSmallMargin">
                     <content>
-                        <VBox alignItems="Center" class="sapUiSmallMargin">
+                        <!-- width="auto" for the same reason as the Panel: at 100% the
+                             margin pushed this column to 48..395 instead of 32..379, so its
+                             centred children sat 16px right of the panel's centre. -->
+                        <VBox alignItems="Center" width="auto" class="sapUiSmallMargin">
                             <Title text="Helpado" level="H4" class="sapUiTinyMarginBottom"/>
-                            <Text text="{i18n>aboutTagline}" wrapping="true" class="grayText textCenter"/>
+                            <Text text="{i18n>aboutTagline}" wrapping="true" textAlign="Center"
+                                  class="grayText"/>
                             <ObjectStatus text="{appData>/appVersionLabel}" state="Success" class="sapUiTinyMarginTop"/>
                         </VBox>
                     </content>

@@ -16,9 +16,10 @@ sap.ui.define([
     "sap/ui/test/Opa5",
     "sap/ui/test/actions/Press",
     "sap/ui/test/matchers/PropertyStrictEquals",
+    "sap/ui/core/IconPool",
     "helphub/test/integration/pages/DashboardPage",
     "helphub/test/mockserver/MockServer"
-], function (opaTest, Opa5, Press, PropertyStrictEquals, DashboardPage, MockServer) {
+], function (opaTest, Opa5, Press, PropertyStrictEquals, IconPool, DashboardPage, MockServer) {
     "use strict";
 
     QUnit.module("Settings Dialog — gear icon on Edit Profile page", {
@@ -101,10 +102,12 @@ sap.ui.define([
         iOpenSettingsDialog(Given, When);
 
         Then.waitFor({
-            controlType: "sap.m.StandardListItem",
-            matchers: new PropertyStrictEquals({ name: "icon", value: "sap-icon://world" }),
-            success: function () {
+            controlType: "sap.ui.core.Icon",
+            matchers: new PropertyStrictEquals({ name: "src", value: "sap-icon://world" }),
+            success: function (aIcons) {
                 Opa5.assert.ok(true, "Language list item found in SettingsDialog");
+                Opa5.assert.ok(IconPool.getIconInfo(aIcons[0].getSrc()),
+                    "sap-icon://world exists in the icon font");
             },
             errorMessage: "Language list item not found in SettingsDialog"
         });
@@ -116,16 +119,22 @@ sap.ui.define([
 
     [
         { title: "Terms of Service",  icon: "sap-icon://document-text" },
-        { title: "Privacy Policy",    icon: "sap-icon://privacy"       }
+        { title: "Privacy Policy",    icon: "sap-icon://shield"        }
     ].forEach(function (oItem) {
         opaTest("SettingsDialog contains '" + oItem.title + "' list item", function (Given, When, Then) {
             iOpenSettingsDialog(Given, When);
 
             Then.waitFor({
-                controlType: "sap.m.StandardListItem",
-                matchers: new PropertyStrictEquals({ name: "icon", value: oItem.icon }),
-                success: function () {
+                controlType: "sap.ui.core.Icon",
+                matchers: new PropertyStrictEquals({ name: "src", value: oItem.icon }),
+                success: function (aIcons) {
                     Opa5.assert.ok(true, "'" + oItem.title + "' list item found in SettingsDialog");
+                    // The old version of this test asserted the icon *property* on a
+                    // StandardListItem and passed happily while sap-icon://privacy
+                    // rendered nothing, because that name is not in the font. Check the
+                    // glyph resolves, not just that the string was set.
+                    Opa5.assert.ok(IconPool.getIconInfo(aIcons[0].getSrc()),
+                        oItem.icon + " exists in the icon font");
                 },
                 errorMessage: "'" + oItem.title + "' list item not found in SettingsDialog"
             });
@@ -144,10 +153,16 @@ sap.ui.define([
             iOpenSettingsDialog(Given, When);
 
             Then.waitFor({
-                controlType: "sap.m.StandardListItem",
-                matchers: new PropertyStrictEquals({ name: "icon", value: oItem.icon }),
-                success: function () {
+                controlType: "sap.ui.core.Icon",
+                matchers: new PropertyStrictEquals({ name: "src", value: oItem.icon }),
+                success: function (aIcons) {
                     Opa5.assert.ok(true, "'" + oItem.title + "' list item found in SettingsDialog");
+                    // The old version of this test asserted the icon *property* on a
+                    // StandardListItem and passed happily while sap-icon://privacy
+                    // rendered nothing, because that name is not in the font. Check the
+                    // glyph resolves, not just that the string was set.
+                    Opa5.assert.ok(IconPool.getIconInfo(aIcons[0].getSrc()),
+                        oItem.icon + " exists in the icon font");
                 },
                 errorMessage: "'" + oItem.title + "' list item not found in SettingsDialog"
             });
