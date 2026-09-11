@@ -74,6 +74,16 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    opaTest("Profile rating stars carry an explicit px size", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+        When.onTheSchedulePage.iPressViewProfileButton();
+
+        Then.onTheBookingDialog.iSeeASizedProfileRating();
+        Then.iTeardownMyUIComponent();
+    });
+
     opaTest("Profile shows either Book/Message or Edit Profile, never both", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 

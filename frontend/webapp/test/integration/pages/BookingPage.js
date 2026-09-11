@@ -241,6 +241,47 @@ sap.ui.define([
                     });
                 },
 
+                /**
+                 * The ratings were sap.m.RatingIndicators. That control sizes each star's
+                 * slot from the unscaled iconSize while Android's WebView text zoom
+                 * multiplies the glyph on top, so every star was clipped at its slot edge
+                 * and overlapped its neighbour — 23px of glyph in a 21px slot, measured on
+                 * device, at any iconSize. They are five plain Icons now.
+                 */
+                iSeeASizedProfileRating: function () {
+                    return this.waitFor({
+                        controlType: "sap.m.Dialog",
+                        matchers: function (oDialog) { return oDialog.getId().indexOf("profileDialog") >= 0; },
+                        success: function (aDialogs) {
+                            var aStars = [];
+                            var bRatingIndicator = false;
+                            aDialogs[0].findAggregatedObjects(true, function (c) {
+                                if (c.isA("sap.m.RatingIndicator")) { bRatingIndicator = true; }
+                                if (c.isA("sap.ui.core.Icon") &&
+                                    /favorite|unfavorite/.test(c.getSrc() || "")) { aStars.push(c); }
+                                return false;
+                            });
+
+                            Opa5.assert.notOk(bRatingIndicator,
+                                "No RatingIndicator remains — its stars clip under font scaling");
+                            Opa5.assert.strictEqual(aStars.length % 5, 0,
+                                "Stars come in rows of five (" + aStars.length + " found)");
+                            Opa5.assert.ok(aStars.length >= 5, "The header rating renders five stars");
+
+                            aStars.forEach(function (oStar) {
+                                // No fixed width: a box in any unit is eventually overrun by
+                                // the zoomed glyph and clips it. Unset, the star is as wide
+                                // as it draws.
+                                Opa5.assert.strictEqual(oStar.getWidth(), "",
+                                    "Star has no fixed box width to clip against");
+                                Opa5.assert.ok(oStar.getSize(),
+                                    "Star glyph size is set rather than inherited");
+                            });
+                        },
+                        errorMessage: "Profile dialog rating not found"
+                    });
+                },
+
                 iSeeTwoDirectSafetyLinks: function () {
                     return this.waitFor({
                         controlType: "sap.m.Dialog",

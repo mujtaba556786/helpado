@@ -68,19 +68,30 @@ sap.ui.define([
             assertions: {
 
                 iSeeProfileDialogWithRating: function () {
-                    // The profile dialog header has a displayOnly RatingIndicator bound to
-                    // /selectedProfile/rating. A value > 0 confirms the rating was set.
-                    // Using RatingIndicator (not Text) avoids expression-binding timing issues.
+                    // The header rating is five Icons now, not a RatingIndicator: that
+                    // control clipped every star under the WebView's font scaling. A
+                    // filled star (sap-icon://favorite) means the rating came through as
+                    // non-zero; an unrated profile draws five outlines instead.
                     return this.waitFor({
-                        controlType: "sap.m.RatingIndicator",
-                        matchers: function (oRI) {
-                            return oRI.getDisplayOnly() === true && oRI.getValue() > 0;
+                        controlType: "sap.m.Dialog",
+                        matchers: function (oDialog) {
+                            return oDialog.getId().indexOf("profileDialog") >= 0 && oDialog.isOpen();
+                        },
+                        check: function (aDialogs) {
+                            var bFilled = false;
+                            aDialogs[0].findAggregatedObjects(true, function (c) {
+                                if (c.isA("sap.ui.core.Icon") && c.getSrc() === "sap-icon://favorite") {
+                                    bFilled = true;
+                                }
+                                return false;
+                            });
+                            return bFilled;
                         },
                         success: function () {
                             Opa5.assert.ok(true,
-                                "Profile dialog RatingIndicator shows a non-zero rating (not 'No rating')");
+                                "Profile dialog shows a filled star, so the rating is non-zero (not 'No rating')");
                         },
-                        errorMessage: "Profile dialog RatingIndicator with value > 0 not found — rating is still 0/null"
+                        errorMessage: "No filled star in the profile dialog — rating is still 0/null"
                     });
                 },
 
