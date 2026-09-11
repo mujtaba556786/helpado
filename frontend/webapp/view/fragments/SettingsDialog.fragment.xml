@@ -11,29 +11,17 @@
         <content>
             <VBox>
 
-                <!-- ── Language ──
-                     Rows are CustomListItems, not StandardListItems. StandardListItem
+                <!-- Rows are CustomListItems, not StandardListItems. StandardListItem
                      fixes its icon box at 44px but lets the glyph inherit the app's
                      line-height, which scales with the Android system font: measured on
                      device at 1.3x that was 57.2px of glyph in a 44px box, clipped on
                      every row. It also offers no way to colour the icon, which is why
-                     these were the last slate icons in the app. -->
-                <List width="auto" showSeparators="None" class="sapUiSmallMarginBeginEnd">
-                    <GroupHeaderListItem title="{i18n>settingsLanguageSection}" upperCase="false"/>
-                    <CustomListItem type="Active" press="onLanguageMenu">
-                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
-                              class="sapUiTinyMarginTopBottom">
-                            <HBox alignItems="Center" width="100%">
-                                <core:Icon src="sap-icon://world" size="1.25rem" width="1.75rem"
-                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
-                                <VBox width="100%">
-                                    <Text text="{i18n>changeLanguage}"/>
-                                </VBox>
-                            </HBox>
-                            <Text text="{appData>/currentLanguageLabel}" wrapping="false" class="grayText"/>
-                        </HBox>
-                    </CustomListItem>
-                </List>
+                     these were the last slate icons in the app.
+
+                     Language is deliberately NOT listed here: the header globe already
+                     opens the same popover (onLanguageMenu) on every page, and it is the
+                     one control a user can still find when the app is in a language they
+                     cannot read. A second entry only duplicated it. -->
 
                 <!-- ── Legal ──
                      viewPrivacy used sap-icon://privacy, which is not in the icon font

@@ -4,7 +4,7 @@
  * Scenarios covered:
  *  1. Gear button exists on the edit-profile page header
  *  2. Tapping gear opens the SettingsDialog
- *  3. SettingsDialog contains Language list item
+ *  3. SettingsDialog has NO Language row (the header globe is the only switcher)
  *  4. SettingsDialog contains Terms of Service list item
  *  5. SettingsDialog contains Privacy Policy list item
  *  6. SettingsDialog contains Help & FAQ list item
@@ -96,20 +96,32 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
-    // ── 3. Language item ──────────────────────────────────────────────────────
+    // ── 3. No Language row ────────────────────────────────────────────────────
+    // Language used to be listed here as a second door to the same popover the
+    // header globe opens (both fire onLanguageMenu). It was removed as a duplicate;
+    // this guards against it quietly coming back. The globe itself is covered by
+    // the header tests in ServiceTilesJourney.
 
-    opaTest("SettingsDialog contains Language list item", function (Given, When, Then) {
+    opaTest("SettingsDialog has no Language row (header globe is the only switcher)", function (Given, When, Then) {
         iOpenSettingsDialog(Given, When);
 
         Then.waitFor({
-            controlType: "sap.ui.core.Icon",
-            matchers: new PropertyStrictEquals({ name: "src", value: "sap-icon://world" }),
-            success: function (aIcons) {
-                Opa5.assert.ok(true, "Language list item found in SettingsDialog");
-                Opa5.assert.ok(IconPool.getIconInfo(aIcons[0].getSrc()),
-                    "sap-icon://world exists in the icon font");
+            id: "settingsDialog",
+            viewName: "helphub.view.Dashboard",
+            success: function (oDialog) {
+                var aWorldIcons = oDialog.findAggregatedObjects(true, function (oCtrl) {
+                    return oCtrl.isA("sap.ui.core.Icon") && oCtrl.getSrc() === "sap-icon://world";
+                });
+                Opa5.assert.strictEqual(aWorldIcons.length, 0,
+                    "SettingsDialog contains no language (world icon) row");
+
+                var aLegal = oDialog.findAggregatedObjects(true, function (oCtrl) {
+                    return oCtrl.isA("sap.ui.core.Icon") && oCtrl.getSrc() === "sap-icon://document-text";
+                });
+                Opa5.assert.ok(aLegal.length > 0,
+                    "Other rows are still present, so the dialog was really inspected");
             },
-            errorMessage: "Language list item not found in SettingsDialog"
+            errorMessage: "SettingsDialog did not open"
         });
 
         Then.iTeardownMyUIComponent();
