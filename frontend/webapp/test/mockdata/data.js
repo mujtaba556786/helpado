@@ -24,7 +24,11 @@ sap.ui.define([], function () {
         terms_accepted_at: "2024-01-01T00:00:00.000Z",
         terms_version: "1.0",
         subscription_plan: "free",
-        monthly_booking_value: 0
+        monthly_booking_value: 0,
+        // Stored the way the server stores it — a comma string, not an array.
+        // Without a value here nothing exercised the flag derivation, which is
+        // how the reopen bug reached production unnoticed.
+        availability: "weekdays,morning,evening"
     };
 
     // Provider account — used to test provider-specific features (category limits, earnings chip, etc.)

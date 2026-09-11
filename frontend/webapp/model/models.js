@@ -5,6 +5,27 @@ sap.ui.define([
     "use strict";
 
     return {
+        // The availability buttons bind their `type` to /user/availabilityFlags,
+        // but the server stores availability as a comma string. Both hydration
+        // paths (Login.controller after a sign-in, Component.applyUser after an
+        // app reopen) have to derive the flags, and only the first one did — so a
+        // reopened app showed every button unselected even though the selection
+        // was saved. Deriving it in one place keeps the two paths from drifting.
+        availabilityFlags: function (vAvailability) {
+            var aKeys = Array.isArray(vAvailability)
+                ? vAvailability
+                : String(vAvailability || "").split(",");
+            var oFlags = {
+                all_day: false, weekdays: false, weekends: false,
+                morning: false, afternoon: false, evening: false, night: false
+            };
+            aKeys.forEach(function (sKey) {
+                sKey = String(sKey).trim();
+                if (oFlags.hasOwnProperty(sKey)) { oFlags[sKey] = true; }
+            });
+            return oFlags;
+        },
+
         createDeviceModel: function () {
             // NB: phone-mode is also force-applied in Component.init (deviceready +
             // narrow-viewport) because UI5's detection is unreliable in the Cordova APK.

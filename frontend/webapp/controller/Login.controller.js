@@ -2,8 +2,9 @@ sap.ui.define([
     "helphub/controller/BaseController",
     "sap/m/MessageToast",
     "sap/m/BusyDialog",
-    "helphub/config"
-], function (BaseController, MessageToast, BusyDialog, Config) {
+    "helphub/config",
+    "helphub/model/models"
+], function (BaseController, MessageToast, BusyDialog, Config, models) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -48,9 +49,7 @@ sap.ui.define([
             oModel.setProperty("/user/availability", aAvail);
             oModel.setProperty("/user/serviceCategories",(oUser.service_categories || "").split(",").filter(Boolean));
 
-            var oFlags = { all_day: false, weekdays: false, weekends: false, morning: false, afternoon: false, evening: false, night: false };
-            aAvail.forEach(function(k) { if (oFlags.hasOwnProperty(k)) oFlags[k] = true; });
-            oModel.setProperty("/user/availabilityFlags", oFlags);
+            oModel.setProperty("/user/availabilityFlags", models.availabilityFlags(aAvail));
 
             oModel.setProperty("/user/address/street",      oUser.street_name   || "");
             oModel.setProperty("/user/address/houseNumber", oUser.street_number || "");

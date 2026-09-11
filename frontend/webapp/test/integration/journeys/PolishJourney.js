@@ -112,4 +112,25 @@ sap.ui.define([
         } });
         Then.iTeardownMyUIComponent();
     });
+
+    opaTest("Saved availability is highlighted after the app boots from a session", function (Given, When, Then) {
+        // iStartMyUIComponent boots through Component.applyUser — the same path an
+        // app reopen takes. That path set /user/availability but never derived
+        // /user/availabilityFlags, which is what the buttons bind their type to,
+        // so every button came back Default and the saved choice looked lost.
+        start(Given);
+        When.waitFor({ id: "headerAvatar", viewName: VIEW, actions: new Press() });
+        Then.waitFor({ id: "profileAvailability", viewName: VIEW, success: function (box) {
+            var mSelected = { weekdays: true, morning: true, evening: true };
+            var aButtons = box.findAggregatedObjects(true, function (c) { return c.isA("sap.m.Button"); });
+            Opa5.assert.strictEqual(aButtons.length, 7, "All seven availability choices render");
+            aButtons.forEach(function (oButton) {
+                var sKey = oButton.data("availKey");
+                var bWant = !!mSelected[sKey];
+                Opa5.assert.strictEqual(oButton.getType(), bWant ? "Emphasized" : "Default",
+                    sKey + " is " + (bWant ? "highlighted" : "not highlighted") + " on boot");
+            });
+        } });
+        Then.iTeardownMyUIComponent();
+    });
 });
