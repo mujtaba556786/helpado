@@ -334,7 +334,7 @@ sap.ui.define([
             this._getProfileDialog().then(function(d) { d.close(); }.bind(this));
         },
 
-        // Opens the dedicated SettingsDialog (language, legal, support, about)
+        // Opens the Help & Info dialog (legal, support, tour, about)
         onOpenSettings: function() {
             this._getSettingsDialog().then(function(oDialog) {
                 oDialog.open();

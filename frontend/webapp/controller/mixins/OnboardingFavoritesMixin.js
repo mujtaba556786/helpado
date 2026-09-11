@@ -20,6 +20,37 @@ sap.ui.define([
             }
         },
 
+        /**
+         * Re-opens the first-login tour from Help & Info. Starts on step 2 ("How it
+         * works") because that is the content people come back for; Welcome is one
+         * Back-press away and Interests one Next-press away. Step 3 is pre-selected
+         * from hhInterests so it shows what is currently saved instead of a blank
+         * grid — the toggle buttons carry their state imperatively (setType), not
+         * via binding, so the model alone would not light them up.
+         */
+        onOpenHowItWorks: function() {
+            var oModel = this.getModel("appData");
+            var aSaved = [];
+            try {
+                aSaved = JSON.parse(localStorage.getItem("hhInterests") || "[]") || [];
+            } catch (e) { aSaved = []; }
+
+            oModel.setProperty("/onboarding/step", 2);
+            oModel.setProperty("/onboarding/interests", aSaved.slice());
+
+            if (this.onCloseSettings) { this.onCloseSettings(); }
+
+            this._getOnboardingDialog().then(function(d) {
+                d.findAggregatedObjects(true, function(oCtrl) {
+                    return oCtrl.isA("sap.m.Button") && oCtrl.data("interestKey") !== null;
+                }).forEach(function(oBtn) {
+                    oBtn.setType(aSaved.indexOf(oBtn.data("interestKey")) >= 0 ? "Emphasized" : "Default");
+                });
+                d.open();
+                this._syncOnboardingButtons();
+            }.bind(this));
+        },
+
         onOnboardingNext: function() {
             var oModel = this.getModel("appData");
             var iStep  = oModel.getProperty("/onboarding/step");
