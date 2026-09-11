@@ -22,8 +22,10 @@
  *  HeaderJourney        — header items centred on the bar, equal targets and gaps
  *  BottomNavJourney     — one selected tab, even widths, readable labels both states
  *  RatingJourney        — tappable star icons write /newRating, empty submit refused, compact dialog
+ *  PopoverJourney       — popover arrows centred on their opener (theme param), rating dialog initial focus
  */
 sap.ui.define([
+    "sap/ui/test/Opa5",
     "helphub/test/integration/journeys/DashboardJourney",
     "helphub/test/integration/journeys/ServiceTilesJourney",
     "helphub/test/integration/journeys/SearchJourney",
@@ -39,8 +41,46 @@ sap.ui.define([
     "helphub/test/integration/journeys/HelpFaqJourney",
     "helphub/test/integration/journeys/HeaderJourney",
     "helphub/test/integration/journeys/BottomNavJourney",
-    "helphub/test/integration/journeys/RatingJourney"
-], function () {
+    "helphub/test/integration/journeys/RatingJourney",
+    "helphub/test/integration/journeys/PopoverJourney"
+], function (Opa5) {
     "use strict";
+
+    // UI5 1.120 (the version the app ships with — see ui5.yaml) has a bug in
+    // sap.m.Popover: its override of the popup's close() reads `that.oPopup`
+    // after exit() has nulled it, so destroying an *open* popover leaves a
+    // stale auto-close handler that throws "Cannot read properties of null
+    // (reading 'getOpenState')" into whatever test runs next. 1.147 fixed it
+    // (uses `this.getOpenState()`), which is why this never showed while the
+    // proxy served the unpinned latest. The app never destroys an open popover;
+    // teardown does, on every test that left one open. Close them first.
+    (function () {
+        var fnTeardown = Opa5.prototype.iTeardownMyUIComponent;
+        Opa5.prototype.iTeardownMyUIComponent = function () {
+            var that = this;
+            this.waitFor({
+                success: function () {
+                    var oWin = Opa5.getWindow(), oCore = oWin.sap.ui.getCore();
+                    Array.prototype.forEach.call(
+                        oWin.document.querySelectorAll(".sapMPopover, .sapMDialog"),
+                        function (el) {
+                            var oCtrl = oCore.byId(el.id);
+                            if (oCtrl && oCtrl.isOpen && oCtrl.isOpen() && oCtrl.close) { oCtrl.close(); }
+                        });
+                }
+            });
+            this.waitFor({
+                check: function () {
+                    var oWin = Opa5.getWindow();
+                    return !Array.prototype.some.call(
+                        oWin.document.querySelectorAll(".sapMPopover, .sapMDialog"),
+                        function (el) { return el.getBoundingClientRect().width > 0; });
+                },
+                errorMessage: "A popover or dialog stayed open into teardown"
+            });
+            return fnTeardown.apply(that, arguments);
+        };
+    })();
+
     QUnit.start();
 });

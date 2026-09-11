@@ -9,13 +9,19 @@
          ~70% of the phone blank with Submit pinned to the bottom edge, a screen
          away from the comment just typed. Compact, the dialog wraps its content
          and the buttons sit directly under it. -->
+    <!-- initialFocus points at the (non-focusable) name Text on purpose. Without
+         it the Dialog focuses its first focusable control, the first star, which
+         draws the icon focus outline — a green square on the star before anything
+         was tapped. Aiming at a non-focusable target leaves focus on the dialog
+         itself: no outline, and not the comment box, so the keyboard stays down. -->
     <Dialog id="ratingDialog"
         title="{i18n>rateThisHelper}"
-        contentWidth="26rem">
+        contentWidth="26rem"
+        initialFocus="ratingHelperName">
 
         <content>
             <VBox class="sapUiMediumMargin">
-                <Text text="{appData>/selectedProfile/name}" class="fontBold sapUiSmallMarginBottom"/>
+                <Text id="ratingHelperName" text="{appData>/selectedProfile/name}" class="fontBold sapUiSmallMarginBottom"/>
 
                 <Label text="{i18n>yourRating}" required="true" class="sapUiTinyMarginBottom"/>
                 <!-- Five tappable Icons, not sap.m.RatingIndicator — same reason as the
