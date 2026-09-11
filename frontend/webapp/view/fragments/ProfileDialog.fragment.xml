@@ -37,7 +37,37 @@
                     <VBox>
                         <Text text="{appData>/selectedProfile/serviceType}" class="smallText"/>
                         <HBox alignItems="Center" class="sapUiTinyMarginTop">
-                            <RatingIndicator value="{appData>/selectedProfile/rating}" maxValue="5" visualMode="Half" displayOnly="true" class="sapUiTinyMarginEnd"/>
+                            <!-- Five plain Icons rather than a rating control. sap.m.RatingIndicator
+                                 lays its stars out in slots sized from the unscaled iconSize, while
+                                 Android's WebView text zoom multiplies the glyph on top (1.3x on the
+                                 test device) — so every star was clipped at its slot edge and ran
+                                 into its neighbour, at any iconSize. Measured: 23px of glyph in a
+                                 21px slot, with the fifth star squeezed to 18px.
+
+                                 No width is set, deliberately. Any fixed box loses this race: the
+                                 zoom multiplies the glyph but not the length, so the glyph overruns
+                                 the box and is clipped. em does not escape it either — it resolves
+                                 against the specified font size, before the zoom applies (1.15em off
+                                 a 0.875rem star came out 16px wide holding an 18px glyph). Left
+                                 unset, each star is simply as wide as it draws, at any zoom level.
+                                 size stays in rem so the stars still follow the user's font-size
+                                 preference.
+
+                                 The icon font has favorite and unfavorite but no half star, so the
+                                 thresholds below round to the nearest whole one. The exact value is
+                                 never lost — it is printed next to the stars. -->
+                            <HBox alignItems="Center" class="sapUiTinyMarginEnd">
+                                <core:Icon src="{= ${appData>/selectedProfile/rating} >= 0.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                           size="0.875rem" color="#D27700" decorative="true"/>
+                                <core:Icon src="{= ${appData>/selectedProfile/rating} >= 1.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                           size="0.875rem" color="#D27700" decorative="true"/>
+                                <core:Icon src="{= ${appData>/selectedProfile/rating} >= 2.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                           size="0.875rem" color="#D27700" decorative="true"/>
+                                <core:Icon src="{= ${appData>/selectedProfile/rating} >= 3.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                           size="0.875rem" color="#D27700" decorative="true"/>
+                                <core:Icon src="{= ${appData>/selectedProfile/rating} >= 4.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                           size="0.875rem" color="#D27700" decorative="true"/>
+                            </HBox>
                             <Text text="{appData>/selectedProfile/ratingLabel}" class="smallText"/>
                         </HBox>
                         <!-- Facts, not a badge. This slot used to show
@@ -153,7 +183,18 @@
                                 <VBox width="100%">
                                     <HBox justifyContent="SpaceBetween" alignItems="Center">
                                         <Text text="{appData>reviewer_name}" class="fontBold smallText"/>
-                                        <RatingIndicator value="{appData>stars}" maxValue="5" displayOnly="true" iconSize="12px"/>
+                                        <HBox alignItems="Center">
+                                            <core:Icon src="{= ${appData>stars} >= 0.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                                       size="0.75rem" color="#D27700" decorative="true"/>
+                                            <core:Icon src="{= ${appData>stars} >= 1.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                                       size="0.75rem" color="#D27700" decorative="true"/>
+                                            <core:Icon src="{= ${appData>stars} >= 2.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                                       size="0.75rem" color="#D27700" decorative="true"/>
+                                            <core:Icon src="{= ${appData>stars} >= 3.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                                       size="0.75rem" color="#D27700" decorative="true"/>
+                                            <core:Icon src="{= ${appData>stars} >= 4.5 ? 'sap-icon://favorite' : 'sap-icon://unfavorite' }"
+                                                       size="0.75rem" color="#D27700" decorative="true"/>
+                                        </HBox>
                                     </HBox>
                                     <Text text="{appData>created_at_relative}" class="smallText grayText"/>
                                     <Text text="{appData>comment}" wrapping="true" class="smallText"/>
