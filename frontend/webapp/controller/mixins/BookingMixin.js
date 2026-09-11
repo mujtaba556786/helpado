@@ -257,9 +257,15 @@ sap.ui.define([
             { value: "all",       key: "filterAll",       icon: "sap-icon://filter" },
             { value: "pending",   key: "filterPending",   icon: "sap-icon://pending" },
             { value: "confirmed", key: "filterConfirmed", icon: "sap-icon://status-positive" },
-            { value: "completed", key: "filterCompleted", icon: "sap-icon://sys-enter-2" },
+            // Was sys-enter-2, which renders pixel-identical to status-positive above —
+            // two rows of a six-row status menu looked like the same option. "complete"
+            // is a checked square, so it differs by shape, not just by weight.
+            { value: "completed", key: "filterCompleted", icon: "sap-icon://complete" },
             { value: "declined",  key: "filterDeclined",  icon: "sap-icon://status-negative" },
-            { value: "cancelled", key: "filterCancelled", icon: "sap-icon://sys-cancel" }
+            // Was sys-cancel, a near-twin of status-negative (outline vs filled X circle).
+            // "cancel" is the slashed no-entry circle: a different shape and a better
+            // match for "called off" than another X.
+            { value: "cancelled", key: "filterCancelled", icon: "sap-icon://cancel" }
         ],
 
         onBookingStatusMenu: function(oEvent) {
@@ -287,7 +293,11 @@ sap.ui.define([
                 // width on an Icon pins its own line box, which the inherited
                 // one can no longer override. Same fix as the category filter.
                 items: this._aBookingStatusOptions.map(function(opt) {
-                    var oIcon = new Icon({ src: opt.icon, size: "1.25rem", width: "1.75rem" });
+                    // Brand green, matching the category filter — these popovers are menus of
+                    // choices, so they read as one control family. The semantic red/amber/green
+                    // still lives on the booking rows themselves, as ObjectStatus badges.
+                    var oIcon = new Icon({ src: opt.icon, size: "1.25rem", width: "1.75rem",
+                                           color: "#2E8B57" });
                     oIcon.addStyleClass("sapUiTinyMarginEnd");
 
                     var oLI = new CustomListItem({
