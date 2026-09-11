@@ -10,6 +10,8 @@
  *  6. SettingsDialog contains Help & FAQ list item
  *  7. SettingsDialog contains Contact Support list item
  *  8. SettingsDialog contains "Helpado" title in About section
+ *  9. Dialog is titled "Help & Info" (nothing settable is left in it)
+ * 10. "How Helpado works" row re-opens the first-login tour on step 2
  */
 sap.ui.define([
     "sap/ui/test/opaQunit",
@@ -158,8 +160,9 @@ sap.ui.define([
     // ── 6 & 7. Support list items ─────────────────────────────────────────────
 
     [
-        { title: "Help & FAQ",       icon: "sap-icon://sys-help-2" },
-        { title: "Contact Support",  icon: "sap-icon://email"      }
+        { title: "How Helpado works", icon: "sap-icon://learning-assistant" },
+        { title: "Help & FAQ",        icon: "sap-icon://sys-help-2"         },
+        { title: "Contact Support",   icon: "sap-icon://email"              }
     ].forEach(function (oItem) {
         opaTest("SettingsDialog contains '" + oItem.title + "' list item", function (Given, When, Then) {
             iOpenSettingsDialog(Given, When);
@@ -195,6 +198,74 @@ sap.ui.define([
                 Opa5.assert.ok(true, "'Helpado' title found in SettingsDialog About section");
             },
             errorMessage: "'Helpado' title not found in SettingsDialog"
+        });
+
+        Then.iTeardownMyUIComponent();
+    });
+
+    // ── 9. Title ───────────────────────────────────────────────────────────────
+    // Renamed from "Settings & Help" once the Language row went: the dialog is
+    // Legal / Support / About, there is nothing left in it a user can *set*.
+
+    opaTest("Dialog is titled 'Help & Info'", function (Given, When, Then) {
+        iOpenSettingsDialog(Given, When);
+
+        Then.waitFor({
+            id: "settingsDialog",
+            viewName: "helphub.view.Dashboard",
+            matchers: new PropertyStrictEquals({ name: "title", value: "Help & Info" }),
+            success: function () {
+                Opa5.assert.ok(true, "Dialog title is 'Help & Info'");
+            },
+            errorMessage: "Dialog title is not 'Help & Info'"
+        });
+
+        Then.iTeardownMyUIComponent();
+    });
+
+    // ── 10. How it works → onboarding tour, step 2 ────────────────────────────
+    // MockServer seeds hhOnboarded=1, so the tour never auto-opens in tests; the
+    // only way it can appear here is through this row. Assert the step, not just
+    // that some dialog opened — landing on Welcome (step 1) would be a regression.
+
+    opaTest("'How Helpado works' row opens the tour on the How-it-works step", function (Given, When, Then) {
+        iOpenSettingsDialog(Given, When);
+
+        When.waitFor({
+            controlType: "sap.m.CustomListItem",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oItem) {
+                return oItem.findAggregatedObjects(true, function (oCtrl) {
+                    return oCtrl.isA("sap.ui.core.Icon") && oCtrl.getSrc() === "sap-icon://learning-assistant";
+                }).length > 0;
+            },
+            actions: new Press(),
+            errorMessage: "'How Helpado works' row not found in Help & Info"
+        });
+
+        Then.waitFor({
+            id: "onboardingDialog",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oDialog) { return oDialog.isOpen(); },
+            success: function (oDialog) {
+                var iStep = oDialog.getModel("appData").getProperty("/onboarding/step");
+                Opa5.assert.strictEqual(iStep, 2, "Tour opened on step 2 (How it works), not Welcome");
+            },
+            errorMessage: "Onboarding tour did not open from Help & Info"
+        });
+
+        // Help & Info closes underneath; isOpen() stays true for the length of the
+        // close animation, so poll for it rather than asserting at the instant the
+        // tour appears. visible:false because a closed dialog is not rendered.
+        Then.waitFor({
+            id: "settingsDialog",
+            viewName: "helphub.view.Dashboard",
+            visible: false,
+            matchers: function (oSettings) { return !oSettings.isOpen(); },
+            success: function () {
+                Opa5.assert.ok(true, "Help & Info closed behind the tour");
+            },
+            errorMessage: "Help & Info stayed open behind the tour"
         });
 
         Then.iTeardownMyUIComponent();
