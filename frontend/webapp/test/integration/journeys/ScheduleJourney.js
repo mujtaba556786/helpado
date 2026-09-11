@@ -59,6 +59,15 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    opaTest("Every status filter option has its own icon", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+
+        Then.onTheSchedulePage.iSeeEveryStatusIconIsDistinct();
+        Then.iTeardownMyUIComponent();
+    });
+
     // ── 4. Booking status badges ──────────────────────────────────────────
 
     opaTest("Confirmed booking shows an ObjectStatus with state 'Success'", function (Given, When, Then) {

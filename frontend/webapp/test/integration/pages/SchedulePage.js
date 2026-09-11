@@ -159,6 +159,41 @@ sap.ui.define([
                         });
                     });
                     return this;
+                },
+
+                iSeeEveryStatusIconIsDistinct: function () {
+                    // Open the popover inline: iOpenBookingStatusMenu lives in the
+                    // actions block, which is a different object from this one.
+                    this.waitFor({
+                        id: "bookingStatusBtn",
+                        viewName: DASHBOARD_VIEW,
+                        actions: new Press(),
+                        errorMessage: "Booking status filter button not found"
+                    });
+                    return this.waitFor({
+                        controlType: "sap.m.CustomListItem",
+                        matchers: function (oItem) {
+                            return !!oItem.data("status");
+                        },
+                        success: function (aItems) {
+                            // Two options used to share a glyph: sys-enter-2 renders
+                            // pixel-identical to status-positive, so "Confirmed" and
+                            // "Completed" looked like the same row. Assert the icons are
+                            // all different rather than merely present.
+                            var aSrc = [];
+                            aItems.forEach(function (oItem) {
+                                oItem.findAggregatedObjects(true, function (oCtrl) {
+                                    if (oCtrl.isA("sap.ui.core.Icon")) { aSrc.push(oCtrl.getSrc()); }
+                                    return false;
+                                });
+                            });
+                            var aUnique = aSrc.filter(function (s, i) { return aSrc.indexOf(s) === i; });
+                            Opa5.assert.strictEqual(aSrc.length, 6, "All 6 status options carry an icon");
+                            Opa5.assert.strictEqual(aUnique.length, aSrc.length,
+                                "No two status options share an icon (" + aSrc.join(", ") + ")");
+                        },
+                        errorMessage: "Status filter options not found in popover"
+                    });
                 }
             }
         }
