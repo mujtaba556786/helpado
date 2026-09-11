@@ -64,6 +64,16 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    opaTest("Profile fact icons share one box and the brand green", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+        When.onTheSchedulePage.iPressViewProfileButton();
+
+        Then.onTheBookingDialog.iSeeAlignedFactIcons();
+        Then.iTeardownMyUIComponent();
+    });
+
     opaTest("Profile shows either Book/Message or Edit Profile, never both", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 

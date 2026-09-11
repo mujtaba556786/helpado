@@ -72,29 +72,66 @@
                         press="onEditProfileFromDialog" width="100%"/>
                 </HBox>
 
-                <!-- ── Info rows — SAP UI5 StandardListItem: icon | label | value ── -->
-                <List showSeparators="Inner" class="sapUiSmallMarginBottom">
-                    <StandardListItem
-                        icon="sap-icon://money-bills"
-                        title="{i18n>bookingRate}"
-                        info="{appData>/selectedProfile/rateDisplay}"
-                        type="Inactive"/>
-                    <StandardListItem
-                        icon="sap-icon://history"
-                        title="{i18n>profileExperience}"
-                        info="{= ${appData>/selectedProfile/years} ? ${appData>/selectedProfile/years} + ' years' : '—'}"
-                        type="Inactive"/>
-                    <StandardListItem
-                        icon="sap-icon://world"
-                        title="{i18n>profileLanguage}"
-                        info="{= ${appData>/selectedProfile/languages} || '—'}"
-                        type="Inactive"/>
-                    <StandardListItem
-                        icon="sap-icon://map"
-                        title="{i18n>location}"
-                        info="{= ${appData>/selectedProfile/city} || '—'}"
-                        type="Inactive"
-                        wrapping="true"/>
+                <!-- ── Info rows ──────────────────────────────────────────────────
+                     Rebuilt off StandardListItem. It gave the icon a fixed 44px box but
+                     let the glyph inherit the app's line-height, which scales with the
+                     Android system font: measured on device at 1.3x the glyph needed
+                     57px inside that 44px box and rendered clipped. It also let each
+                     glyph keep its own natural width, so the four icons did not start
+                     on the same vertical line.
+
+                     The list now carries the same margin class as the About and Reviews
+                     blocks below, so the icon column lines up with those headings
+                     instead of running edge to edge across the dialog. -->
+                <!-- width="auto": List defaults to 100%, so the side margins below
+                     would add on top of a full-width box and push the values ~32px past
+                     the dialog edge (measured on device: row 32..443 in a 411px dialog). -->
+                <List width="auto" showSeparators="Inner"
+                      class="sapUiSmallMarginBottom sapUiMediumMarginBeginEnd">
+                    <CustomListItem type="Inactive">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center">
+                                <core:Icon src="sap-icon://money-bills" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <Text text="{i18n>bookingRate}"/>
+                            </HBox>
+                            <Text text="{appData>/selectedProfile/rateDisplay}"/>
+                        </HBox>
+                    </CustomListItem>
+                    <CustomListItem type="Inactive">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center">
+                                <core:Icon src="sap-icon://history" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <Text text="{i18n>profileExperience}"/>
+                            </HBox>
+                            <Text text="{= ${appData>/selectedProfile/years} ? ${appData>/selectedProfile/years} + ' years' : '—'}"/>
+                        </HBox>
+                    </CustomListItem>
+                    <CustomListItem type="Inactive">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center">
+                                <core:Icon src="sap-icon://world" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <Text text="{i18n>profileLanguage}"/>
+                            </HBox>
+                            <Text text="{= ${appData>/selectedProfile/languages} || '—'}"/>
+                        </HBox>
+                    </CustomListItem>
+                    <CustomListItem type="Inactive">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center">
+                                <core:Icon src="sap-icon://map" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <Text text="{i18n>location}"/>
+                            </HBox>
+                            <Text text="{= ${appData>/selectedProfile/city} || '—'}" wrapping="true"/>
+                        </HBox>
+                    </CustomListItem>
                 </List>
 
                 <!-- ── Bio ── -->
