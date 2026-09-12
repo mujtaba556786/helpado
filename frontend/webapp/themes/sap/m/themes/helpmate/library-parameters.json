@@ -272,7 +272,7 @@
 	"_sap_m_Page_FloatinFooterHeight_Compact": "2.5rem",
 	"_sap_m_Page_FloatingFooterMarginBottom": "0.5rem",
 	"_sap_m_PlanningCalendarHeader_Background": "var(--sapList_Background)",
-	"_sap_m_Popover_ArrowOffset": "0.5rem",
+	"_sap_m_Popover_ArrowOffset": "8",
 	"_sap_m_Popover_CompactArrowOffset": "0.5rem",
 	"_sap_m_Popover_ThickShadowSize": "0.0625rem",
 	"_sap_m_Popover_OpacityTransitionDuration": "0.2s",

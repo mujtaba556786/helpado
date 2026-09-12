@@ -23,6 +23,12 @@ server:
             - /resources
             - /test-resources
           url: https://ui5.sap.com
+          # Pinned to the version the app actually ships with (framework.version
+          # above; the APK bundles the same one and index.html pins CDN 1.120).
+          # Without this the proxy serves whatever ui5.sap.com's latest is, so the
+          # OPA5/QUnit suites were running on 1.147 while users got 1.120 — the
+          # Popover arrow bug shipped green because of exactly that gap.
+          version: 1.120.18
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:
