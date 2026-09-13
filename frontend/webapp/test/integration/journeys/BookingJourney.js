@@ -68,6 +68,19 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    opaTest("Booking from the search page lands on My Schedule afterwards", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressServiceTile("Cleaning");
+        When.onTheBookingDialog.iPressBookOnTheFirstSearchResult();
+        When.onTheBookingDialog.iFillABookingDate();
+        When.onTheBookingDialog.iSendTheBookingRequest();
+        When.onTheBookingDialog.iConfirmTheBookingSentMessage();
+
+        Then.onTheBookingDialog.iAmOnMyScheduleAfterBooking();
+        Then.iTeardownMyUIComponent();
+    });
+
     // ── 3. Safety sheet ───────────────────────────────────────────────────
 
     opaTest("Safety is two named links, with no overflow menu", function (Given, When, Then) {

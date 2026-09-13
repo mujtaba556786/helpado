@@ -22,13 +22,21 @@ sap.ui.define([
 
             actions: {
 
+                /**
+                 * Opens the helper's profile from a booking card. Presses exactly ONE
+                 * button: OPA5 runs actions on every matched control, and the mock
+                 * data now includes a booking the test user RECEIVED (B6), whose
+                 * Profile button opens My Profile instead of a helper dialog.
+                 */
                 iPressViewProfileButton: function () {
                     return this.waitFor({
                         controlType: "sap.m.Button",
                         viewName: DASHBOARD_VIEW,
                         matchers: function (oBtn) {
                             // hhNotifChip is the CSS class used exclusively on booking-card Profile buttons
-                            return oBtn.hasStyleClass("hhNotifChip");
+                            if (!oBtn.hasStyleClass("hhNotifChip")) { return false; }
+                            var oCtx = oBtn.getBindingContext("appData");
+                            return !!oCtx && oCtx.getProperty("id") === "B4";
                         },
                         actions: new Press(),
                         success: function () {
@@ -103,6 +111,43 @@ sap.ui.define([
                             Opa5.assert.ok(true, "Bookings list control exists on My Schedule tab");
                         },
                         errorMessage: "bookingsList not found on My Schedule tab"
+                    });
+                },
+
+                /**
+                 * Every card showed provider_name, so a helper saw her own name on
+                 * each booking she had received. The card must name the OTHER
+                 * party: the helper on a booking I made, the customer on one I got.
+                 */
+                iSeeTheOtherPartyOnEachCard: function () {
+                    return this.waitFor({
+                        id: "bookingsList",
+                        viewName: DASHBOARD_VIEW,
+                        matchers: new AggregationFilled({ name: "items" }),
+                        success: function (oList) {
+                            var mExpected = { B1: "Sarah Martinez", B6: "Max Kunde" };
+                            var mSeen = {};
+                            oList.getItems().forEach(function (oItem) {
+                                var oCtx = oItem.getBindingContext("appData");
+                                var sId  = oCtx && oCtx.getProperty("id");
+                                if (!mExpected[sId]) { return; }
+                                var aTexts = [];
+                                oItem.findAggregatedObjects(true, function (c) {
+                                    if (c.isA("sap.m.Text")) { aTexts.push(c.getText()); }
+                                    return false;
+                                });
+                                mSeen[sId] = aTexts;
+                            });
+                            Object.keys(mExpected).forEach(function (sId) {
+                                Opa5.assert.ok(mSeen[sId], "booking " + sId + " is rendered");
+                                Opa5.assert.ok((mSeen[sId] || []).indexOf(mExpected[sId]) >= 0,
+                                    "booking " + sId + " names the other party '" + mExpected[sId] +
+                                    "' (texts: " + JSON.stringify(mSeen[sId]) + ")");
+                            });
+                            Opa5.assert.ok((mSeen.B6 || []).indexOf("Julia Tester") < 0,
+                                "the helper's own name is not shown on the booking she received");
+                        },
+                        errorMessage: "Bookings list is empty"
                     });
                 },
 

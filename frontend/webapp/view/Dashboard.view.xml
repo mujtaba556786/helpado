@@ -397,7 +397,8 @@ xmlns:l="sap.ui.layout"
                                                 <HBox justifyContent="SpaceBetween" alignItems="Start">
                                                     <VBox class="bookingInfoBox">
                                                         <Title text="{appData>service}" level="H5"/>
-                                                        <Text text="{appData>provider_name}" class="grayText smallText"/>
+                                                        <!-- The other party: the helper for a customer, the customer for a helper -->
+                                                        <Text text="{appData>counterpartName}" class="grayText smallText"/>
                                                         <Text text="{path:'appData>scheduled_date', formatter:'.formatBookingDate'} {appData>scheduled_time}" class="smallText blueText"/>
                                                     </VBox>
                                                     <ObjectStatus text="{path:'appData>status', formatter:'.formatStatusLabel'}" state="{path:'appData>status', formatter:'.formatBookingState'}"/>

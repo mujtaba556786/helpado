@@ -407,6 +407,22 @@ sap.ui.define([], function () {
             total_price: 35,
             is_seen: 1,
             created_at: "2025-06-08T06:00:00.000Z"
+        },
+        // The test user is the HELPER here (provider_id = USER.id). Guards the
+        // schedule card naming the other party, not always the provider.
+        {
+            id: "B6",
+            customer_id: "c9",
+            customer_name: "Max Kunde",
+            provider_id: "U_TEST_001",
+            provider_name: "Julia Tester",
+            service: "Gardening",
+            scheduled_date: "2025-06-25",
+            scheduled_time: "16:00",
+            status: "pending",
+            total_price: 25,
+            is_seen: 1,
+            created_at: "2025-06-18T06:00:00.000Z"
         }
     ];
 
