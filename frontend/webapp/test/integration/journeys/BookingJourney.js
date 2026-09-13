@@ -4,7 +4,9 @@
  * Scenarios covered:
  *  1. The booking dialog shows the helper's hourly rate (it previously showed
  *     no price at all, so people booked without ever seeing one)
- *  2. Preferred time is a TimePicker, not a free-text Input
+ *  2. Preferred time is a TimePicker, not a free-text Input, and its clock
+ *     face renders and selects the tapped hour (the 1.147-exported theme hid
+ *     the face under UI5 1.120 and misplaced its hit area)
  *  3. Onboarding step 3 renders one chip per ServiceConstants category, keyed
  *     and labelled from the catalogue (it previously had 12 hardcoded English
  *     names that had drifted from the real 10)
@@ -49,6 +51,20 @@ sap.ui.define([
         When.onTheBookingDialog.iPressBook();
 
         Then.onTheBookingDialog.iSeeATimePicker();
+        Then.iTeardownMyUIComponent();
+    });
+
+    opaTest("Time picker shows a clock face that selects the tapped hour", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+        When.onTheSchedulePage.iPressViewProfileButton();
+        When.onTheBookingDialog.iPressBook();
+        When.onTheBookingDialog.iOpenTheTimePicker();
+
+        Then.onTheBookingDialog.iSeeAUsableClockFace();
+
+        When.onTheBookingDialog.iCloseTheTimePicker();
         Then.iTeardownMyUIComponent();
     });
 

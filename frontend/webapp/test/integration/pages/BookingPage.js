@@ -108,6 +108,34 @@ sap.ui.define([
                         },
                         errorMessage: "Onboarding dialog not open"
                     });
+                },
+
+                /**
+                 * Opens the Preferred Time clock popover the way the clock icon
+                 * press does. (Not toggleOpen(): in 1.120 its argument means
+                 * "is currently open", so toggleOpen(true) closes.)
+                 */
+                iOpenTheTimePicker: function () {
+                    return this.waitFor({
+                        id: "bookingTime",
+                        viewName: DASHBOARD_VIEW,
+                        success: function (oCtrl) {
+                            oCtrl._openPicker();
+                            Opa5.assert.ok(true, "Time picker popover requested");
+                        },
+                        errorMessage: "bookingTime control not found"
+                    });
+                },
+
+                iCloseTheTimePicker: function () {
+                    return this.waitFor({
+                        id: "bookingTime",
+                        viewName: DASHBOARD_VIEW,
+                        success: function (oCtrl) {
+                            oCtrl._closePicker();
+                        },
+                        errorMessage: "bookingTime control not found"
+                    });
                 }
             },
 
@@ -155,6 +183,59 @@ sap.ui.define([
                                 "Preferred time is a TimePicker, not a free-text Input");
                         },
                         errorMessage: "bookingTime control not found"
+                    });
+                },
+
+                /**
+                 * The helpmate theme was exported against UI5 1.147, whose clock CSS
+                 * shows the active face via .sapMTPCFadeIn/.sapMTPCDisplay. The app
+                 * runs 1.120, which renders .sapMTPCActive instead — so the face
+                 * stayed display:none and the popover was an empty box. 1.147 also
+                 * moved .sapMTPClockCover (the hit area the JS measures for centre
+                 * and ring radii) outside the dial, which shifted the ring maths.
+                 * See themes/sap/m/themes/helpmate/README-ui5-version-patches.md.
+                 *
+                 * Checks the behaviour, not the CSS: the face has a height, and
+                 * hit-testing the centre of "9" (outer ring) and "21" (inner ring)
+                 * selects exactly those hours.
+                 */
+                iSeeAUsableClockFace: function () {
+                    return this.waitFor({
+                        id: "bookingTime",
+                        viewName: DASHBOARD_VIEW,
+                        check: function (oTP) {
+                            // The clocks control is created lazily on first open
+                            var oClocks = oTP._getClocks();
+                            var oClock = oClocks && oClocks.getAggregation("_clocks")[0];
+                            var oDom = oClock && oClock.getDomRef();
+                            return !!oDom && oDom.classList.contains("sapMTPCActive") &&
+                                   oDom.getBoundingClientRect().height > 0;
+                        },
+                        success: function (oTP) {
+                            var oClock = oTP._getClocks().getAggregation("_clocks")[0];
+                            var oDom   = oClock.getDomRef();
+                            Opa5.assert.ok(oDom.getBoundingClientRect().height > 100,
+                                "Hours clock face is rendered (height " +
+                                Math.round(oDom.getBoundingClientRect().height) + "px), not display:none");
+
+                            var oCover = oDom.querySelector(".sapMTPClockCover").getBoundingClientRect();
+                            var oDial  = oDom.querySelector(".sapMTPCDial").getBoundingClientRect();
+                            Opa5.assert.ok(
+                                Math.abs(oCover.left - oDial.left) <= 1 && Math.abs(oCover.top - oDial.top) <= 1 &&
+                                Math.abs(oCover.width - oDial.width) <= 1,
+                                "Clock hit area sits exactly on the dial (cover " + Math.round(oCover.width) +
+                                "px vs dial " + Math.round(oDial.width) + "px)");
+
+                            oClock._calculateDimensions();
+                            [9, 21].forEach(function (iHour) {
+                                var oNum = oDom.querySelector("#" + oClock.getId() + "-" + iHour).getBoundingClientRect();
+                                oClock._calculatePosition(oNum.left + oNum.width / 2, oNum.top + oNum.height / 2);
+                                Opa5.assert.strictEqual(oClock._iSelectedValue, iHour,
+                                    "Tapping the centre of \"" + iHour + "\" selects " + iHour +
+                                    " (got " + oClock._iSelectedValue + ")");
+                            });
+                        },
+                        errorMessage: "Hours clock face never became visible in the time picker popover"
                     });
                 },
 

@@ -6,8 +6,8 @@
  * string into Math.max() unparsed, gets NaN, and never positions the arrow —
  * it sat at the stylesheet default 20px from the popover's left edge, pointing
  * at nothing, on the language and notification popovers. The theme value is
- * now the plain "8" the runtime expects (see themes/.../helpmate/README-arrow-
- * offset.md). These tests measure the rendered arrow against the opener so a
+ * now the plain "8" the runtime expects (see themes/.../helpmate/README-ui5-
+ * version-patches.md). These tests measure the rendered arrow against the opener so a
  * theme re-export cannot silently bring the bug back.
  *
  *  1. Language popover arrow is centred on the globe button
