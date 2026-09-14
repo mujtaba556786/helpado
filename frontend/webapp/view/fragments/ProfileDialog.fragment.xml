@@ -35,7 +35,7 @@
                         displaySize="L"
                         class="sapUiMediumMarginEnd"/>
                     <VBox>
-                        <Text text="{appData>/selectedProfile/serviceType}" class="smallText"/>
+                        <Text text="{path:'appData>/selectedProfile/serviceType', formatter:'.formatServiceList'}" class="smallText"/>
                         <HBox alignItems="Center" class="sapUiTinyMarginTop">
                             <!-- Five plain Icons rather than a rating control. sap.m.RatingIndicator
                                  lays its stars out in slots sized from the unscaled iconSize, while

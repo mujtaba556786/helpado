@@ -399,7 +399,7 @@ xmlns:l="sap.ui.layout"
                                             <VBox class="fiBookingCardInner">
                                                 <HBox justifyContent="SpaceBetween" alignItems="Start">
                                                     <VBox class="bookingInfoBox">
-                                                        <Title text="{appData>service}" level="H5"/>
+                                                        <Title text="{path:'appData>service', formatter:'.formatServiceList'}" level="H5"/>
                                                         <!-- The other party: the helper for a customer, the customer for a helper -->
                                                         <Text text="{appData>counterpartName}" class="grayText smallText"/>
                                                         <Text text="{path:'appData>scheduled_date', formatter:'.formatBookingDate'} {appData>scheduled_time}" class="smallText blueText"/>
@@ -451,7 +451,7 @@ xmlns:l="sap.ui.layout"
                                                     <Avatar displaySize="S" src="{appData>photo}" initials="P" backgroundColor="Accent1" class="sapUiTinyMarginEnd"/>
                                                     <VBox>
                                                         <Title text="{appData>name}" level="H5"/>
-                                                        <Text text="{appData>serviceType}" class="grayText smallText"/>
+                                                        <Text text="{path:'appData>serviceType', formatter:'.formatServiceList'}" class="grayText smallText"/>
                                                         <HBox alignItems="Center">
                                                             <RatingIndicator value="{appData>rating}" displayOnly="true" iconSize="12px" class="sapUiTinyMarginEnd"
                                                                 visible="{= ${appData>review_count} > 0 }"/>
@@ -483,7 +483,7 @@ xmlns:l="sap.ui.layout"
                                                     <Avatar displaySize="S" src="{appData>photo}" initials="P" backgroundColor="Accent1" class="sapUiTinyMarginEnd"/>
                                                     <VBox>
                                                         <Title text="{appData>name}" level="H5"/>
-                                                        <Text text="{appData>serviceType}" class="grayText smallText"/>
+                                                        <Text text="{path:'appData>serviceType', formatter:'.formatServiceList'}" class="grayText smallText"/>
                                                     </VBox>
                                                 </HBox>
                                                 <Button text="{i18n>profile}" icon="sap-icon://person-placeholder" type="Transparent" press="onViewRecentProfile"/>

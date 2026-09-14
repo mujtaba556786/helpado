@@ -1,13 +1,32 @@
 sap.ui.define([
     "sap/m/MessageToast",
     "helphub/config",
-    "sap/ui/core/format/DateFormat"
-], function(MessageToast, Config, DateFormat) {
+    "sap/ui/core/format/DateFormat",
+    "helphub/model/ServiceConstants"
+], function(MessageToast, Config, DateFormat, ServiceConstants) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
 
     return {
+
+        /**
+         * A helper's categories are stored as the raw comma-joined API keys
+         * ("Transport,Gardening"), and a booking copies that string. Rendered
+         * straight from the model it showed exactly that — no space, and in
+         * English in every locale. Split, localise each name through its
+         * ServiceConstants i18n key (unknown names pass through), rejoin.
+         */
+        formatServiceList: function (sList) {
+            if (!sList) { return ""; }
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            return String(sList).split(",").map(function (sName) {
+                var sTrim = sName.trim();
+                if (!sTrim) { return ""; }
+                var oSvc = ServiceConstants.find(function (o) { return o.name === sTrim; });
+                return oSvc ? (oBundle.getText(oSvc.key) || sTrim) : sTrim;
+            }).filter(Boolean).join(", ");
+        },
 
         // Compute average rating (rounded to 1 dp) from a reviews array; returns null for empty input.
         _computeAvgRating: function(aReviews) {

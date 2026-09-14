@@ -57,6 +57,33 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    // A booking copies the helper's category list, stored as the raw API keys
+    // joined by commas. The card title rendered that string as-is:
+    // "Transport,Cleaning" — no space, and English in every locale.
+    opaTest("A booking for several categories reads 'Transport, Cleaning', localised", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+
+        Then.waitFor({
+            controlType: "sap.m.Title",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oTitle) {
+                var oCtx = oTitle.getBindingContext("appData");
+                return !!oCtx && oCtx.getProperty("id") === "B4";
+            },
+            success: function (aTitles) {
+                var sText = aTitles[0].getText();
+                var oBundle = aTitles[0].getModel("i18n").getResourceBundle();
+                var sWant = oBundle.getText("serviceTransport") + ", " + oBundle.getText("serviceCleaning");
+                Opa5.assert.strictEqual(sText, sWant, "card title is '" + sWant + "' (stored as 'Transport,Cleaning')");
+                Opa5.assert.ok(sText.indexOf(",C") < 0 && sText.indexOf(",T") < 0, "no comma without a following space");
+            },
+            errorMessage: "Booking B4's card title was not rendered"
+        });
+        Then.iTeardownMyUIComponent();
+    });
+
     // ── 3. Filter chips ───────────────────────────────────────────────────
 
     opaTest("The status filter popover lists all 6 status options", function (Given, When, Then) {

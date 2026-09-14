@@ -18,7 +18,7 @@
         <content>
             <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
                 <Label text="{i18n>service}" required="true"/>
-                <Text text="{appData>/selectedProfile/serviceType}" class="fontBold sapUiTinyMarginBottom"/>
+                <Text text="{path:'appData>/selectedProfile/serviceType', formatter:'.formatServiceList'}" class="fontBold sapUiTinyMarginBottom"/>
 
                 <!-- The rate the helper charges, so it is never a surprise at the
                      point of booking. No duration is collected, so this is shown

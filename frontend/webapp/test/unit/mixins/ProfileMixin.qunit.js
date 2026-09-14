@@ -167,4 +167,41 @@ sap.ui.define([
         assert.strictEqual(aResult[0].created_at_relative, "just now", "first → just now");
         assert.ok(aResult[1].created_at_relative.indexOf("hr ago") >= 0, "second → hr ago");
     });
+
+    // ── formatServiceList ─────────────────────────────────────────────────────
+    // Categories are stored as raw comma-joined API keys ("Transport,Gardening")
+    // and a booking copies the string; rendered unformatted it showed exactly
+    // that, in English in every locale.
+
+    QUnit.module("ProfileMixin — formatServiceList", {
+        beforeEach: function () {
+            // Bundle that "translates" by prefixing the key, so we can see which
+            // key was looked up.
+            this.ctrl = Object.assign({}, ProfileMixin, {
+                getOwnerComponent: function () {
+                    var oBundle = { getText: function (k) { return "t:" + k; } };
+                    return { getModel: function () { return { getResourceBundle: function () { return oBundle; } }; } };
+                }
+            });
+        }
+    });
+
+    QUnit.test("splits on commas, localises each known category, joins with ', '", function (assert) {
+        assert.strictEqual(this.ctrl.formatServiceList("Transport,Gardening"),
+            "t:serviceTransport, t:serviceGardening", "no space after the comma in the input, one in the output");
+        assert.strictEqual(this.ctrl.formatServiceList("Elder Care, Pet Care"),
+            "t:serviceElderCare, t:servicePetCare", "tolerates a space after the comma; multi-word names resolve");
+    });
+
+    QUnit.test("single value and unknown names pass through unchanged", function (assert) {
+        assert.strictEqual(this.ctrl.formatServiceList("Cleaning"), "t:serviceCleaning", "single category");
+        assert.strictEqual(this.ctrl.formatServiceList("Babysitting"), "Babysitting", "a name that is not a category is shown as stored");
+        assert.strictEqual(this.ctrl.formatServiceList("Cleaning,,Babysitting,"), "t:serviceCleaning, Babysitting", "empty segments dropped");
+    });
+
+    QUnit.test("empty input renders nothing", function (assert) {
+        assert.strictEqual(this.ctrl.formatServiceList(""), "");
+        assert.strictEqual(this.ctrl.formatServiceList(null), "");
+        assert.strictEqual(this.ctrl.formatServiceList(undefined), "");
+    });
 });

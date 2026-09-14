@@ -420,7 +420,9 @@ sap.ui.define([], function () {
             customer_name: "Julia Tester",
             provider_id: "p5",
             provider_name: "Tom Walker",
-            service: "Cleaning",
+            // Real bookings copy the helper's comma-joined category list; the
+            // schedule must render it as "Transport, Cleaning", localised.
+            service: "Transport,Cleaning",
             scheduled_date: "2025-06-05",
             scheduled_time: "11:00",
             status: "declined",
