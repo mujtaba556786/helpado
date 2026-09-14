@@ -13,10 +13,20 @@ function issueAccessToken(user) {
     return jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '15m' });
 }
 
+// A session lasts SESSION_DAYS after its last use, not after login. Every
+// successful refresh pushes the row's expires_at forward, so anyone who opens
+// the app at least once in that window never sees a login code again; a
+// device silent for the whole window does. The DB row is the real lifetime —
+// logout deletes it — and the JWT only carries a distant hard cap so
+// jwt.verify does not cut a live session off at day 60 as it used to.
+const SESSION_DAYS   = 60;
+const SESSION_MS     = SESSION_DAYS * 24 * 60 * 60 * 1000;
+const REFRESH_JWT_TTL = '400d';
+
 async function issueRefreshToken(user) {
-    const token     = jwt.sign({ userId: user.id }, REFRESH_SECRET, { expiresIn: '60d' });
+    const token     = jwt.sign({ userId: user.id }, REFRESH_SECRET, { expiresIn: REFRESH_JWT_TTL });
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    const expiresAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + SESSION_MS);
     await pool.execute(
         'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)',
         [user.id, tokenHash, expiresAt]
@@ -155,6 +165,11 @@ async function refreshAccessToken(refreshToken) {
         err.statusCode = 401;
         throw err;
     }
+    // Slide the session: this device was just used, so it gets another full window.
+    await pool.execute(
+        'UPDATE refresh_tokens SET expires_at = ? WHERE token_hash = ?',
+        [new Date(Date.now() + SESSION_MS), tokenHash]
+    );
     return issueAccessToken(users[0]);
 }
 
@@ -194,5 +209,5 @@ module.exports = {
     issueTokens, upsertSocialUser,
     loginPasswordless, consumeMagicToken, consumeMagicCode,
     refreshAccessToken, logout, getMe, acceptTerms,
-    CURRENT_TERMS_VERSION
+    CURRENT_TERMS_VERSION, SESSION_DAYS
 };

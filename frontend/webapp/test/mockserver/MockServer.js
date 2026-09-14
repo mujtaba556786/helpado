@@ -17,6 +17,12 @@ sap.ui.define([
 
     var _originalFetch = null;
     var _started = false;
+    // Per-test overrides: path substring -> function(url, options) returning
+    // a Promise (a Response-like object, or a rejection for a network error).
+    // Component.js captures window.fetch ONCE, at the first component start,
+    // so a journey cannot swap window.fetch itself — it registers here and
+    // handleFetch consults the overrides first.
+    var _mOverrides = {};
 
     function makeResponse(body, status) {
         var sBody = JSON.stringify(body);
@@ -33,6 +39,8 @@ sap.ui.define([
     }
 
     function handleFetch(url, options) {
+        var sPath = Object.keys(_mOverrides).filter(function (k) { return url.toString().indexOf(k) >= 0; })[0];
+        if (sPath) { return _mOverrides[sPath](url, options); }
         var sMethod = (options && options.method) ? options.method.toUpperCase() : "GET";
         var sUrl = url.toString();
 
@@ -253,6 +261,20 @@ sap.ui.define([
             _started = false;
         },
 
-        isStarted: function () { return _started; }
+        isStarted: function () { return _started; },
+
+        /** Route every call whose url contains sPath through fn (see _mOverrides). */
+        override: function (sPath, fn) { _mOverrides[sPath] = fn; },
+        clearOverrides: function () { _mOverrides = {}; },
+        /** Response-like helpers for overrides. */
+        respond: makeResponse,
+        respondHtml: function (status, sHtml) {
+            return Promise.resolve({
+                ok: false, status: status,
+                json: function () { return Promise.reject(new SyntaxError("Unexpected token <")); },
+                text: function () { return Promise.resolve(sHtml); }
+            });
+        },
+        networkError: function () { return Promise.reject(new TypeError("Failed to fetch")); }
     };
 });
