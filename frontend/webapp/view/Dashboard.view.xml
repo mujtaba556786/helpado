@@ -73,9 +73,12 @@ xmlns:l="sap.ui.layout"
                                         <VBox class="fiSvcIconWrap" alignItems="Center" justifyContent="Center">
                                             <core:Icon src="{appData>icon}" class="fiSvcIcon"
                                                 visible="{= !${appData>img} }"/>
+                                            <!-- Same 1.25rem box as .fiSvcIcon's font-size, so the SVG tiles
+                                                 scale with the icon-font tiles (incl. the phone's font scale).
+                                                 The SVGs carry the same ~10% whitespace as SAP glyphs. -->
                                             <Image src="{appData>img}" visible="{= !!${appData>img} }"
-                                                width="26px" height="26px" densityAware="false"
-                                                decorative="true"/>
+                                                width="1.25rem" height="1.25rem" densityAware="false"
+                                                decorative="true" class="fiSvcImg"/>
                                         </VBox>
                                         <Text text="{appData>label}" class="fiSvcName"/>
                                         <!-- "Popular" is hidden for now: nothing measures popularity, it is a

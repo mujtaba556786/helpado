@@ -297,6 +297,53 @@ sap.ui.define([
 
     // ── 6. Spot-check specific service categories ─────────────────────────
 
+    // ── 9. Icon-font and SVG tiles render at one size ──────────────────────
+    // Six categories use hand-drawn SVGs (no animal in SAP's font, etc.), the
+    // rest use sap-icon:// glyphs. The SVGs were a fixed 26px next to 1.25rem
+    // glyphs — bigger on desktop, and a different mismatch on a phone with a
+    // font scale — so the grid looked like two icon sets. Both now get the
+    // same 1.25rem box; the SVGs carry SAP-like whitespace (unit-tested).
+    opaTest("Every service tile's icon — SVG or icon font — renders in the same box", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        Then.waitFor({
+            controlType: "sap.m.CustomListItem",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oItem) { return oItem.hasStyleClass("fiSvcCard"); },
+            check: function (aItems) {
+                return aItems.length >= ServiceConstants.length && aItems.every(function (oItem) {
+                    return !!oItem.getDomRef() && !!oItem.getDomRef().querySelector(".fiSvcIcon, img");
+                });
+            },
+            success: function (aItems) {
+                var aSvg = [], aFont = [];
+                aItems.forEach(function (oItem) {
+                    var oDom  = oItem.getDomRef();
+                    var oImg  = oDom.querySelector("img");
+                    var oIcon = oDom.querySelector(".fiSvcIcon");
+                    var oEl   = (oImg && oImg.offsetParent) ? oImg : oIcon;
+                    var oRect = oEl.getBoundingClientRect();
+                    (oEl === oImg ? aSvg : aFont).push({ name: oDom.querySelector(".fiSvcName").textContent, h: oRect.height, w: oRect.width });
+                });
+                Opa5.assert.ok(aSvg.length >= 6 && aFont.length >= 4,
+                    aSvg.length + " SVG tiles and " + aFont.length + " icon-font tiles measured");
+                var fRef = aFont[0].h;
+                Opa5.assert.ok(aFont.every(function (o) { return Math.abs(o.h - fRef) <= 1; }),
+                    "icon-font tiles share one height (" + Math.round(fRef) + "px)");
+                aSvg.forEach(function (o) {
+                    Opa5.assert.ok(Math.abs(o.h - fRef) <= 1 && Math.abs(o.w - fRef) <= 1,
+                        o.name + " SVG box is " + Math.round(o.w) + "x" + Math.round(o.h) + "px — same as the icon-font box");
+                });
+                // The box must be font-relative (1.25rem), not a px constant, so it
+                // follows the phone's font scale exactly as the glyphs do.
+                var fRem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                Opa5.assert.ok(Math.abs(fRef - 1.25 * fRem) <= 1, "box is 1.25rem (" + Math.round(1.25 * fRem) + "px at this root font size)");
+            },
+            errorMessage: "Service tiles did not all render an icon"
+        });
+        Then.iTeardownMyUIComponent();
+    });
+
     // Spot-check a sample drawn from the catalogue itself. Hardcoding names let
     // this drift: it still asked for "Babysitting", which is not a category.
     // In English the i18n label equals the constant's name, which is what the
