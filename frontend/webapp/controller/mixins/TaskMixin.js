@@ -120,11 +120,11 @@ sap.ui.define([
                     var oGraphic = bImage
                         ? new Image({ src: cat.icon, width: "1.75rem", height: "1.25rem",
                                       densityAware: false, decorative: true })
-                        // The custom SVGs are drawn in the brand green; without this
-                        // the font glyphs stayed near-black and the list read as two
-                        // different icon sets stacked together.
-                        : new Icon({ src: cat.icon, size: "1.25rem", width: "1.75rem",
-                                     color: "#2E8B57" });
+                        // The custom SVGs are drawn in the brand green; a glyph left in
+                        // the text colour made the list read as two icon sets. The
+                        // colour lives in .hhCatMenuIcon with the other pickers.
+                        : new Icon({ src: cat.icon, size: "1.25rem", width: "1.75rem" })
+                              .addStyleClass("hhCatMenuIcon");
                     oGraphic.addStyleClass("sapUiTinyMarginEnd");
 
                     var oLI = new CustomListItem({
