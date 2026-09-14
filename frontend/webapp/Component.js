@@ -17,6 +17,7 @@ sap.ui.define([
     // the token keeps this in step.
     var _sAccessToken = null;
     try { _sAccessToken = localStorage.getItem("helpmate_token"); } catch (e) { /* ignore */ }
+    var _fnRefreshSession = function () { return Promise.resolve(null); };   // set once the fetch patch installs
 
     var StorageHelper = {
         set: function(k, v) {
@@ -92,8 +93,15 @@ sap.ui.define([
                     return oNext;
                 }
 
+                // Exchange the stored refresh token for a new access token.
+                // Resolves to the token, or null. The session is cleared ONLY when
+                // the server itself rejects the refresh token (401/403: expired,
+                // revoked, account suspended). A rejected fetch (offline, weak
+                // mobile link), a 5xx, or a non-JSON body (Railway's 502 page
+                // during a redeploy) used to clear it too — every hiccup at app
+                // open cost the user a fresh login email. Those now keep the
+                // session; the next attempt simply tries again.
                 var pRefresh = null;   // shared so a burst of 401s refreshes once
-
                 function refreshOnce() {
                     if (pRefresh) { return pRefresh; }
                     pRefresh = new Promise(function (resolve) {
@@ -104,17 +112,21 @@ sap.ui.define([
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ refreshToken: sRefresh })
                             })
-                            .then(function (r) { return r.json(); })
-                            .then(function (d) {
-                                if (d && d.success && d.accessToken) {
-                                    StorageHelper.set("helpmate_token", d.accessToken);
-                                    resolve(d.accessToken);
-                                } else {
-                                    StorageHelper.clear();
-                                    resolve(null);
+                            .then(function (r) {
+                                if (r.status === 401 || r.status === 403) {
+                                    StorageHelper.clear();          // the server said no
+                                    return null;
                                 }
+                                if (!r.ok) { return null; }         // 5xx: keep the session
+                                return r.json().then(function (d) {
+                                    if (d && d.success && d.accessToken) {
+                                        StorageHelper.set("helpmate_token", d.accessToken);
+                                        return d.accessToken;
+                                    }
+                                    return null;
+                                }, function () { return null; });   // not JSON: keep the session
                             })
-                            .catch(function () { resolve(null); });
+                            .then(resolve, function () { resolve(null); });   // network: keep the session
                         });
                     }).then(function (sToken) {
                         pRefresh = null;
@@ -122,6 +134,7 @@ sap.ui.define([
                     });
                     return pRefresh;
                 }
+                _fnRefreshSession = refreshOnce;   // module-level: the patch runs once, components start many times (OPA5)
 
                 window.fetch = function (input, init) {
                     if (!isApiCall(input)) {
@@ -336,66 +349,65 @@ sap.ui.define([
                 oRouter.navTo("dashboard", {}, true);
             }
 
-            // ── Try silent refresh when access token is expired ────────────────
-            function trySilentRefresh() {
-                StorageHelper.get("helphub_refresh_token", function(sRefresh) {
-                    if (!sRefresh) {
-                        StorageHelper.clear();
-                        oAppData.setProperty("/magicLinkProcessing", false);
-                        return;
-                    }
-                    fetch(API_BASE + "/api/auth/refresh", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ refreshToken: sRefresh })
-                    })
-                    .then(function(r) { return r.json(); })
-                    .then(function(d) {
-                        if (d.success && d.accessToken) {
-                            StorageHelper.set("helpmate_token", d.accessToken);
-                            // Retry /me with new token
-                            return fetch(API_BASE + "/api/auth/me", {
-                                headers: { "Authorization": "Bearer " + d.accessToken }
-                            }).then(function(r) { return r.json(); })
-                              .then(function(oData) {
-                                  if (oData.success) applyUser(oData.user);
-                                  else {
-                                      StorageHelper.clear();
-                                      oAppData.setProperty("/magicLinkProcessing", false);
-                                  }
-                              });
-                        }
-                        StorageHelper.clear();
-                        oAppData.setProperty("/magicLinkProcessing", false);
-                    })
-                    .catch(function() {
-                        StorageHelper.clear();
-                        oAppData.setProperty("/magicLinkProcessing", false);
-                    });
+            // ── Auto-login on app open ─────────────────────────────────────────
+            // Access tokens last 15 minutes, so almost every open goes through
+            // a refresh. Only a 401/403 from the server ends the session (see
+            // refreshOnce). A network error or 5xx — offline, a weak mobile
+            // link, Railway mid-redeploy — is retried with backoff; if the
+            // server stays unreachable we land on the login page WITH the
+            // session kept, so the next open signs in without a code.
+            var that = this;
+            var BOOT_RETRY_MS = window.__hhBootRetryMs || [2000, 4000, 8000];   // tests shorten the backoff
+
+            function settle() { oAppData.setProperty("/magicLinkProcessing", false); }
+
+            function fetchMe(sToken) {
+                return fetch(API_BASE + "/api/auth/me", {
+                    headers: { "Authorization": "Bearer " + sToken }
+                }).then(function (r) {
+                    if (r.status === 401 || r.status === 403) { return { unauthorized: true }; }
+                    if (!r.ok) { throw new Error("me " + r.status); }
+                    return r.json();
                 });
             }
 
-            // ── Auto-login on app open ─────────────────────────────────────────
+            function bootWithToken(sToken, iAttempt) {
+                return fetchMe(sToken).then(function (oData) {
+                    if (oData && oData.unauthorized) {
+                        // Access token expired — refresh, then try /me again.
+                        return _fnRefreshSession().then(function (sNew) {
+                            if (!sNew) { return settle(); }     // cleared, or server unreachable
+                            return fetchMe(sNew).then(function (oAgain) {
+                                if (oAgain && oAgain.success) { applyUser(oAgain.user); }
+                                else { settle(); }
+                            });
+                        });
+                    }
+                    if (oData && oData.success) { applyUser(oData.user); }
+                    else { settle(); }
+                }).catch(function () {
+                    // Transient: keep the session, try again shortly.
+                    if (iAttempt < BOOT_RETRY_MS.length) {
+                        return new Promise(function (resolve) {
+                            setTimeout(function () { resolve(bootWithToken(sToken, iAttempt + 1)); }, BOOT_RETRY_MS[iAttempt]);
+                        });
+                    }
+                    settle();
+                    sap.ui.require(["sap/m/MessageToast"], function (MessageToast) {
+                        var oI18n = that.getModel("i18n");
+                        MessageToast.show(oI18n ? oI18n.getResourceBundle().getText("loginServerUnreachable")
+                                                : "Could not reach the server. Your session is saved — try again in a moment.");
+                    });
+                });
+            }
+            this._bootWithToken = bootWithToken;
+
             StorageHelper.get("helpmate_token", function(sToken) {
                 if (!sToken) {
-                    oAppData.setProperty("/magicLinkProcessing", false);
+                    settle();
                     return; // no session — stay on login
                 }
-                fetch(API_BASE + "/api/auth/me", {
-                    headers: { "Authorization": "Bearer " + sToken }
-                })
-                .then(function(r) {
-                    if (r.status === 401) { trySilentRefresh(); return null; }
-                    return r.json();
-                })
-                .then(function(oData) {
-                    if (!oData || !oData.success) {
-                        oAppData.setProperty("/magicLinkProcessing", false);
-                        return;
-                    }
-                    applyUser(oData.user);
-                })
-                .catch(function() { trySilentRefresh(); });
+                bootWithToken(sToken, 0);
             });
 
             // Geolocation

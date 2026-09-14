@@ -23,6 +23,7 @@
  *  BottomNavJourney     — one selected tab, even widths, readable labels both states
  *  RatingJourney        — tappable star icons write /newRating, empty submit refused, compact dialog
  *  PopoverJourney       — popover arrows centred on their opener (theme param), rating dialog initial focus
+ *  SessionJourney       — saved session survives network errors and 5xx; only a 401/403 logs out
  */
 sap.ui.define([
     "sap/ui/test/Opa5",
@@ -42,7 +43,8 @@ sap.ui.define([
     "helphub/test/integration/journeys/HeaderJourney",
     "helphub/test/integration/journeys/BottomNavJourney",
     "helphub/test/integration/journeys/RatingJourney",
-    "helphub/test/integration/journeys/PopoverJourney"
+    "helphub/test/integration/journeys/PopoverJourney",
+    "helphub/test/integration/journeys/SessionJourney"
 ], function (Opa5) {
     "use strict";
 
