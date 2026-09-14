@@ -24,6 +24,7 @@
  *  RatingJourney        — tappable star icons write /newRating, empty submit refused, compact dialog
  *  PopoverJourney       — popover arrows centred on their opener (theme param), rating dialog initial focus
  *  SessionJourney       — saved session survives network errors and 5xx; only a 401/403 logs out
+ *  CategoryIconJourney  — SVG and glyph category icons: one size and colour in every picker
  */
 sap.ui.define([
     "sap/ui/test/Opa5",
@@ -44,7 +45,8 @@ sap.ui.define([
     "helphub/test/integration/journeys/BottomNavJourney",
     "helphub/test/integration/journeys/RatingJourney",
     "helphub/test/integration/journeys/PopoverJourney",
-    "helphub/test/integration/journeys/SessionJourney"
+    "helphub/test/integration/journeys/SessionJourney",
+    "helphub/test/integration/journeys/CategoryIconJourney"
 ], function (Opa5) {
     "use strict";
 

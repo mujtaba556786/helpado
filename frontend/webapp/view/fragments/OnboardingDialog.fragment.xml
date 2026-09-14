@@ -101,7 +101,7 @@
             <FlexBox wrap="Wrap" class="sapUiTinyMarginTop" items="{appData>/services}">
                 <Button icon="{appData>display}" text="{appData>label}"
                     press="onToggleInterest"
-                    class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                    class="sapUiTinyMarginEnd sapUiTinyMarginBottom hhInterestChip">
                     <customData>
                         <core:CustomData key="interestKey" value="{appData>name}"/>
                     </customData>

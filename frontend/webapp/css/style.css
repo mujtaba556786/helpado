@@ -599,6 +599,29 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
     transition: color 0.2s ease !important;
 }
 .fiSvcImg { transition: filter 0.2s ease; }
+
+/* ── Category icons: one colour everywhere ──────────────────────────────
+   Six categories are hand-drawn SVGs in the brand green; the rest are
+   icon-font glyphs, which take the text colour of whatever control they sit
+   in. Where a picker shows both side by side the glyphs came out near-black
+   (Post Task category Select, onboarding interest chips) or the old SVG
+   green (task category filter menu), so each list read as two icon sets.
+   Glyphs get the SVG green; on an emphasized (selected) chip both go white,
+   the SVG via the same filter the tiles use on hover. */
+.hhCatPicker .sapMSelectListItemIcon.sapUiIcon,
+.hhInterestChip .sapMBtnIcon.sapUiIcon,
+.hhCatMenuIcon.sapUiIcon { color: #10b981 !important; }
+/* UI5 puts the type class on .sapMBtnInner, not on the button root. */
+.hhInterestChip .sapMBtnInner.sapMBtnEmphasized .sapMBtnIcon.sapUiIcon { color: #fff !important; }
+.hhInterestChip .sapMBtnInner.sapMBtnEmphasized img.sapMBtnIcon { filter: brightness(0) invert(1); }
+/* A Button sizes an image icon (sapMBtnCustomIcon) to its full inner height,
+   2.125rem, while a glyph is a 1rem character in a 34px line — so the SVG
+   chips were twice the size of the glyph chips. Give the image the glyph's
+   1rem and the same margins, so both occupy the identical 22x34 box. */
+.hhInterestChip img.sapMBtnCustomIcon {
+    width: 1rem !important; height: 1rem !important; max-height: none !important;
+    margin: 0.5625rem 0.1875rem !important; box-sizing: content-box !important;
+}
 .fiSvcName {
     font-size: 13px !important; font-weight: 600 !important;
     text-align: center !important; line-height: 1.3 !important; white-space: normal !important;

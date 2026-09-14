@@ -234,6 +234,11 @@ sap.ui.define([
                     controller: this
                 }).then(function(oDialog) {
                     this.getView().addDependent(oDialog);
+                    // The category Select's picker is a separate popup; a style
+                    // class on the Select never reaches it. Tag the picker so
+                    // .hhCatPicker can colour the glyphs like the SVG categories.
+                    var oSelect = this.byId("taskCategorySelect");
+                    if (oSelect) { oSelect.getPicker().addStyleClass("hhCatPicker"); }
                     return oDialog;
                 }.bind(this));
             }
