@@ -111,6 +111,18 @@ async function req(method, path, { token, admin, body } = {}) {
     check("  ...but recorded under the real caller, not the claimed id",
         claimed && claimed.customer_id === MALLORY, claimed && claimed.customer_id);
 
+    // Notification texts are composed here and stored verbatim, so a helper's
+    // comma-joined category list ("Transport,Gardening") used to land in the
+    // bell exactly like that.
+    r = await req('POST', `/bookings`, {
+        token: mallory,
+        body: { customer_id: MALLORY, provider_id: BOB, service: 'Transport,Gardening', scheduled_date: '2030-02-02' } });
+    check("POST booking with a two-category service -> accepted", r.status === 200, r.status);
+    const [[note]] = await db.query(
+        "SELECT message FROM notifications WHERE user_id = ? AND type = 'booking_request' ORDER BY id DESC LIMIT 1", [BOB]);
+    check("  ...and the helper's notification reads 'Transport, Gardening', not 'Transport,Gardening'",
+        !!note && note.message.indexOf('Transport, Gardening') >= 0 && note.message.indexOf('Transport,Gardening') < 0, note && note.message);
+
     // ── 4. self-service vs moderation on users ────────────────────────────
     r = await req('PUT', `/users/${ALICE}`, { token: mallory, body: { name: 'hacked' } });
     check("PUT users/:id  editing someone else -> 403", r.status === 403, r.status);

@@ -2,6 +2,15 @@ const pool                    = require('../db/pool');
 const { calculateTrustScore } = require('./TrustService');
 const { createAndPush }       = require('./NotificationService');
 
+// A booking's service is the helper's category list as stored — the raw API
+// keys joined by commas ("Transport,Gardening"). Notification texts are
+// composed here and stored verbatim, so the client formatter never sees them;
+// render the list readably at the source.
+function serviceLabel(sService, sFallback) {
+    const parts = String(sService || '').split(',').map(x => x.trim()).filter(Boolean);
+    return parts.length ? parts.join(', ') : sFallback;
+}
+
 async function createBooking({ customer_id, provider_id, service, scheduled_date, scheduled_time, message }) {
     if (!customer_id || !provider_id) {
         const err = new Error('customer_id and provider_id are required');
@@ -23,7 +32,7 @@ async function createBooking({ customer_id, provider_id, service, scheduled_date
         provider_id,
         'booking_request',
         `New booking request from ${customerName}`,
-        `${customerName} wants to book ${service || 'your service'}${scheduled_date ? ' on ' + scheduled_date : ''}${scheduled_time ? ' at ' + scheduled_time : ''}.`,
+        `${customerName} wants to book ${serviceLabel(service, 'your service')}${scheduled_date ? ' on ' + scheduled_date : ''}${scheduled_time ? ' at ' + scheduled_time : ''}.`,
         id
     );
 
@@ -104,15 +113,15 @@ async function updateStatus(bookingId, status) {
         if (status === 'cancelled') {
             notifyUserId = booking.provider_id;
             title = `Booking cancelled by ${booking.customer_name || 'customer'}`;
-            msg = `The booking for ${booking.service || 'a service'} has been cancelled.`;
+            msg = `The booking for ${serviceLabel(booking.service, 'a service')} has been cancelled.`;
         } else if (status === 'confirmed') {
             notifyUserId = booking.customer_id;
             title = `${booking.provider_name} confirmed your booking!`;
-            msg = `Your booking for ${booking.service || 'a service'} has been confirmed.`;
+            msg = `Your booking for ${serviceLabel(booking.service, 'a service')} has been confirmed.`;
         } else if (status === 'declined') {
             notifyUserId = booking.customer_id;
             title = `${booking.provider_name} declined your booking`;
-            msg = `Your booking for ${booking.service || 'a service'} was declined. Try another helper.`;
+            msg = `Your booking for ${serviceLabel(booking.service, 'a service')} was declined. Try another helper.`;
         } else {
             notifyUserId = booking.customer_id;
             title = `Booking completed`;
@@ -128,7 +137,7 @@ async function updateStatus(bookingId, status) {
                 booking.customer_id,
                 'booking_cancelled',
                 `You cancelled your booking`,
-                `Your booking for ${booking.service || 'a service'} with ${booking.provider_name || 'the helper'} has been cancelled.`,
+                `Your booking for ${serviceLabel(booking.service, 'a service')} with ${booking.provider_name || 'the helper'} has been cancelled.`,
                 bookingId
             );
         }
