@@ -40,10 +40,32 @@ sap.ui.define([], function () {
                 o.selectors.forEach(function (s) { (bPads ? aPadSelectors : aTopSelectors).push(s); });
             });
 
-            assert.deepEqual(aPadSelectors, [".sapMPage > header"],
-                "exactly one selector pads the inset, and it is the <header> element itself (got " + JSON.stringify(aPadSelectors) + ")");
+            // Page headers: the element and the bar inside it both carry sapMPageHeader,
+            // so only the <header> element itself may be padded, exactly once.
+            var aHeaderPads = aPadSelectors.filter(function (s) { return /sapMPage\b|> header|sapMPageHeader/.test(s); });
+            assert.deepEqual(aHeaderPads, [".sapMPage > header"],
+                "exactly one page-header selector pads the inset, and it is the <header> element itself (got " + JSON.stringify(aHeaderPads) + ")");
             assert.ok(aPadSelectors.every(function (s) { return s.indexOf(".sapMPageHeader") < 0; }),
                 "no padding rule targets .sapMPageHeader — that class is on the header AND on the bar inside it");
+
+            // Stretched dialogs: title bar, sub-header and content all move by the inset,
+            // otherwise the dialog's Close sits in the status-bar strip where taps never arrive.
+            var sTitle = aTopSelectors.filter(function (s) { return /sapMDialogStretched .sapMDialogTitleGroup$/.test(s); })[0];
+            assert.ok(sTitle, "a rule moves the stretched dialog's title bar down by the inset");
+            var sSub = aTopSelectors.filter(function (s) { return /sapMDialogStretched .sapMDialogSubHeader$/.test(s); })[0];
+            assert.ok(sSub, "a rule moves the stretched dialog's sub-header down by the inset");
+            var oSubRule = aTop.filter(function (o) { return o.selectors.indexOf(sSub) >= 0; })[0];
+            assert.ok(oSubRule && /top\s*:\s*calc\(\s*2\.75rem\s*\+\s*env\(safe-area-inset-top\)\s*\)/.test(oSubRule.body),
+                "sub-header top is calc(2.75rem + inset) — below the moved title bar");
+            var aDialogPads = aPadSelectors.filter(function (s) { return /sapMDialogStretched.*\.sapMDialogSection$/.test(s); });
+            assert.ok(aDialogPads.length >= 3, "stretched dialog sections (plain, hh sub-header, UI5 sub-header) pad by the inset (" + aDialogPads.length + " selectors)");
+            aDialogPads.forEach(function (sSel) {
+                var o = aTop.filter(function (r) { return r.selectors.indexOf(sSel) >= 0; })[0];
+                var bSub = /SubHeader/.test(sSel);
+                var re = bSub ? /padding-top\s*:\s*calc\(\s*5\.75rem\s*\+\s*env\(safe-area-inset-top\)\s*\)/
+                              : /padding-top\s*:\s*calc\(\s*2\.75rem\s*\+\s*env\(safe-area-inset-top\)\s*\)/;
+                assert.ok(re.test(o.body), sSel + " pads " + (bSub ? "5.75rem" : "2.75rem") + " + inset");
+            });
 
             var sSectionRule = aTopSelectors.filter(function (s) { return /sapMPageWithHeader.*>\s*section$/.test(s); })[0];
             assert.ok(sSectionRule, "a rule shifts the page's content section by the inset");

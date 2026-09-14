@@ -149,6 +149,7 @@ sap.ui.define([
         When.onTheBookingDialog.iPressOnboardingNext();   // step 1 → 2
 
         Then.onTheBookingDialog.iSeeOnboardingStep(2);
+        Then.onTheBookingDialog.iSeeDistinctIconsOnTheHowItWorksRows();
 
         When.onTheBookingDialog.iPressOnboardingBack();   // step 2 → 1
 
