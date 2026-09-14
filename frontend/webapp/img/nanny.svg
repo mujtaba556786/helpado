@@ -1,8 +1,19 @@
 <!-- Nanny: a pram. Was sap-icon://family-care, which draws three ADULTS and
      reads as a group rather than childcare. The canopy is ONE path — drawing it
-     as two left a white seam that made it look like a wheelbarrow. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="14" height="14" role="img" aria-label="Nanny">
-    <g fill="#2E8B57">
+     as two left a seam that made it look like a wheelbarrow. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="3.38 11.13 52.37 52.37" width="14" height="14" role="img" aria-label="Nanny">
+    <defs>
+        <!-- Details are cut OUT so the tile background shows through, like the
+             counters in SAP icon-font glyphs. Painted white on top they broke on
+             hover, when the SAP glyphs turn white. -->
+        <mask id="cut" maskUnits="userSpaceOnUse" x="-64" y="-64" width="192" height="192">
+            <rect x="-64" y="-64" width="192" height="192" fill="#fff"/>
+            <!-- wheel hubs -->
+            <circle cx="17" cy="54" r="2.3" fill="#000"/>
+            <circle cx="41" cy="54" r="2.3" fill="#000"/>
+        </mask>
+    </defs>
+    <g fill="#10b981" mask="url(#cut)">
         <!-- hood: a single solid dome -->
         <path d="M8 36a21 21 0 0 1 42 0z"/>
         <!-- footwell -->
@@ -13,6 +24,4 @@
         <circle cx="17" cy="54" r="6.8"/>
         <circle cx="41" cy="54" r="6.8"/>
     </g>
-    <circle cx="17" cy="54" r="2.3" fill="#FFFFFF"/>
-    <circle cx="41" cy="54" r="2.3" fill="#FFFFFF"/>
 </svg>

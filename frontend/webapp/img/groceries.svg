@@ -1,13 +1,21 @@
 <!-- Groceries: a shopping bag with produce. Was sap-icon://basket — closest of
      the five, but abstract; a bag with a leaf reads as food shopping. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="14" height="14" role="img" aria-label="Groceries">
-    <g fill="#2E8B57">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="5.06 8.31 53.89 53.89" width="14" height="14" role="img" aria-label="Groceries">
+    <defs>
+        <!-- Details are cut OUT so the tile background shows through, like the
+             counters in SAP icon-font glyphs. Painted white on top they broke on
+             hover, when the SAP glyphs turn white. -->
+        <mask id="cut" maskUnits="userSpaceOnUse" x="-64" y="-64" width="192" height="192">
+            <rect x="-64" y="-64" width="192" height="192" fill="#fff"/>
+            <!-- leaf, so it reads as food rather than retail -->
+            <path d="M32 34c-7 0-11 4-11 10 7 .6 11-3 11-10z" fill="#000"/>
+            <path d="M33 34c0 7 4 10.6 11 10 0-6-4-10-11-10z" fill="#000"/>
+        </mask>
+    </defs>
+    <g fill="#10b981" mask="url(#cut)">
         <!-- handles -->
         <path d="M23 24v-4a9 9 0 0 1 18 0v4h-6v-4a3 3 0 0 0-6 0v4z"/>
         <!-- bag -->
         <path d="M14 22h36l3.4 32a5 5 0 0 1-5 5.5H15.6a5 5 0 0 1-5-5.5z"/>
     </g>
-    <!-- leaf, so it reads as food rather than retail -->
-    <path d="M32 34c-7 0-11 4-11 10 7 .6 11-3 11-10z" fill="#FFFFFF"/>
-    <path d="M33 34c0 7 4 10.6 11 10 0-6-4-10-11-10z" fill="#FFFFFF" opacity="0.75"/>
 </svg>

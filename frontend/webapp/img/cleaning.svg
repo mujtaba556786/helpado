@@ -1,8 +1,18 @@
 <!-- Cleaning: bucket with suds. Was sap-icon://home-share — a house with a
      share arrow. Two spray-bottle attempts read as a blob and then as a tube at
-     26px; a bucket is fewer, bolder shapes and survives the tile size. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="14" height="14" role="img" aria-label="Cleaning">
-    <g fill="#2E8B57">
+     tile size; a bucket is fewer, bolder shapes and survives it. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="3.2 1.95 61.11 61.11" width="14" height="14" role="img" aria-label="Cleaning">
+    <defs>
+        <!-- Details are cut OUT so the tile background shows through, like the
+             counters in SAP icon-font glyphs. Painted white on top they broke on
+             hover, when the SAP glyphs turn white. -->
+        <mask id="cut" maskUnits="userSpaceOnUse" x="-64" y="-64" width="192" height="192">
+            <rect x="-64" y="-64" width="192" height="192" fill="#fff"/>
+            <!-- rim -->
+            <rect x="8" y="30" width="48" height="5" rx="2.5" fill="#000"/>
+        </mask>
+    </defs>
+    <g fill="#10b981" mask="url(#cut)">
         <!-- suds -->
         <circle cx="46" cy="10" r="5"/>
         <circle cx="56" cy="18" r="3.4"/>
@@ -12,6 +22,4 @@
         <!-- bucket -->
         <path d="M8 30h48l-5.4 25.6A6 6 0 0 1 44.7 60H19.3a6 6 0 0 1-5.9-4.4z"/>
     </g>
-    <!-- rim highlight -->
-    <rect x="8" y="30" width="48" height="5" rx="2.5" fill="#FFFFFF" opacity="0.9"/>
 </svg>
