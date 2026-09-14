@@ -48,6 +48,15 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    opaTest("Each booking card names the other party, never the viewer", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+
+        Then.onTheSchedulePage.iSeeTheOtherPartyOnEachCard();
+        Then.iTeardownMyUIComponent();
+    });
+
     // ── 3. Filter chips ───────────────────────────────────────────────────
 
     opaTest("The status filter popover lists all 6 status options", function (Given, When, Then) {

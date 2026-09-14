@@ -117,4 +117,101 @@ sap.ui.define([
     QUnit.test("undefined → Warning", function (assert) {
         assert.strictEqual(BookingMixin.formatBookingState(undefined), "Warning");
     });
+
+    // ── formatCanMarkCompleted ────────────────────────────────────────────────
+    //
+    // The API returns the DATE column as "YYYY-MM-DDT00:00:00.000Z". new Date()
+    // of that is 02:00 local in Berlin — later than local midnight — so for any
+    // user east of UTC "Mark as completed" only appeared the day AFTER the
+    // booking. Found on the live site with a same-day confirmed booking.
+
+    QUnit.module("BookingMixin — formatCanMarkCompleted");
+
+    function todayIso() {
+        var d = new Date();
+        return d.getFullYear() + "-" +
+            String(d.getMonth() + 1).padStart(2, "0") + "-" +
+            String(d.getDate()).padStart(2, "0");
+    }
+
+    QUnit.test("a confirmed booking dated today (UTC-midnight form) can be completed", function (assert) {
+        assert.strictEqual(
+            BookingMixin.formatCanMarkCompleted("confirmed", "C1", todayIso() + "T00:00:00.000Z", "C1"),
+            true);
+    });
+
+    QUnit.test("a confirmed booking dated today (plain form) can be completed", function (assert) {
+        assert.strictEqual(
+            BookingMixin.formatCanMarkCompleted("confirmed", "C1", todayIso(), "C1"), true);
+    });
+
+    QUnit.test("a confirmed booking dated tomorrow cannot be completed yet", function (assert) {
+        var d = new Date(); d.setDate(d.getDate() + 1);
+        var sTomorrow = d.getFullYear() + "-" +
+            String(d.getMonth() + 1).padStart(2, "0") + "-" +
+            String(d.getDate()).padStart(2, "0");
+        assert.strictEqual(
+            BookingMixin.formatCanMarkCompleted("confirmed", "C1", sTomorrow + "T00:00:00.000Z", "C1"),
+            false);
+    });
+
+    QUnit.test("only the customer of a confirmed booking may complete it", function (assert) {
+        var sToday = todayIso();
+        assert.strictEqual(BookingMixin.formatCanMarkCompleted("confirmed", "C1", sToday, "P1"), false, "provider");
+        assert.strictEqual(BookingMixin.formatCanMarkCompleted("pending",   "C1", sToday, "C1"), false, "pending");
+        assert.strictEqual(BookingMixin.formatCanMarkCompleted("confirmed", "C1", "",     "C1"), false, "no date");
+        assert.strictEqual(BookingMixin.formatCanMarkCompleted("confirmed", "C1", "nope", "C1"), false, "bad date");
+    });
+
+    // ── _updateBookingStatus ──────────────────────────────────────────────────
+    //
+    // The success handler used `that`, which was never defined in the function,
+    // so every accept/decline threw a TypeError *after* the server had already
+    // changed the status — no toast, no list refresh. Run the handler against a
+    // stubbed controller and a stubbed fetch and require the happy path to
+    // complete and reload the schedule.
+
+    QUnit.module("BookingMixin — _updateBookingStatus", {
+        beforeEach: function () {
+            this.origFetch = window.fetch;
+            this.calls = [];
+            var that = this;
+            window.fetch = function (sUrl, oInit) {
+                that.calls.push({ url: sUrl, body: JSON.parse(oInit.body) });
+                return Promise.resolve({ json: function () { return Promise.resolve({ success: true }); } });
+            };
+            this.reloaded = 0;
+            this.ctrl = Object.assign({}, BookingMixin, {
+                getModel: function () { return { getProperty: function () { return "P1"; } }; },
+                getOwnerComponent: function () {
+                    var oBundle = { getText: function (k) { return k; } };
+                    var oI18n   = { getResourceBundle: function () { return oBundle; } };
+                    return { getModel: function () { return oI18n; } };
+                },
+                _loadSchedule: function () { that.reloaded++; }
+            });
+            var oCtx = { getObject: function () { return { id: "B2" }; } };
+            var oSrc = { getBindingContext: function () { return oCtx; } };
+            this.event = { getSource: function () { return oSrc; } };
+        },
+        afterEach: function () { window.fetch = this.origFetch; }
+    });
+
+    QUnit.test("accepting a booking PUTs the status and reloads the schedule without throwing", function (assert) {
+        var that = this;
+        return this.ctrl._updateBookingStatus(this.event, "confirmed").then(function () {
+            assert.strictEqual(that.calls.length, 1, "one status request");
+            assert.ok(/\/api\/bookings\/B2\/status$/.test(that.calls[0].url), "request targets the booking");
+            assert.deepEqual(that.calls[0].body, { status: "confirmed", user_id: "P1" });
+            assert.strictEqual(that.reloaded, 1, "schedule reloaded after success");
+        });
+    });
+
+    QUnit.test("declining a booking reloads the schedule too", function (assert) {
+        var that = this;
+        return this.ctrl._updateBookingStatus(this.event, "declined").then(function () {
+            assert.strictEqual(that.calls[0].body.status, "declined");
+            assert.strictEqual(that.reloaded, 1);
+        });
+    });
 });

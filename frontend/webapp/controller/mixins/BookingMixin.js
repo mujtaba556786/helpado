@@ -90,6 +90,11 @@ sap.ui.define([
                             title: oBundle.getText("bookingSentTitle"),
                             onClose: function() {
                                 this._loadSchedule();
+                                // The tab panels live on dashboardPage. Booking usually starts
+                                // from the Local Experts search page, so switching the tab
+                                // alone changed nothing visible — the NavContainer stayed on
+                                // searchPage and the user never saw their new booking.
+                                this._showDashboardPage();
                                 oModel.setProperty("/currentTab", "mySchedule");
                                 this._markBookingsSeen && this._markBookingsSeen();
                             }.bind(this)
@@ -101,6 +106,15 @@ sap.ui.define([
                 }
             }.bind(this))
             .catch(function() { MessageToast.show(oBundle.getText("bookingNoServer")); });
+        },
+
+        /** Bring the inner NavContainer back to dashboardPage if it is elsewhere. */
+        _showDashboardPage: function() {
+            var oNav = this.byId("navContainer");
+            var oPage = oNav && oNav.getCurrentPage();
+            if (oPage && oPage.getId().indexOf("dashboardPage") < 0) {
+                oNav.to(this.byId("dashboardPage"));
+            }
         },
 
         onAcceptBooking: function(oEvent) {
@@ -119,11 +133,12 @@ sap.ui.define([
             var sBookingId = oBooking && oBooking.id;
             if (!sBookingId) return;
             var sUserId = this.getModel("appData").getProperty("/user/id");
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var that = this;
 
             // Use explicit actions so sAction reliably equals MessageBox.Action.OK on confirm
-            MessageBox.confirm(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("bookingCancelConfirm"), {
-                title: "Cancel Booking",
+            MessageBox.confirm(oBundle.getText("bookingCancelConfirm"), {
+                title: oBundle.getText("cancelBooking"),
                 actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
                 emphasizedAction: MessageBox.Action.CANCEL,
                 onClose: function(sAction) {
@@ -136,10 +151,10 @@ sap.ui.define([
                     .then(function(r) { return r.json(); })
                     .then(function(oData) {
                         if (oData.success) {
-                            MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle().getText("bookingCancelled"));
+                            MessageToast.show(oBundle.getText("bookingCancelled"));
                             that._loadSchedule();
                         } else {
-                            MessageToast.show(oData.error || "Could not cancel booking.");
+                            MessageToast.show(oData.error || oBundle.getText("bookingUpdateFailed"));
                         }
                     })
                     .catch(function() { MessageToast.show(oBundle.getText("bookingNoServer")); });
@@ -157,8 +172,13 @@ sap.ui.define([
             if (String(sStatus) !== "confirmed") return false;
             if (!sUserId || String(sCustomerId) !== String(sUserId)) return false;
             if (!sDate) return false;
-            var dScheduled = new Date(sDate);
-            if (isNaN(dScheduled.getTime())) return false;
+            // The API sends the DATE column as "2026-09-14T00:00:00.000Z". new Date()
+            // of that is 02:00 local in Berlin, which is *after* local midnight, so
+            // the button only appeared the day after the booking for anyone east of
+            // UTC. Take the calendar day and build it as a local date, exactly as
+            // formatBookingDate does.
+            var dScheduled = this._parseBookingDay(sDate);
+            if (!dScheduled) return false;
             var dToday = new Date();
             dToday.setHours(0, 0, 0, 0);
             return dScheduled <= dToday;
@@ -225,18 +245,26 @@ sap.ui.define([
                             MessageToast.show(oData.error || "Could not update this booking.");
                         }
                     })
-                    .catch(function () { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
+                    .catch(function () { MessageToast.show(oBundle.getText("errNoServer")); });
                 }
             });
         },
 
+        /**
+         * Accept / decline. The success handler referenced `that`, which was never
+         * defined in this function, so every accept and decline threw a TypeError
+         * right after the server had already changed the status: no toast, no list
+         * refresh, and the helper was left thinking nothing had happened.
+         */
         _updateBookingStatus: function(oEvent, sStatus) {
             var oCtx = oEvent.getSource().getBindingContext("appData");
             if (!oCtx) return;
             var sBookingId = oCtx.getObject().id;
             var sUserId    = this.getModel("appData").getProperty("/user/id");
+            var oBundle    = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            var that       = this;
 
-            fetch(API_BASE + "/api/bookings/" + encodeURIComponent(sBookingId) + "/status", {
+            return fetch(API_BASE + "/api/bookings/" + encodeURIComponent(sBookingId) + "/status", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: sStatus, user_id: sUserId })
@@ -244,12 +272,14 @@ sap.ui.define([
             .then(function(r) { return r.json(); })
             .then(function(oData) {
                 if (oData.success) {
-                    MessageToast.show(that.getOwnerComponent().getModel("i18n").getResourceBundle()
-                        .getText("bookingStatusChanged", [that.formatStatusLabel(sStatus)]));
-                    this._loadSchedule();
+                    MessageToast.show(oBundle.getText("bookingStatusChanged",
+                        [that.formatStatusLabel(sStatus)]));
+                    that._loadSchedule();
+                } else {
+                    MessageToast.show(oData.error || oBundle.getText("bookingUpdateFailed"));
                 }
-            }.bind(this))
-            .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("bookingUpdateFailed")); });
+            })
+            .catch(function() { MessageToast.show(oBundle.getText("bookingUpdateFailed")); });
         },
 
         // Status options for the filter popover — order + icons mirror the old chip row.
@@ -353,6 +383,12 @@ sap.ui.define([
                                  localStorage.getItem("helpmate_user_id") || "");
             aFiltered = aFiltered.map(function (b) {
                 return Object.assign({}, b, {
+                    // The card always showed provider_name, so a helper looking at
+                    // her own schedule saw her own name on every booking and had no
+                    // idea who had booked her. Show the other party instead.
+                    counterpartName: String(b.provider_id) === sUserId
+                        ? (b.customer_name || "")
+                        : (b.provider_name || ""),
                     canMarkCompleted: this.formatCanMarkCompleted(
                         b.status, b.customer_id, b.scheduled_date, sUserId
                     ),
@@ -392,14 +428,24 @@ sap.ui.define([
                 .catch(function() { /* silent */ });
         },
 
+        /**
+         * Calendar day of a booking as a LOCAL midnight Date, whatever the API
+         * wrapped around it ("2026-09-14", "2026-09-14T00:00:00.000Z", ...).
+         * Returns null when it cannot be read.
+         */
+        _parseBookingDay: function (sDate) {
+            var aParts = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(sDate));
+            var d = aParts ? new Date(+aParts[1], +aParts[2] - 1, +aParts[3]) : new Date(sDate);
+            return isNaN(d.getTime()) ? null : d;
+        },
+
         formatBookingDate: function(sDate) {
             if (!sDate) { return ""; }
             try {
                 // Was pinned to "en-US", so a German or Turkish user still saw
                 // "Aug 1, 2026". DateFormat follows the app's configured locale.
-                var aParts = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(sDate));
-                var d = aParts ? new Date(+aParts[1], +aParts[2] - 1, +aParts[3]) : new Date(sDate);
-                if (isNaN(d.getTime())) { return sDate; }
+                var d = this._parseBookingDay(sDate);
+                if (!d) { return sDate; }
                 return DateFormat.getDateInstance({ style: "medium" }).format(d);
             } catch (e) { return sDate; }
         },

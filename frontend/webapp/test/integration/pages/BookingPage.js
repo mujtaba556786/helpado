@@ -127,6 +127,64 @@ sap.ui.define([
                     });
                 },
 
+                /** Book straight from a provider card on the Local Experts search page. */
+                iPressBookOnTheFirstSearchResult: function () {
+                    return this.waitFor({
+                        controlType: "sap.m.Button",
+                        viewName: DASHBOARD_VIEW,
+                        matchers: function (oBtn) {
+                            return oBtn.hasStyleClass("hhExpertBookBtn") && oBtn.getVisible();
+                        },
+                        actions: new Press(),
+                        errorMessage: "No Book button on the search results"
+                    });
+                },
+
+                /** Date is required; the picker itself is covered elsewhere. */
+                iFillABookingDate: function () {
+                    return this.waitFor({
+                        id: "bookingDate",
+                        viewName: DASHBOARD_VIEW,
+                        success: function (oDP) {
+                            oDP.getModel("appData").setProperty("/bookingForm/date", "2030-01-15");
+                            Opa5.assert.ok(true, "Booking date set");
+                        },
+                        errorMessage: "bookingDate control not found"
+                    });
+                },
+
+                iSendTheBookingRequest: function () {
+                    return this.waitFor({
+                        controlType: "sap.m.Dialog",
+                        searchOpenDialogs: true,
+                        matchers: function (oDlg) { return oDlg.getId().indexOf("bookingDialog") >= 0; },
+                        success: function (aDialogs) {
+                            // beginButton is re-parented into the dialog's footer toolbar,
+                            // so ask the dialog for it rather than matching by parent.
+                            var oSend = aDialogs[0].getBeginButton();
+                            Opa5.assert.ok(oSend && oSend.getVisible(), "Send Booking Request button is present");
+                            oSend.firePress();
+                        },
+                        errorMessage: "Booking dialog not open"
+                    });
+                },
+
+                iConfirmTheBookingSentMessage: function () {
+                    return this.waitFor({
+                        controlType: "sap.m.Dialog",
+                        searchOpenDialogs: true,
+                        matchers: function (oDlg) {
+                            return oDlg.getType() === "Message" && oDlg.getId().indexOf("__success") === 0;
+                        },
+                        success: function (aDialogs) {
+                            var aBtns = aDialogs[0].getButtons();
+                            Opa5.assert.ok(aBtns.length >= 1, "Booking-sent message has a close button");
+                            aBtns[0].firePress();
+                        },
+                        errorMessage: "Booking Request Sent message did not appear"
+                    });
+                },
+
                 iCloseTheTimePicker: function () {
                     return this.waitFor({
                         id: "bookingTime",
@@ -236,6 +294,30 @@ sap.ui.define([
                             });
                         },
                         errorMessage: "Hours clock face never became visible in the time picker popover"
+                    });
+                },
+
+                /**
+                 * After "Booking Request Sent" the code switched /currentTab to
+                 * mySchedule, but the tab panels live on dashboardPage and the inner
+                 * NavContainer was still on the Local Experts searchPage — so the
+                 * user was left on the search results and never saw the booking.
+                 */
+                iAmOnMyScheduleAfterBooking: function () {
+                    return this.waitFor({
+                        id: "navContainer",
+                        viewName: DASHBOARD_VIEW,
+                        check: function (oNav) {
+                            var oPage = oNav.getCurrentPage();
+                            return !!oPage && oPage.getId().indexOf("dashboardPage") >= 0;
+                        },
+                        success: function (oNav) {
+                            Opa5.assert.ok(true, "NavContainer is back on dashboardPage after booking");
+                            Opa5.assert.strictEqual(
+                                oNav.getModel("appData").getProperty("/currentTab"), "mySchedule",
+                                "My Schedule tab is selected after booking");
+                        },
+                        errorMessage: "Still on the search page after the booking was sent"
                     });
                 },
 
