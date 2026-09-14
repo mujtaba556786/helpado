@@ -233,14 +233,16 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 }
 .hhNavBadge {
     position: absolute;
-    /* The nearest positioned ancestor is UI5's own sapMFlexItem, which has
-       height 0 and sits level with the label — so top:0 put the badge on top of
-       the text. Offset upward from that baseline to land on the icon instead. */
-    /* Horizontally: anchor to the ICON, not the tab's right edge. The wrap is a
+    /* Containing block is .hhNavBtnWrap (see the position:static rule above),
+       whose top edge is the icon's top edge — so top:0 lands the badge on the
+       icon's upper-right corner. (The old -30px offset was measured from UI5's
+       zero-height flex item level with the label; against the wrap it pushed
+       the badge above the bar, where sapMBarPH's overflow:hidden clipped it.)
+       Horizontally: anchor to the ICON, not the tab's right edge. The wrap is a
        centred flex row, so its midpoint is the icon's midpoint; right:10px put
        the badge at the far edge of a wide desktop tab, on the border to the
        next one, so the Tasks count read as the Messages count. */
-    top: -30px; left: calc(50% + 6px); right: auto;
+    top: 0; left: calc(50% + 6px); right: auto;
     background: #ef4444; color: #fff;
     font-size: 0.58rem; font-weight: 700;
     min-width: 16px; height: 16px;

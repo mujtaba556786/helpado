@@ -128,6 +128,15 @@ sap.ui.define([
                     Math.round(oBtn.left) + "–" + Math.round(oBtn.right) + "px), clear of its right edge");
                 Opa5.assert.ok(Math.abs(fBadgeX - (oIcon.left + oIcon.right) / 2) <= 24,
                     "Badge is within 24px of the Tasks icon centre (" + Math.round((oIcon.left + oIcon.right) / 2) + "px)");
+                // Vertically it has to overlap the icon and stay inside the bar —
+                // the bar's sapMBarPH clips overflow, so a badge floated above the
+                // bar passes the horizontal checks while being invisible.
+                var oBar = aBtns[0].getDomRef().closest(".hhBottomNav").getBoundingClientRect();
+                Opa5.assert.ok(oBadge.top >= oBar.top && oBadge.bottom <= oBar.bottom,
+                    "Badge (" + Math.round(oBadge.top) + "–" + Math.round(oBadge.bottom) + "px) lies inside the nav bar (" +
+                    Math.round(oBar.top) + "–" + Math.round(oBar.bottom) + "px), so it is not clipped");
+                Opa5.assert.ok(oBadge.bottom > oIcon.top && oBadge.top < oIcon.bottom,
+                    "Badge overlaps the Tasks icon vertically (icon " + Math.round(oIcon.top) + "–" + Math.round(oIcon.bottom) + "px)");
             },
             errorMessage: "Tasks tab has no badge (openTaskCount is 0?)"
         });
