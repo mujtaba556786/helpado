@@ -45,10 +45,13 @@
 
         <!-- Step 2: How it works -->
         <VBox visible="{= ${appData>/onboarding/step} === 2}" class="sapUiMediumMargin">
+            <!-- Each row leads with an icon for its step. These were Avatars with
+                 initials="1".."4": sap.m.Avatar accepts only LETTERS as initials, so
+                 every row fell back to the default person glyph. -->
             <Panel backgroundDesign="Solid" class="sapUiSmallMarginBottom">
                 <content>
                     <HBox alignItems="Center" class="sapUiSmallMargin">
-                        <Avatar displaySize="XS" initials="1" backgroundColor="Accent5" class="sapUiSmallMarginEnd"/>
+                        <core:Icon src="sap-icon://search" size="1.5rem" color="#10b981" class="sapUiSmallMarginEnd hhTourStepIcon"/>
                         <VBox>
                             <Title text="{i18n>onboardStep1Title}" level="H5"/>
                             <Text text="{i18n>onboardStep1Desc}" class="grayText smallText" wrapping="true"/>
@@ -59,7 +62,7 @@
             <Panel backgroundDesign="Solid" class="sapUiSmallMarginBottom">
                 <content>
                     <HBox alignItems="Center" class="sapUiSmallMargin">
-                        <Avatar displaySize="XS" initials="2" backgroundColor="Accent5" class="sapUiSmallMarginEnd"/>
+                        <core:Icon src="sap-icon://discussion" size="1.5rem" color="#10b981" class="sapUiSmallMarginEnd hhTourStepIcon"/>
                         <VBox>
                             <Title text="{i18n>onboardStep2Title}" level="H5"/>
                             <Text text="{i18n>onboardStep2Desc}" class="grayText smallText" wrapping="true"/>
@@ -70,7 +73,7 @@
             <Panel backgroundDesign="Solid" class="sapUiSmallMarginBottom">
                 <content>
                     <HBox alignItems="Center" class="sapUiSmallMargin">
-                        <Avatar displaySize="XS" initials="3" backgroundColor="Accent5" class="sapUiSmallMarginEnd"/>
+                        <core:Icon src="sap-icon://appointment-2" size="1.5rem" color="#10b981" class="sapUiSmallMarginEnd hhTourStepIcon"/>
                         <VBox>
                             <Title text="{i18n>onboardStep3Title}" level="H5"/>
                             <Text text="{i18n>onboardStep3Desc}" class="grayText smallText" wrapping="true"/>
@@ -81,7 +84,7 @@
             <Panel backgroundDesign="Solid" class="sapUiSmallMarginBottom">
                 <content>
                     <HBox alignItems="Center" class="sapUiSmallMargin">
-                        <Avatar displaySize="XS" initials="4" backgroundColor="Accent5" class="sapUiSmallMarginEnd"/>
+                        <core:Icon src="sap-icon://user-settings" size="1.5rem" color="#10b981" class="sapUiSmallMarginEnd hhTourStepIcon"/>
                         <VBox>
                             <Title text="{i18n>onboardStep4Title}" level="H5"/>
                             <Text text="{i18n>onboardStep4Desc}" class="grayText smallText" wrapping="true"/>

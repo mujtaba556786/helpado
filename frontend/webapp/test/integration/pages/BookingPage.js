@@ -540,6 +540,26 @@ sap.ui.define([
                         },
                         errorMessage: "Onboarding dialog not open"
                     });
+                },
+
+                // Step 2's four rows led with sap.m.Avatar initials="1".."4". Avatar
+                // accepts only LETTERS as initials, so all four fell back to the
+                // default person glyph and the tour showed four identical icons.
+                iSeeDistinctIconsOnTheHowItWorksRows: function () {
+                    return this.waitFor({
+                        controlType: "sap.ui.core.Icon",
+                        matchers: function (oIcon) { return oIcon.hasStyleClass("hhTourStepIcon"); },
+                        check: function (aIcons) { return aIcons.length === 4 && aIcons.every(function (i) { return !!i.getDomRef(); }); },
+                        success: function (aIcons) {
+                            var aSrc = aIcons.map(function (i) { return i.getSrc(); });
+                            Opa5.assert.strictEqual(aSrc.length, 4, "four step icons");
+                            Opa5.assert.strictEqual(new Set(aSrc).size, 4, "all four are different (" + aSrc.join(", ") + ")");
+                            Opa5.assert.ok(aSrc.every(function (s) { return s.indexOf("person-placeholder") < 0; }), "none is the person fallback");
+                            Opa5.assert.ok(findIn(aIcons[0].getParent().getParent().getParent(), function (c) { return c.isA("sap.m.Avatar"); }).length === 0,
+                                "no Avatar left on the step rows");
+                        },
+                        errorMessage: "How-it-works step icons not rendered"
+                    });
                 }
             }
         }

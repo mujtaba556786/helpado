@@ -119,6 +119,25 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 .sapMDialog.sapMDialogWithSubHeader .sapMDialogSection {
     padding-top: 5.75rem !important;
 }
+/* A stretched dialog fills the WebView. When the WebView runs under the status
+   bar (iOS, before the StatusBar plugin has resized it — a state that can last
+   the whole session) the title bar and its Close/✕ sat in the system strip,
+   where taps never reach the page: the category picker could not be closed.
+   Shift the title bar, the sub-header and the content by the inset, exactly
+   as the page header/section are. On web/Android the inset is 0. */
+.sapMDialog.sapMDialogStretched .sapMDialogTitleGroup {
+    top: env(safe-area-inset-top) !important;
+}
+.sapMDialog.sapMDialogStretched .sapMDialogSubHeader {
+    top: calc(2.75rem + env(safe-area-inset-top)) !important;
+}
+.sapMDialog.sapMDialogStretched .sapMDialogSection {
+    padding-top: calc(2.75rem + env(safe-area-inset-top)) !important;
+}
+.sapMDialog.sapMDialogStretched.hhDialogWithSubHeader .sapMDialogSection,
+.sapMDialog.sapMDialogStretched.sapMDialogWithSubHeader .sapMDialogSection {
+    padding-top: calc(5.75rem + env(safe-area-inset-top)) !important;
+}
 .hhBottomNav .sapMBarMiddle,
 .hhBottomNav .sapMBarPH {
     display: flex !important;
