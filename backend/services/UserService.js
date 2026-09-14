@@ -156,7 +156,10 @@ async function getProviders(category) {
                       created_at,
                       (SELECT COUNT(*) FROM bookings b
                         WHERE b.provider_id = users.id
-                          AND b.status = 'completed') AS completed_jobs
+                          AND b.status = 'completed') AS completed_jobs,
+                      (SELECT COUNT(*) FROM ratings r
+                        WHERE r.provider_id = users.id
+                          AND r.status != 'rejected') AS review_count
                FROM users
                WHERE service_categories IS NOT NULL
                  AND service_categories != ''
@@ -185,7 +188,10 @@ async function getProviders(category) {
         name: u.name,
         photo: u.avatar && u.avatar.startsWith('/uploads/') ? `${process.env.BACKEND_URL || process.env.API_BASE_URL || 'https://helphub-production.up.railway.app'}${u.avatar}` : (u.avatar || ''),
         bio: u.bio || '',
-        rating: u.rating || 5.0,
+        // Was `|| 5.0`: a brand-new helper with no reviews showed five stars,
+        // a stronger trust signal than anyone who had actually been reviewed.
+        // 0 with review_count 0 lets the client show "New" instead of stars.
+        rating: u.rating || 0,
         rate: u.rate || 0,
         currency: 'EUR',
         city: u.city || '',
@@ -207,7 +213,8 @@ async function getProviders(category) {
         // so the profile facts silently rendered blank in production.
         // The allowlist is also why trust_level has never leaked; keep it that way.
         created_at: u.created_at || null,
-        completed_jobs: Number(u.completed_jobs) || 0
+        completed_jobs: Number(u.completed_jobs) || 0,
+        review_count: Number(u.review_count) || 0
     }));
 }
 

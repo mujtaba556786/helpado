@@ -89,6 +89,9 @@ sap.ui.define([
                         {
                             title: oBundle.getText("bookingSentTitle"),
                             onClose: function() {
+                                // A status filter left over from earlier (e.g. "Cancelled")
+                                // would hide the booking that was just made.
+                                oModel.setProperty("/bookingStatusFilter", "all");
                                 this._loadSchedule();
                                 // The tab panels live on dashboardPage. Booking usually starts
                                 // from the Local Experts search page, so switching the tab
@@ -136,13 +139,16 @@ sap.ui.define([
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var that = this;
 
-            // Use explicit actions so sAction reliably equals MessageBox.Action.OK on confirm
+            // "OK / Cancel" on a "cancel this booking?" question was ambiguous —
+            // Cancel meant keep. Name the outcomes instead.
+            var sYes  = oBundle.getText("cancelBookingYes");
+            var sKeep = oBundle.getText("keepBooking");
             MessageBox.confirm(oBundle.getText("bookingCancelConfirm"), {
                 title: oBundle.getText("cancelBooking"),
-                actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
-                emphasizedAction: MessageBox.Action.CANCEL,
+                actions: [sYes, sKeep],
+                emphasizedAction: sKeep,
                 onClose: function(sAction) {
-                    if (sAction !== MessageBox.Action.OK) return;
+                    if (sAction !== sYes) return;
                     fetch(API_BASE + "/api/bookings/" + encodeURIComponent(sBookingId) + "/status", {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
@@ -303,6 +309,14 @@ sap.ui.define([
             var oBundle  = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var that     = this;
             var sCurrent = oModel.getProperty("/bookingStatusFilter") || "all";
+
+            // With a filter active the chip reads "Status: Pending ✕" — the ✕
+            // promises "tap to clear", but the tap reopened the menu. Clear.
+            if (sCurrent !== "all") {
+                oModel.setProperty("/bookingStatusFilter", "all");
+                this._applyBookingFilter();
+                return;
+            }
 
             var oList = new List({
                 mode: "SingleSelectMaster",
