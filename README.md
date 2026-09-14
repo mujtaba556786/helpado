@@ -1,6 +1,6 @@
 # Helpado
 
-Neighborhood Help Network — connect with trusted neighbors for everyday tasks.
+Neighborhood Help Network — connect with neighbours for everyday tasks.
 
 ## Structure
 
