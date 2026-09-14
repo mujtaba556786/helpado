@@ -10,7 +10,8 @@ sap.ui.define([
     "helphub/test/unit/mixins/ProfileTrustFacts.qunit",
     "helphub/test/unit/i18n/i18nCoverage.qunit",
     "helphub/test/unit/css/safeArea.qunit",
-    "helphub/test/unit/css/categoryIcons.qunit"
+    "helphub/test/unit/css/categoryIcons.qunit",
+    "helphub/test/unit/legal/trustClaims.qunit"
 ], function () {
     "use strict";
     QUnit.start();
