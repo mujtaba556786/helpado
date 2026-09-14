@@ -169,10 +169,10 @@ sap.ui.define([
         assert.strictEqual(result, "None", "null → None");
     });
 
-    // tile.openstreetmap.org is a volunteer server whose usage policy blocks
-    // apps with no identifying User-Agent/Referer (the Cordova WebView) and
-    // rate-limits the rest; the live site was rendering 403 "Blocked" tiles.
-    // Both maps now build their layer from Config.MAP_TILES.
+    // Two tile providers have failed the same way: a placeholder IMAGE served
+    // with HTTP 200 (OSM's "403 Access blocked" tile for Chrome-family UAs with
+    // no Referer, CARTO's "API KEY REQUIRED" watermark), so neither host may
+    // come back. Both maps build their layer from Config.MAP_TILES.
 
     QUnit.module("MapMixin — tile provider", {
         beforeEach: function () {
@@ -192,14 +192,23 @@ sap.ui.define([
         assert.ok(this.captured, "L.tileLayer was called");
         assert.strictEqual(this.captured.url, Config.MAP_TILES.url, "url comes from config");
         assert.strictEqual(this.captured.opts.attribution, Config.MAP_TILES.attribution, "attribution comes from config");
-        assert.strictEqual(this.captured.opts.subdomains, Config.MAP_TILES.subdomains, "subdomains come from config");
+        assert.strictEqual(this.captured.opts.maxZoom, Config.MAP_TILES.maxZoom, "maxZoom comes from config");
+        // Leaflet only substitutes {s} when the url has it; passing subdomains
+        // for a provider without {s} is harmless but a config lie.
+        assert.strictEqual(this.captured.opts.subdomains, Config.MAP_TILES.subdomains,
+            "subdomains are passed only when configured");
     });
 
-    QUnit.test("the configured provider is not OSM's volunteer tile server", function (assert) {
-        assert.ok(Config.MAP_TILES.url.indexOf("tile.openstreetmap.org") < 0,
-            "not tile.openstreetmap.org (" + Config.MAP_TILES.url + ")");
-        assert.ok(/^https:\/\/\{s\}\..+\{z\}\/\{x\}\/\{y\}/.test(Config.MAP_TILES.url), "is a templated XYZ tile url");
+    QUnit.test("the configured provider is neither host known to serve placeholder tiles", function (assert) {
+        var sUrl = Config.MAP_TILES.url;
+        assert.ok(sUrl.indexOf("openstreetmap.org") < 0, "not tile.openstreetmap.org (" + sUrl + ")");
+        assert.ok(sUrl.indexOf("cartocdn.com") < 0, "not CARTO basemaps, which need an API key (" + sUrl + ")");
+        assert.ok(/^https:\/\/.+\{z\}\/\{[xy]\}\/\{[xy]\}/.test(sUrl), "is a templated XYZ tile url");
+        if (sUrl.indexOf("{s}") >= 0) {
+            assert.ok(Config.MAP_TILES.subdomains, "a {s} url declares its subdomains");
+        }
         assert.ok(/openstreetmap\.org\/copyright/.test(Config.MAP_TILES.attribution),
-            "attribution still credits OpenStreetMap contributors (the data is theirs)");
+            "attribution credits OpenStreetMap contributors (part of the data is theirs)");
+        assert.ok(/Esri/.test(Config.MAP_TILES.attribution), "attribution credits the tile provider");
     });
 });

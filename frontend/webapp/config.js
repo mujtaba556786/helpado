@@ -7,16 +7,19 @@ sap.ui.define([], function () {
         // controller so it is changed in one place — note it ships in the client
         // and is therefore public, so use a support address, not a personal one.
         SUPPORT_EMAIL: "mujtabaahmed556@gmail.com",
-        // Map tiles. Was tile.openstreetmap.org — a volunteer server whose usage
-        // policy blocks apps that send no identifying User-Agent/Referer (the
-        // Cordova WebView sends neither) and rate-limits the rest; the live site
-        // started rendering 403 "Blocked" tiles. CARTO's OSM-based Voyager tiles
-        // are key-free and allow this with attribution. One place to swap in a
-        // keyed provider later.
+        // Map tiles. Two providers have already been burned, and both fail the
+        // same way — a placeholder IMAGE served with HTTP 200, so a status check
+        // proves nothing; look at the pixels:
+        //   - tile.openstreetmap.org serves a "403 Access blocked" tile (plus an
+        //     x-blocked header) to Chrome-family user agents that send no
+        //     Referer, which is what the Android WebView did.
+        //   - CARTO's basemaps now need an API key and watermark every tile
+        //     with "API KEY REQUIRED".
+        // Esri's World Street Map is key-free, needs neither UA nor Referer,
+        // and asks only for attribution. Note the {z}/{y}/{x} order.
         MAP_TILES: {
-            url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-            attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
-            subdomains: "abcd",
+            url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+            attribution: "Tiles &copy; <a href=\"https://www.esri.com/\">Esri</a> &mdash; Esri, HERE, Garmin, FAO, NOAA, USGS, &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
             maxZoom: 19
         }
     };

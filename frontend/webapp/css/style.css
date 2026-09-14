@@ -53,9 +53,20 @@ header .sapMBar .sapMFlexItem {
 /* ══════════════════════════════════════════════════════════════
    SAFE AREA — notch + home indicator
    ══════════════════════════════════════════════════════════════ */
-.sapMPage > header,
-.sapMPageHeader {
+/* Pad the <header> element ONLY. UI5 puts sapMPageHeader on that element AND
+   on the Bar inside it, so the old ".sapMPage > header, .sapMPageHeader"
+   selector applied the inset twice (header 59pt + bar 59pt on an iPhone with
+   the WebView under the status bar). */
+.sapMPage > header {
     padding-top: env(safe-area-inset-top) !important;
+}
+/* sap.m.Page positions its content section at a fixed top equal to the
+   UNPADDED header height, so the padded header covered the first inset-height
+   of every page — seen on iOS as the map and the dashboard title sitting
+   under the header. Shift the section by the same inset; on web/Android the
+   inset is 0 and nothing moves. */
+.sapMNav > .sapMPage.sapMPageWithHeader:not(.sapMPageWithSubHeader) > section {
+    top: calc(2.75rem + env(safe-area-inset-top)) !important;   /* 2.75rem = 44px, the cozy header height UI5 uses */
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -308,10 +319,12 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 }
 
 /* ── Map ──────────────────────────────────────────────────────── */
-.mapDiv   { height: 260px; width: 100%; z-index: 0; }
+/* The map div carries the height and .hhMapBox wraps it. They used to be set
+   independently (26vh box, 260px/180px div), so on a tall phone a blank strip
+   sat between the map and the Show/Hide button and on a short desktop window
+   the box cropped the attribution. */
+.mapDiv   { height: 26vh; min-height: 180px; width: 100%; z-index: 0; }
 #googleMap { width: 100%; }
-
-@media (max-width: 480px) { .mapDiv { height: 180px; } }
 
 /* ── Chat bubbles — raw HTML injected via core:HTML ── */
 #chatBubbles     { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
@@ -626,7 +639,7 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 
 /* Map */
 .hhMapWrap      { position: relative; }
-.hhMapBox       { height: 26vh; width: 100%; overflow: hidden; }
+.hhMapBox       { width: 100%; overflow: hidden; }   /* height comes from .mapDiv */
 .hhMapToggleBtn.sapMBtn {
     width: 100% !important; border-radius: 0 !important;
     height: 32px !important; font-size: 0.78rem !important;

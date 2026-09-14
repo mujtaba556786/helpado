@@ -8,11 +8,9 @@ sap.ui.define([
         /** Tile layer from config — see Config.MAP_TILES for why not OSM directly. */
         _createTileLayer: function () {
             var oTiles = Config.MAP_TILES;
-            return L.tileLayer(oTiles.url, {
-                attribution: oTiles.attribution,
-                subdomains:  oTiles.subdomains || "abc",
-                maxZoom:     oTiles.maxZoom || 19
-            });
+            var oOpts = { attribution: oTiles.attribution, maxZoom: oTiles.maxZoom || 19 };
+            if (oTiles.subdomains) { oOpts.subdomains = oTiles.subdomains; }
+            return L.tileLayer(oTiles.url, oOpts);
         },
 
         _calculateDistanceKm: function (oA, oB) {
