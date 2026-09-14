@@ -103,6 +103,37 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    // The Tasks count badge was anchored to the tab's right edge, so on a wide
+    // desktop tab it sat on the border to Messages and read as an unread-message
+    // count. It must sit on the Tasks icon, inside the Tasks button.
+    opaTest("The Tasks badge sits on the Tasks icon, not on the border to Messages", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        Then.waitFor({
+            controlType: "sap.m.Button",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oBtn) { return oBtn.data("tab") === "tasks"; },
+            check: function (aBtns) {
+                var oWrap = aBtns[0].getParent().getDomRef();
+                return !!oWrap && !!oWrap.querySelector(".hhNavBadge") &&
+                       aBtns[0].getModel("appData").getProperty("/openTaskCount") > 0;
+            },
+            success: function (aBtns) {
+                var oBtn   = aBtns[0].getDomRef().getBoundingClientRect();
+                var oIcon  = aBtns[0].getDomRef().querySelector(".sapUiIcon").getBoundingClientRect();
+                var oBadge = aBtns[0].getParent().getDomRef().querySelector(".hhNavBadge").getBoundingClientRect();
+                var fBadgeX = (oBadge.left + oBadge.right) / 2;
+                Opa5.assert.ok(fBadgeX > oBtn.left && fBadgeX < oBtn.right - 12,
+                    "Badge centre (" + Math.round(fBadgeX) + "px) is inside the Tasks button (" +
+                    Math.round(oBtn.left) + "–" + Math.round(oBtn.right) + "px), clear of its right edge");
+                Opa5.assert.ok(Math.abs(fBadgeX - (oIcon.left + oIcon.right) / 2) <= 24,
+                    "Badge is within 24px of the Tasks icon centre (" + Math.round((oIcon.left + oIcon.right) / 2) + "px)");
+            },
+            errorMessage: "Tasks tab has no badge (openTaskCount is 0?)"
+        });
+        Then.iTeardownMyUIComponent();
+    });
+
     opaTest("Both selected and unselected labels are readable", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 

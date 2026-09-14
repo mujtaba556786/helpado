@@ -450,7 +450,10 @@ xmlns:l="sap.ui.layout"
                                                         <Title text="{appData>name}" level="H5"/>
                                                         <Text text="{appData>serviceType}" class="grayText smallText"/>
                                                         <HBox alignItems="Center">
-                                                            <RatingIndicator value="{appData>rating}" displayOnly="true" iconSize="12px" class="sapUiTinyMarginEnd"/>
+                                                            <RatingIndicator value="{appData>rating}" displayOnly="true" iconSize="12px" class="sapUiTinyMarginEnd"
+                                                                visible="{= ${appData>review_count} > 0 }"/>
+                                                            <ObjectStatus text="{i18n>newHelperBadge}" state="Information" class="sapUiTinyMarginEnd hhNewHelperBadge"
+                                                                visible="{= !(${appData>review_count} > 0) }"/>
                                                             <Text text="{path:'appData>', formatter:'.formatPriceDisplay'}" class="smallText blueText"/>
                                                         </HBox>
                                                     </VBox>
@@ -676,7 +679,12 @@ xmlns:l="sap.ui.layout"
                                         <VBox class="hhExpertNameBox">
                                             <Title text="{appData>name}" level="H4" class="hhExpertName"/>
                                             <HBox alignItems="Center" class="hhExpertMeta">
-                                                <RatingIndicator value="{appData>rating}" displayOnly="true" iconSize="13px" class="sapUiTinyMarginEnd"/>
+                                                <!-- Stars only once someone has actually reviewed; a new helper
+                                                     used to get five stars by default. -->
+                                                <RatingIndicator value="{appData>rating}" displayOnly="true" iconSize="13px" class="sapUiTinyMarginEnd"
+                                                    visible="{= ${appData>review_count} > 0 }"/>
+                                                <ObjectStatus text="{i18n>newHelperBadge}" state="Information" class="sapUiTinyMarginEnd hhNewHelperBadge"
+                                                    visible="{= !(${appData>review_count} > 0) }"/>
                                                 <Text text="{path:'appData>', formatter:'.formatDistance'}" class="smallText hhExpertDist"/>
                                             </HBox>
                                         </VBox>

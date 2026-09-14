@@ -1,7 +1,19 @@
-sap.ui.define([], function () {
+sap.ui.define([
+    "helphub/config"
+], function (Config) {
     "use strict";
 
     return {
+
+        /** Tile layer from config — see Config.MAP_TILES for why not OSM directly. */
+        _createTileLayer: function () {
+            var oTiles = Config.MAP_TILES;
+            return L.tileLayer(oTiles.url, {
+                attribution: oTiles.attribution,
+                subdomains:  oTiles.subdomains || "abc",
+                maxZoom:     oTiles.maxZoom || 19
+            });
+        },
 
         _calculateDistanceKm: function (oA, oB) {
             if (!oA || !oB) { return 999; }
@@ -26,10 +38,7 @@ sap.ui.define([], function () {
                 [oUserLoc.lat, oUserLoc.lng], 13
             );
 
-            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-                attribution: "© OpenStreetMap contributors",
-                maxZoom: 19
-            }).addTo(this._oMap);
+            this._createTileLayer().addTo(this._oMap);
 
             this._oUserMarker = L.marker([oUserLoc.lat, oUserLoc.lng])
                 .addTo(this._oMap)
@@ -92,10 +101,7 @@ sap.ui.define([], function () {
             this._oTaskMap = L.map("taskMap", { zoomControl: true }).setView(
                 [oUserLoc.lat, oUserLoc.lng], 13
             );
-            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-                attribution: "© OpenStreetMap contributors",
-                maxZoom: 19
-            }).addTo(this._oTaskMap);
+            this._createTileLayer().addTo(this._oTaskMap);
 
             L.marker([oUserLoc.lat, oUserLoc.lng])
                 .addTo(this._oTaskMap)

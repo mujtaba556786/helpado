@@ -1,6 +1,7 @@
 sap.ui.define([
-    "helphub/controller/mixins/MapMixin"
-], function (MapMixin) {
+    "helphub/controller/mixins/MapMixin",
+    "helphub/config"
+], function (MapMixin, Config) {
     "use strict";
 
     // Shared user location (Berlin centre)
@@ -166,5 +167,39 @@ sap.ui.define([
         var oCtx = Object.assign({}, MapMixin);
         var result = MapMixin.formatAvailabilityState.call(oCtx, null);
         assert.strictEqual(result, "None", "null → None");
+    });
+
+    // tile.openstreetmap.org is a volunteer server whose usage policy blocks
+    // apps with no identifying User-Agent/Referer (the Cordova WebView) and
+    // rate-limits the rest; the live site was rendering 403 "Blocked" tiles.
+    // Both maps now build their layer from Config.MAP_TILES.
+
+    QUnit.module("MapMixin — tile provider", {
+        beforeEach: function () {
+            this.origL = window.L;
+            this.captured = null;
+            var that = this;
+            window.L = { tileLayer: function (sUrl, oOpts) {
+                that.captured = { url: sUrl, opts: oOpts };
+                return { addTo: function () { return this; } };
+            } };
+        },
+        afterEach: function () { window.L = this.origL; }
+    });
+
+    QUnit.test("the tile layer is built from Config.MAP_TILES", function (assert) {
+        MapMixin._createTileLayer();
+        assert.ok(this.captured, "L.tileLayer was called");
+        assert.strictEqual(this.captured.url, Config.MAP_TILES.url, "url comes from config");
+        assert.strictEqual(this.captured.opts.attribution, Config.MAP_TILES.attribution, "attribution comes from config");
+        assert.strictEqual(this.captured.opts.subdomains, Config.MAP_TILES.subdomains, "subdomains come from config");
+    });
+
+    QUnit.test("the configured provider is not OSM's volunteer tile server", function (assert) {
+        assert.ok(Config.MAP_TILES.url.indexOf("tile.openstreetmap.org") < 0,
+            "not tile.openstreetmap.org (" + Config.MAP_TILES.url + ")");
+        assert.ok(/^https:\/\/\{s\}\..+\{z\}\/\{x\}\/\{y\}/.test(Config.MAP_TILES.url), "is a templated XYZ tile url");
+        assert.ok(/openstreetmap\.org\/copyright/.test(Config.MAP_TILES.attribution),
+            "attribution still credits OpenStreetMap contributors (the data is theirs)");
     });
 });

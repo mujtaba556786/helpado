@@ -1,6 +1,7 @@
 sap.ui.define([
-    "helphub/controller/mixins/BookingMixin"
-], function (BookingMixin) {
+    "helphub/controller/mixins/BookingMixin",
+    "sap/m/MessageBox"
+], function (BookingMixin, MessageBox) {
     "use strict";
 
     // ── formatCanRespond / formatCanCancel ────────────────────────────────────
@@ -213,5 +214,65 @@ sap.ui.define([
             assert.strictEqual(that.calls[0].body.status, "declined");
             assert.strictEqual(that.reloaded, 1);
         });
+    });
+
+    // ── onCancelBooking ───────────────────────────────────────────────────────
+    //
+    // The confirm dialog offered "OK / Cancel" to the question "cancel this
+    // booking?" — Cancel meant keep. It now names the outcomes, and only the
+    // affirmative one sends the request.
+
+    QUnit.module("BookingMixin — onCancelBooking confirm dialog", {
+        beforeEach: function () {
+            var that = this;
+            this.origFetch   = window.fetch;
+            this.origConfirm = MessageBox.confirm;
+            this.calls = [];
+            window.fetch = function (sUrl, oInit) {
+                that.calls.push(JSON.parse(oInit.body));
+                return Promise.resolve({ json: function () { return Promise.resolve({ success: true }); } });
+            };
+            this.confirmArgs = null;
+            MessageBox.confirm = function (sText, oOpts) { that.confirmArgs = { text: sText, opts: oOpts }; };
+            this.ctrl = Object.assign({}, BookingMixin, {
+                getModel: function () { return { getProperty: function () { return "C1"; } }; },
+                getOwnerComponent: function () {
+                    var oBundle = { getText: function (k) { return "[" + k + "]"; } };
+                    var oI18n   = { getResourceBundle: function () { return oBundle; } };
+                    return { getModel: function () { return oI18n; } };
+                },
+                _loadSchedule: function () {}
+            });
+            var oCtx = { getObject: function () { return { id: "B2", customer_id: "C1" }; } };
+            var oSrc = { getBindingContext: function () { return oCtx; } };
+            this.event = { getSource: function () { return oSrc; } };
+        },
+        afterEach: function () {
+            window.fetch = this.origFetch;
+            MessageBox.confirm = this.origConfirm;
+        }
+    });
+
+    QUnit.test("the dialog names both outcomes and emphasises keeping the booking", function (assert) {
+        this.ctrl.onCancelBooking(this.event);
+        var o = this.confirmArgs.opts;
+        assert.deepEqual(o.actions, ["[cancelBookingYes]", "[keepBooking]"], "actions are the two named outcomes");
+        assert.strictEqual(o.emphasizedAction, "[keepBooking]", "the safe choice is emphasised");
+        assert.strictEqual(o.title, "[cancelBooking]", "title comes from i18n");
+        assert.ok(o.actions.indexOf(MessageBox.Action.OK) < 0 && o.actions.indexOf(MessageBox.Action.CANCEL) < 0,
+            "no ambiguous OK / Cancel pair");
+    });
+
+    QUnit.test("choosing 'keep booking' sends nothing", function (assert) {
+        this.ctrl.onCancelBooking(this.event);
+        this.confirmArgs.opts.onClose("[keepBooking]");
+        assert.strictEqual(this.calls.length, 0, "no status request");
+    });
+
+    QUnit.test("choosing 'yes, cancel' sends the cancellation", function (assert) {
+        this.ctrl.onCancelBooking(this.event);
+        this.confirmArgs.opts.onClose("[cancelBookingYes]");
+        assert.strictEqual(this.calls.length, 1, "one status request");
+        assert.deepEqual(this.calls[0], { status: "cancelled", user_id: "C1" });
     });
 });

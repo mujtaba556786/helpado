@@ -127,6 +127,17 @@ sap.ui.define([
                     });
                 },
 
+                iLeaveTheStatusFilterOn: function (sStatus) {
+                    return this.waitFor({
+                        id: "dashboardPage",   // the schedule panel itself is hidden on other tabs
+                        viewName: DASHBOARD_VIEW,
+                        success: function (oPage) {
+                            oPage.getModel("appData").setProperty("/bookingStatusFilter", sStatus);
+                        },
+                        errorMessage: "dashboardPage not found"
+                    });
+                },
+
                 /** Book straight from a provider card on the Local Experts search page. */
                 iPressBookOnTheFirstSearchResult: function () {
                     return this.waitFor({
@@ -316,6 +327,9 @@ sap.ui.define([
                             Opa5.assert.strictEqual(
                                 oNav.getModel("appData").getProperty("/currentTab"), "mySchedule",
                                 "My Schedule tab is selected after booking");
+                            Opa5.assert.strictEqual(
+                                oNav.getModel("appData").getProperty("/bookingStatusFilter"), "all",
+                                "Status filter is reset so the new booking is visible");
                         },
                         errorMessage: "Still on the search page after the booking was sent"
                     });

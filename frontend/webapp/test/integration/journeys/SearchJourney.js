@@ -126,6 +126,60 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    // ── Rating on a helper nobody has reviewed ───────────────────────────
+    //
+    // The API defaulted rating to 5.0, so a brand-new helper carried five
+    // stars — a stronger trust signal than anyone actually reviewed. The card
+    // now shows "New" until review_count > 0.
+
+    opaTest("A helper with no reviews shows 'New' instead of five stars", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressServiceTile("Cleaning");
+
+        Then.waitFor({
+            controlType: "sap.m.CustomListItem",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oItem) {
+                var oCtx = oItem.getBindingContext("appData");
+                return !!oCtx && oCtx.getProperty("id") === "p9";
+            },
+            success: function (aItems) {
+                var oItem = aItems[0];
+                var aStars = oItem.findAggregatedObjects(true, function (c) { return c.isA("sap.m.RatingIndicator"); });
+                var aNew   = oItem.findAggregatedObjects(true, function (c) {
+                    return c.isA("sap.m.ObjectStatus") && c.hasStyleClass("hhNewHelperBadge");
+                });
+                Opa5.assert.ok(aStars.length === 1 && !aStars[0].getVisible(),
+                    "No star rating is shown for a helper with review_count 0");
+                Opa5.assert.ok(aNew.length === 1 && aNew[0].getVisible() && !!aNew[0].getText(),
+                    "A 'New' badge is shown instead (text: '" + (aNew[0] && aNew[0].getText()) + "')");
+            },
+            errorMessage: "Card for the unreviewed helper p9 not found"
+        });
+
+        // ...and a reviewed helper on the same list still shows stars.
+        Then.waitFor({
+            controlType: "sap.m.CustomListItem",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oItem) {
+                var oCtx = oItem.getBindingContext("appData");
+                return !!oCtx && oCtx.getProperty("id") === "p4";
+            },
+            success: function (aItems) {
+                var aStars = aItems[0].findAggregatedObjects(true, function (c) { return c.isA("sap.m.RatingIndicator"); });
+                var aNew   = aItems[0].findAggregatedObjects(true, function (c) {
+                    return c.isA("sap.m.ObjectStatus") && c.hasStyleClass("hhNewHelperBadge");
+                });
+                Opa5.assert.ok(aStars.length === 1 && aStars[0].getVisible() && aStars[0].getValue() > 4,
+                    "A reviewed helper still shows their star rating");
+                Opa5.assert.ok(aNew.length === 1 && !aNew[0].getVisible(), "...and no 'New' badge");
+            },
+            errorMessage: "Card for the reviewed helper p4 not found"
+        });
+        Then.iTeardownMyUIComponent();
+    });
+
     opaTest("Pressing Handyman tile shows a populated provider list", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 

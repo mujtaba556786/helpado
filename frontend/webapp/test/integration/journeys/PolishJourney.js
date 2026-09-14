@@ -113,6 +113,53 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    // UI5's phone value-help for a MultiComboBox is a stretched Dialog with the
+    // search field in its subHeader. Our dialog padding only cleared the title
+    // bar, so the first row ("Cleaning" in the profile's category picker) rendered
+    // underneath the search field and could not be tapped. The picker type is
+    // fixed when the control is constructed, so build one in phone mode here —
+    // the CSS under test is global and applies to it the same way.
+    opaTest("Phone category picker does not hide its first row under the search field", function (Given, When, Then) {
+        start(Given);
+        var bPhoneBefore = sap.ui.Device.system.phone;
+        var oMcb;
+        When.waitFor({ id: "dashboardPage", viewName: VIEW, success: function () {
+            sap.ui.Device.system.phone = true;
+            oMcb = new sap.m.MultiComboBox({
+                items: ["Cleaning", "Gardening", "Handyman", "Elder Care", "Nanny"].map(function (s) {
+                    return new sap.ui.core.Item({ key: s, text: s });
+                })
+            });
+            oMcb.placeAt(document.body);
+            sap.ui.getCore().applyChanges();
+            oMcb.open();
+        } });
+        Then.waitFor({
+            controlType: "sap.m.Dialog", searchOpenDialogs: true,
+            // sapMDialogWithSubHeader is written by the renderer, so hasStyleClass()
+            // does not see it — match on the aggregation instead.
+            matchers: function (d) { return !!d.getSubHeader() && d.isOpen(); },
+            success: function (aDlg) {
+                var oDlg  = aDlg[0];
+                var oSub  = oDlg.getSubHeader() && oDlg.getSubHeader().getDomRef();
+                var oFirst = oDlg.getDomRef().querySelector(".sapMListUl > li");
+                Opa5.assert.ok(oSub && oFirst, "Picker has a subHeader and a first list row");
+                if (oSub && oFirst) {
+                    var fSubBottom = oSub.getBoundingClientRect().bottom;
+                    var fRowTop    = oFirst.getBoundingClientRect().top;
+                    Opa5.assert.ok(fRowTop >= fSubBottom - 1,
+                        "First row (top " + Math.round(fRowTop) + "px) starts below the search field (bottom " +
+                        Math.round(fSubBottom) + "px): '" + oFirst.textContent.trim() + "'");
+                }
+                oDlg.close();
+                sap.ui.Device.system.phone = bPhoneBefore;
+                if (oMcb) { oMcb.destroy(); }
+            },
+            errorMessage: "Phone-mode MultiComboBox picker dialog did not open"
+        });
+        Then.iTeardownMyUIComponent();
+    });
+
     opaTest("Saved availability is highlighted after the app boots from a session", function (Given, When, Then) {
         // iStartMyUIComponent boots through Component.applyUser — the same path an
         // app reopen takes. That path set /user/availability but never derived

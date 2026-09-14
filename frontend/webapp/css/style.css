@@ -100,7 +100,12 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
    title group occupies 0-44px and the subHeader 44-92px, while the section only
    padded 44px — so the first row of content (the task's status chip and budget)
    rendered underneath the subHeader and was invisible. */
-.sapMDialog.hhDialogWithSubHeader .sapMDialogSection {
+.sapMDialog.hhDialogWithSubHeader .sapMDialogSection,
+/* UI5's own phone pickers (ComboBox / MultiComboBox / Select value help) carry
+   sapMDialogWithSubHeader and put their search field in that subHeader — the
+   first list row ("Cleaning" in the profile's category picker) sat under it and
+   could not be tapped. Same offset. */
+.sapMDialog.sapMDialogWithSubHeader .sapMDialogSection {
     padding-top: 5.75rem !important;
 }
 .hhBottomNav .sapMBarMiddle,
@@ -142,6 +147,12 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 }
 .hhBottomNav .hhNavBtnWrap > .sapMFlexItem:first-child {
     flex: 1 1 0 !important;
+}
+/* The badge's core:HTML sits in its own zero-width .sapMFlexItem at the button's
+   right edge, and UI5 makes that item position:relative — so it, not the wrap,
+   was the badge's containing block. Make it static so the (relative) wrap is. */
+.hhBottomNav .hhNavBtnWrap > .sapMFlexItem:last-child {
+    position: static !important;
 }
 /* ── Selected tab ────────────────────────────────────────────────────────
    Selection used type="Emphasized" — UI5's PRIMARY ACTION style, a solid
@@ -225,7 +236,11 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
     /* The nearest positioned ancestor is UI5's own sapMFlexItem, which has
        height 0 and sits level with the label — so top:0 put the badge on top of
        the text. Offset upward from that baseline to land on the icon instead. */
-    top: -30px; right: 10px;
+    /* Horizontally: anchor to the ICON, not the tab's right edge. The wrap is a
+       centred flex row, so its midpoint is the icon's midpoint; right:10px put
+       the badge at the far edge of a wide desktop tab, on the border to the
+       next one, so the Tasks count read as the Messages count. */
+    top: -30px; left: calc(50% + 6px); right: auto;
     background: #ef4444; color: #fff;
     font-size: 0.58rem; font-weight: 700;
     min-width: 16px; height: 16px;

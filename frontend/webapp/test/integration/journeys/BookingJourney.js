@@ -71,6 +71,8 @@ sap.ui.define([
     opaTest("Booking from the search page lands on My Schedule afterwards", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 
+        // A leftover filter used to hide the booking that was just made.
+        When.onTheBookingDialog.iLeaveTheStatusFilterOn("cancelled");
         When.onTheDashboard.iPressServiceTile("Cleaning");
         When.onTheBookingDialog.iPressBookOnTheFirstSearchResult();
         When.onTheBookingDialog.iFillABookingDate();

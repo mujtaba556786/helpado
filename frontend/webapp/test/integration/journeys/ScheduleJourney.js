@@ -12,7 +12,7 @@
  *  5. Opening the provider profile dialog shows a numeric rating (not 'No rating')
  *  6. Pressing "confirmed" filter chip limits list to confirmed bookings only
  *  7. Pressing "pending" filter chip limits list to pending bookings only
- *  8. Pressing "all" filter chip restores the full list (excluding cancelled)
+ *  8. Clearing the active filter chip restores the full list (excluding cancelled)
  */
 sap.ui.define([
     "sap/ui/test/opaQunit",
@@ -161,6 +161,37 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    // The active chip reads "Status: Pending ✕" — the ✕ promises a tap clears
+    // the filter, but the tap reopened the menu instead.
+    opaTest("Tapping the active status chip clears the filter instead of reopening the menu", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressNavTab("mySchedule");
+        When.onTheSchedulePage.iPressBookingFilter("pending");
+        Then.waitFor({
+            id: "bookingStatusBtn", viewName: "helphub.view.Dashboard",
+            check: function (oBtn) { return oBtn.getModel("appData").getProperty("/bookingStatusFilter") === "pending"; },
+            success: function () { Opa5.assert.ok(true, "Pending filter is active"); }
+        });
+
+        When.onTheSchedulePage.iOpenBookingStatusMenu();   // the same button — now a "clear" tap
+
+        Then.waitFor({
+            id: "bookingStatusBtn", viewName: "helphub.view.Dashboard",
+            check: function (oBtn) { return oBtn.getModel("appData").getProperty("/bookingStatusFilter") === "all"; },
+            success: function (oBtn) {
+                Opa5.assert.ok(true, "Filter is back to 'all'");
+                var aOpen = sap.ui.core.Element.registry.filter(function (e) {
+                    return e.isA("sap.m.Popover") && e.isOpen && e.isOpen();
+                });
+                Opa5.assert.strictEqual(aOpen.length, 0, "No status popover was opened by the clearing tap");
+                Opa5.assert.strictEqual(oBtn.getType(), "Default", "Chip is back to its neutral look");
+            },
+            errorMessage: "Tapping the active chip did not clear the status filter"
+        });
+        Then.iTeardownMyUIComponent();
+    });
+
     opaTest("Pressing 'pending' filter chip shows only pending bookings", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 
@@ -191,12 +222,14 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
-    opaTest("Pressing 'all' filter chip restores the full (non-cancelled) list", function (Given, When, Then) {
+    opaTest("Clearing the filter chip restores the full (non-cancelled) list", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 
         When.onTheDashboard.iPressNavTab("mySchedule");
         When.onTheSchedulePage.iPressBookingFilter("confirmed"); // narrow first
-        When.onTheSchedulePage.iPressBookingFilter("all");       // then reset
+        // The active chip ("Status: Confirmed ✕") clears on tap; the popover's
+        // "All" entry is only reachable from the neutral state.
+        When.onTheSchedulePage.iOpenBookingStatusMenu();         // then reset
 
         // With 4 non-cancelled bookings in mock data (B1–B4), list should show 4 items
         Then.waitFor({
