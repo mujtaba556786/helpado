@@ -176,6 +176,24 @@ async function req(method, path, { token, admin, body } = {}) {
     r = await req('POST', `/auth/refresh`, { body: { refreshToken: rtok } });
     check("POST auth/refresh after logout -> 401", r.status === 401, r.status);
 
+    // ── 8. home activity counts helpers the way the marketplace lists them ──
+    // Nobody's role is literally 'provider' in production — people become
+    // helpers by filling in service_categories. The strip's query required
+    // role = 'provider', counted 0 on the live site and the strip hid itself.
+    await db.execute("UPDATE users SET service_categories = NULL, lat = NULL WHERE id IN (?, ?, ?)", [ALICE, BOB, MALLORY]);
+    await db.execute("UPDATE users SET service_categories = 'Cleaning', lat = 52.52, lng = 13.4, role = 'user' WHERE id = ?", [ALICE]);
+    await db.execute("UPDATE users SET service_categories = 'Gardening', lat = 52.5, lng = 13.4, role = 'user', status = 'Suspended' WHERE id = ?", [MALLORY]);
+    await db.execute("UPDATE users SET service_categories = 'Moving', lat = NULL, role = 'provider' WHERE id = ?", [BOB]);
+
+    r = await req('GET', `/home/activity`);
+    check("GET home/activity counts a role='user' account with categories and a location", r.status === 200 && r.json.helpers === 1,
+        "helpers=" + (r.json && r.json.helpers) + " (Alice counts; Mallory is Suspended; Bob has no location)");
+    r = await req('GET', `/providers`);
+    const ids = (Array.isArray(r.json) ? r.json : (r.json.providers || [])).map(p => p.id);
+    check("GET providers lists Alice and Bob but not the suspended Mallory (same helper rule)",
+        ids.includes(ALICE) && ids.includes(BOB) && !ids.includes(MALLORY), JSON.stringify(ids));
+    await db.execute("UPDATE users SET status = 'Active' WHERE id = ?", [MALLORY]);
+
     console.log(`\n${pass} passed, ${fail} failed`);
     await db.end();
     process.exit(fail ? 1 : 0);
