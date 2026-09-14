@@ -2,13 +2,19 @@ const express = require('express');
 const router  = express.Router();
 const pool    = require('../db/pool');
 const { handleAsync } = require('../middleware/auth');
+const { HELPER_WHERE } = require('../services/UserService');
 
 // GET /api/home/activity — public, no auth required
 // Returns live marketplace pulse signals for the home screen activity strip
 router.get('/activity', handleAsync(async (req, res) => {
+    // Same definition of "helper" as the marketplace list (HELPER_WHERE) —
+    // this used to require role = 'provider', which no real account has, so
+    // the strip counted 0 and hid itself in production. "Nearby" still needs
+    // a location.
     const [[{ helpers }]] = await pool.query(
         `SELECT COUNT(*) AS helpers FROM users
-         WHERE role = 'provider' AND status = 'Active' AND lat IS NOT NULL`
+         WHERE ${HELPER_WHERE}
+           AND lat IS NOT NULL`
     );
 
     const [[{ requests }]] = await pool.query(

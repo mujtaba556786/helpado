@@ -49,7 +49,9 @@ xmlns:l="sap.ui.layout"
                                 <core:Icon src="sap-icon://employee" class="fiActivityIcon"/>
                                 <Text text="{appData>/homeActivity/helpers} helpers nearby" class="fiActivityText"/>
                             </HBox>
-                            <HBox alignItems="Center" class="fiActivityItem">
+                            <!-- Hidden at zero: "0 open tasks today" advertises the quiet, not the pulse. -->
+                            <HBox alignItems="Center" class="fiActivityItem"
+                                visible="{= ${appData>/homeActivity/requests} > 0}">
                                 <core:Icon src="sap-icon://task" class="fiActivityIcon"/>
                                 <Text text="{appData>/homeActivity/requests} open tasks today" class="fiActivityText"/>
                             </HBox>

@@ -140,6 +140,17 @@ async function uploadAvatar(id, filenameOrUrl) {
     return avatarUrl;
 }
 
+// What makes a user a helper on the marketplace: they offer at least one
+// category and are not suspended (TrustService auto-suspend). There is no
+// separate "provider" role to check — people become helpers by filling in
+// their categories. Every query that counts or lists helpers must use this
+// same predicate; the home activity strip once counted role = 'provider'
+// instead, found nobody, and hid itself on the live site.
+const HELPER_WHERE = `users.service_categories IS NOT NULL
+                 AND users.service_categories != ''
+                 AND users.service_categories != 'None'
+                 AND (users.status IS NULL OR users.status = 'Active')`;
+
 const HERO_CATEGORY = 'Cleaning';
 
 async function getProviders(category) {
@@ -161,9 +172,7 @@ async function getProviders(category) {
                         WHERE r.provider_id = users.id
                           AND r.status != 'rejected') AS review_count
                FROM users
-               WHERE service_categories IS NOT NULL
-                 AND service_categories != ''
-                 AND service_categories != 'None'`;
+               WHERE ${HELPER_WHERE}`;
     const params = [];
     if (category) {
         sql += ' AND FIND_IN_SET(?, service_categories)';
@@ -336,5 +345,6 @@ async function updateProfile(id, { name, bio, avatar }) {
 
 module.exports = {
     getAll, updateUser, uploadAvatar, getProviders, getProviderRatings,
-    createRating, updateStatus, approveUser, onboardUser, updateProfile
+    createRating, updateStatus, approveUser, onboardUser, updateProfile,
+    HELPER_WHERE
 };
