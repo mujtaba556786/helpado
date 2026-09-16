@@ -11,7 +11,8 @@ sap.ui.define([
     "helphub/test/unit/i18n/i18nCoverage.qunit",
     "helphub/test/unit/css/safeArea.qunit",
     "helphub/test/unit/css/categoryIcons.qunit",
-    "helphub/test/unit/legal/trustClaims.qunit"
+    "helphub/test/unit/legal/trustClaims.qunit",
+    "helphub/test/unit/legal/imprint.qunit"
 ], function () {
     "use strict";
     QUnit.start();

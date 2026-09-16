@@ -15,6 +15,15 @@ sap.ui.define([
             this._oBusyDialog = new BusyDialog({ title: this.getResourceBundle().getText("pleaseWait") });
         },
 
+        // Legal footer on the login card (§ 5 DDG: reachable before sign-in)
+        onViewImprint: function () {
+            this._openLegalPage("Impressum", "/legal/imprint.html");
+        },
+
+        onViewPrivacy: function () {
+            this._openLegalPage("Privacy Policy (GDPR)", "/legal/privacy.html");
+        },
+
         // ── Apply session data from backend response ────────────────────────────
         _applySession: function (oData) {
             var sAccessToken = oData.accessToken || oData.token;

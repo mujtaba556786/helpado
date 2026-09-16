@@ -11,7 +11,7 @@ sap.ui.define([], function () {
 
     var BASE  = "../../";
     var FILES = [
-        "legal/terms.html", "legal/privacy.html",
+        "legal/terms.html", "legal/privacy.html", "legal/imprint.html",
         "i18n/i18n.properties", "i18n/i18n_en.properties", "i18n/i18n_de.properties",
         "i18n/i18n_tr.properties", "i18n/i18n_ar.properties"
     ];
@@ -20,6 +20,8 @@ sap.ui.define([], function () {
         /trusted (local )?(helpers?|neighbou?rs?|people|users?|providers?)/i,
         /(vetted|screened|background[- ]checked|verified) (local )?(helpers?|neighbou?rs?|people|users?|providers?)/i,
         /\b(Verified User|Trusted User)\b/,        // the removed badge names
+        /\bexperts? nearby\b/i,                     // the old search heading ("Cleaning Experts Nearby")
+        /\b(local |our )?experts\b/i,               // "expert" is a qualification nobody checks
         /vertrauensw(ü|ue)rdige?n? (Helfer|Nachbarn|Anbieter)/i,   // de
         /(gepr(ü|ue)fte|verifizierte) (Helfer|Nachbarn|Anbieter)/i,
         /g(ü|u)venilir (yardımcı|komşu|sağlayıcı)/i,                // tr

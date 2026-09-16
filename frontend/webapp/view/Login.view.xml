@@ -49,6 +49,15 @@
                     <Button text="{i18n>loginResendLink}" type="Transparent" width="100%" class="sapUiSmallMarginTop" press="onResendMagicLink"/>
                     <Button text="{i18n>loginDifferentEmail}" type="Ghost" width="100%" class="sapUiTinyMarginTop" press="onBackToEmail"/>
                 </VBox>
+
+                <!-- § 5 DDG: Impressum and Datenschutz must be reachable without an
+                     account, so they sit on the login card, not only in Settings. -->
+                <HBox id="loginLegalLinks" justifyContent="Center" alignItems="Center" wrap="Wrap"
+                      class="sapUiSmallMarginBottom">
+                    <Link id="loginImprintLink" text="{i18n>viewImprint}" press="onViewImprint" class="sapUiTinyMarginEnd"/>
+                    <Text text="·" class="grayText sapUiTinyMarginEnd"/>
+                    <Link id="loginPrivacyLink" text="{i18n>viewPrivacy}" press="onViewPrivacy"/>
+                </HBox>
             </VBox>
 
             <!-- Neighbourhood scene, edge to edge along the bottom -->

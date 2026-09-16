@@ -346,10 +346,44 @@ sap.ui.define([
 
     // Spot-check a sample drawn from the catalogue itself. Hardcoding names let
     // this drift: it still asked for "Babysitting", which is not a category.
-    // In English the i18n label equals the constant's name, which is what the
-    // tile renders.
+    // For these five the English i18n label equals the constant's name, which
+    // is what the tile renders. (Not true for every category: see the
+    // Transport test below.)
     var aCategorySpotChecks = ServiceConstants.slice(0, 5).map(function (oSvc) {
         return oSvc.name;
+    });
+
+    // The backend key stays "Transport", but the tile must not say so: a tile
+    // called "Transport" reads as ride-hailing, and carrying passengers for
+    // money needs a PBefG licence in Germany. The label is deliveries/errands.
+    opaTest("The Transport category renders as 'Deliveries & Errands', never 'Transport'", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        Then.waitFor({
+            controlType: "sap.m.CustomListItem",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oItem) {
+                var oCtx = oItem.getBindingContext("appData");
+                return !!oCtx && oCtx.getObject().name === "Transport";
+            },
+            success: function (aItems) {
+                var aLabels = [];
+                aItems[0].findAggregatedObjects(true, function (oChild) {
+                    if (oChild.isA("sap.m.Text") && oChild.hasStyleClass("fiSvcName")) {
+                        aLabels.push(oChild.getText());
+                    }
+                });
+                var oBundle = aItems[0].getModel("i18n").getResourceBundle();
+                Opa5.assert.strictEqual(aLabels[0], oBundle.getText("serviceTransport"),
+                    "tile shows the localised serviceTransport label");
+                Opa5.assert.strictEqual(aLabels[0], "Deliveries & Errands",
+                    "English label is 'Deliveries & Errands'");
+                Opa5.assert.notStrictEqual(aLabels[0], "Transport", "the raw backend key is not shown");
+            },
+            errorMessage: "Tile bound to the Transport category not found"
+        });
+
+        Then.iTeardownMyUIComponent();
     });
 
     aCategorySpotChecks.forEach(function (sCat) {

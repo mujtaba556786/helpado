@@ -587,7 +587,7 @@ xmlns:l="sap.ui.layout"
         </Page>
 
         <!-- PAGE 2: Search & Results -->
-        <Page id="searchPage" title="{i18n>localExperts}" showNavButton="true" navButtonPress="onNavBack" enableScrolling="true">
+        <Page id="searchPage" title="{i18n>localHelpers}" showNavButton="true" navButtonPress="onNavBack" enableScrolling="true">
             <content>
                 <VBox>
 
@@ -649,7 +649,10 @@ xmlns:l="sap.ui.layout"
 
                     <!-- ── Heading ── -->
                     <HBox justifyContent="SpaceBetween" alignItems="Center" class="hhExpertHeading">
-                        <Title text="{appData>/selectedCategoryName} Experts Nearby" level="H4"/>
+                        <!-- Built in JS (helpersNearbyHeading) so the word order can differ per
+                             locale; the old literal "… Experts Nearby" was untranslated and
+                             "experts" claims a vetting that does not exist (see trustClaims test). -->
+                        <Title id="helpersNearbyTitle" text="{appData>/helpersNearbyHeading}" level="H4"/>
                     </HBox>
 
                     <!-- ── Ad slot (soft) ── -->
