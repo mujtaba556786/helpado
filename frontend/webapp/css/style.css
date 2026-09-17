@@ -194,18 +194,42 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
    removed the old override expecting sapButton_TextColor to cover it, but
    transparent buttons do not read that token, so the contrast fix regressed
    here. #4A5568 measures 7.53:1. */
-.hhBottomNav .hhNavBtn .sapMBtnContent,
-.hhBottomNav .hhNavBtn .sapMBtnIcon.sapUiIcon {
+.hhBottomNav .hhNavBtn .sapMBtnContent {
     color: #4A5568 !important;
     transition: color 0.15s ease;
 }
+/* The glyph sits in the same 40px mint square as a service tile's icon
+   (.fiSvcIconWrap / .fiSvcIcon: same radius, tint and green), so the bar and
+   the grid read as one set. Before, the bar had dark-grey glyphs a size larger
+   than the tiles' and a pale pill for selection, and looked like a different
+   app's footer. Selection is the tiles' hover state: solid green, white glyph. */
+.hhBottomNav .hhNavBtn .sapMBtnIcon.sapUiIcon {
+    color: #10b981 !important;
+    background: rgba(16,185,129,0.12) !important;
+    width: 40px !important;
+    height: 40px !important;
+    /* sapMBtnIconLeft adds padding-right:6px (gap to a label beside it) and
+       the theme caps the glyph at max-height:38px; both would squash the square
+       to 46x38. */
+    max-height: none !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: color 0.15s ease, background 0.15s ease;
+}
 .hhBottomNav .hhNavBtn[data-hhsel="true"] .sapMBtnInner {
-    background: #E6F4EC !important;
+    background: transparent !important;
     border-color: transparent !important;
 }
-.hhBottomNav .hhNavBtn[data-hhsel="true"] .sapMBtnContent,
 .hhBottomNav .hhNavBtn[data-hhsel="true"] .sapMBtnIcon.sapUiIcon {
-    color: #1C7449 !important;   /* 5.08:1 on the tint */
+    background: #10b981 !important;
+    color: #fff !important;
+}
+.hhBottomNav .hhNavBtn[data-hhsel="true"] .sapMBtnContent {
+    color: #1C7449 !important;   /* 6.9:1 on white */
     font-weight: 600 !important;
 }
 /* Nav button outer — fills cell, no side effects */
@@ -235,10 +259,9 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
     width: 100% !important;
 }
 .hhNavBtn .sapMBtnIcon.sapUiIcon {
-    font-size: 1.35rem !important;
+    font-size: 1.25rem !important;   /* = .fiSvcIcon, the tile glyph size */
     margin: 0 !important;
     line-height: 1 !important;
-    display: block !important;
 }
 .hhNavBtn .sapMBtnContent {
     /* 0.65rem (10.4px) truncated "Messages" to "Mes...s". 0.7rem still fits the
@@ -284,7 +307,6 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 /* Small phones — tighten slightly */
 @media (max-width: 380px) {
     .hhNavBtn.sapMBtn { padding: 5px 0 !important; }
-    .hhNavBtn .sapMBtnIcon.sapUiIcon { font-size: 1.2rem !important; }
     /* Was 0.6rem (9.6px) — this is the rule 375px phones actually hit, and it
        was both the truncation and the legibility problem. */
     .hhNavBtn .sapMBtnContent { font-size: 0.7rem !important; }

@@ -1,9 +1,10 @@
 sap.ui.define([
     "sap/ui/test/opaQunit",
     "sap/ui/test/Opa5",
+    "sap/ui/core/IconPool",
     "helphub/test/integration/pages/DashboardPage",
     "helphub/test/mockserver/MockServer"
-], function (opaTest, Opa5, DashboardPage, MockServer) {
+], function (opaTest, Opa5, IconPool, DashboardPage, MockServer) {
     "use strict";
 
     var VIEW = "helphub.view.Dashboard";
@@ -140,6 +141,71 @@ sap.ui.define([
             },
             errorMessage: "Tasks tab has no badge (openTaskCount is 0?)"
         });
+        Then.iTeardownMyUIComponent();
+    });
+
+    // The bar's glyphs are styled as the service tiles' icons: same 40px mint
+    // square (.fiSvcIconWrap), same green, same 1.25rem glyph; the selected tab
+    // is the tiles' hover state (solid green, white glyph). Before this the bar
+    // had dark-grey glyphs a size larger than the tiles' and one filled heart
+    // among four outlined icons, and looked like another app's footer.
+    opaTest("Nav icons match the service tile icons; the selected one is the tile hover state", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        Then.waitFor({
+            id: "dashboardPage", viewName: VIEW,
+            success: function (oPage) {
+                var oView = oPage.getParent();
+                while (!oView.isA("sap.ui.core.mvc.View")) { oView = oView.getParent(); }
+                var oWin = Opa5.getWindow();
+
+                var oTileWrap = oWin.document.querySelector(".fiSvcIconWrap");
+                var oTileIcon = oWin.document.querySelector(".fiSvcIcon.sapUiIcon");
+                Opa5.assert.ok(oTileWrap && oTileIcon, "a service tile icon is on screen to compare against");
+                var tw = oWin.getComputedStyle(oTileWrap), ti = oWin.getComputedStyle(oTileIcon);
+
+                navButtons(oView).forEach(function (b) {
+                    var oDom = b.getDomRef();
+                    var oIcon = oDom.querySelector(".sapMBtnIcon.sapUiIcon");
+                    var st = oWin.getComputedStyle(oIcon);
+                    var sTab = b.getCustomData().filter(function (d) { return d.getKey() === "tab"; })[0].getValue();
+                    var bSel = oDom.getAttribute("data-hhsel") === "true";
+                    var oRect = oIcon.getBoundingClientRect();
+
+                    Opa5.assert.ok(Math.abs(oRect.width - parseFloat(tw.width)) <= 1 &&
+                                   Math.abs(oRect.height - parseFloat(tw.height)) <= 1,
+                        sTab + " icon box is the tile's " + tw.width + " square (got " +
+                        Math.round(oRect.width) + "x" + Math.round(oRect.height) + ")");
+                    Opa5.assert.strictEqual(st.borderTopLeftRadius, tw.borderTopLeftRadius,
+                        sTab + " icon box has the tile's corner radius");
+                    Opa5.assert.strictEqual(st.fontSize, ti.fontSize,
+                        sTab + " glyph is the tile glyph size (" + ti.fontSize + ")");
+
+                    if (bSel) {
+                        Opa5.assert.strictEqual(st.backgroundColor, ti.color,
+                            sTab + " (selected) box is solid tile green");
+                        Opa5.assert.strictEqual(st.color, "rgb(255, 255, 255)",
+                            sTab + " (selected) glyph is white");
+                    } else {
+                        Opa5.assert.strictEqual(st.color, ti.color,
+                            sTab + " glyph is the tile green (" + ti.color + ")");
+                        Opa5.assert.strictEqual(st.backgroundColor, tw.backgroundColor,
+                            sTab + " box is the tile tint (" + tw.backgroundColor + ")");
+                    }
+                });
+
+                // Saved uses the outline heart: the filled one was the only solid
+                // glyph in the row and read heavier than its neighbours.
+                var oSaved = navButtons(oView).filter(function (b) {
+                    return b.getCustomData().some(function (d) { return d.getKey() === "tab" && d.getValue() === "saved"; });
+                })[0];
+                Opa5.assert.strictEqual(oSaved && oSaved.getIcon(), "sap-icon://heart-2",
+                    "Saved tab uses the outline heart (heart-2)");
+                Opa5.assert.ok(IconPool.getIconInfo("heart-2"), "heart-2 exists in the icon font");
+            },
+            errorMessage: "Bottom nav buttons not found"
+        });
+
         Then.iTeardownMyUIComponent();
     });
 

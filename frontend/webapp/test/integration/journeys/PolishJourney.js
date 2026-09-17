@@ -32,9 +32,18 @@ sap.ui.define([
             success: function (aButtons) {
                 var b = aButtons[0];
                 var label = b.getDomRef("content");
-                var inner = b.getDomRef("inner");
+                // The label sits on whichever ancestor is actually painted. It used
+                // to be the inner span's tint pill; since the tile-style icons the
+                // pill is gone and the label sits on the bar itself. Reading a
+                // transparent inner parsed as black and gave a fake 2.79:1.
+                var el = label, bg = "rgb(255, 255, 255)";
+                while (el && el !== document.documentElement) {
+                    var c = window.getComputedStyle(el).backgroundColor;
+                    if (c && c !== "transparent" && !/rgba\(0,\s*0,\s*0,\s*0\)/.test(c)) { bg = c; break; }
+                    el = el.parentElement;
+                }
                 var l1 = luminance(window.getComputedStyle(label).color);
-                var l2 = luminance(window.getComputedStyle(inner).backgroundColor);
+                var l2 = luminance(bg);
                 var ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
                 Opa5.assert.ok(ratio >= 4.5, "Selected task label contrast is " + ratio.toFixed(2) + ":1");
                 Opa5.assert.ok(b.getDomRef().getBoundingClientRect().height >= 44, "Navigation has a comfortable touch target");

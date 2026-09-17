@@ -564,7 +564,7 @@ xmlns:l="sap.ui.layout"
                             </Button>
 
                             <!-- Saved -->
-                            <Button icon="sap-icon://heart" text="{i18n>saved}" press="onBottomNavSelect"
+                            <Button icon="sap-icon://heart-2" text="{i18n>saved}" press="onBottomNavSelect"
                                 type="Transparent"
                                 class="hhNavBtn">
                                 <customData>
