@@ -56,7 +56,7 @@
       h3 { font-size: 1.15rem; font-weight: 700; }
       p { margin: 0; }
       a { color: var(--green); }
-      .wrap { width: min(1040px, 100%); margin-inline: auto; padding-inline: 20px; }
+      .wrap { width: min(1200px, 100%); margin-inline: auto; padding-inline: 24px; }
       .eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--green); }
       .rtl .eyebrow { letter-spacing: 0; }
     
@@ -71,7 +71,7 @@
       .langs button:focus-visible { outline: 3px solid var(--brand); outline-offset: 1px; }
     
       .hero { padding-block: 44px 0; overflow: hidden; }
-      .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 32px; align-items: end; }
+      .hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: end; }
       .hero-copy { padding-bottom: 40px; display: grid; gap: 20px; }
       .lede { font-size: 1.15rem; color: var(--ink-2); max-width: 34ch; }
       .rtl .lede { max-width: none; }
@@ -85,7 +85,11 @@
       .btn-secondary:hover { background: var(--mint); }
       .proofs { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .92rem; color: var(--ink-2); }
       .proofs span::before { content: "✓"; color: var(--leaf); font-weight: 700; margin-inline-end: 6px; }
-      .hero-art svg { width: 100%; height: auto; display: block; max-width: 100%; }
+      .hero-art { display: flex; justify-content: center; align-items: flex-end; }
+      /* A phone frame drawn in CSS around a real screenshot of the Find Help tab:
+         a screenshot settles "is this real?" faster than any illustration. */
+      .phone { width: min(300px, 78vw); aspect-ratio: 390 / 780; border-radius: 34px; border: 9px solid #131e29; background: #131e29; box-shadow: 0 24px 60px rgba(19,30,41,.22); overflow: hidden; margin-bottom: -60px; }
+      .phone img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 25px; }
     
       section { padding-block: 56px; }
       section + section { border-top: 1px solid var(--line); }
@@ -98,20 +102,13 @@
       .step::before { counter-increment: step; content: counter(step); font-family: "72", "72full", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-weight: 700; font-size: 1.6rem; color: var(--leaf); }
       .step p { color: var(--ink-2); font-size: .97rem; }
     
-      .cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+      .cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      @media (min-width: 640px)  { .cats { grid-template-columns: repeat(3, 1fr); } }
+      @media (min-width: 1000px) { .cats { grid-template-columns: repeat(4, 1fr); } }
       .cat { display: flex; align-items: center; gap: 12px; background: var(--paper); border: 1px solid var(--ink); border-radius: 16px; box-shadow: 0 2px 10px rgba(15,23,42,.07); padding: 12px 14px; font-weight: 600; font-size: .95rem; }
       .cat i { flex: none; width: 40px; height: 40px; border-radius: 12px; background: var(--mint); display: grid; place-items: center; font-style: normal; color: var(--leaf); }
       .cat i svg { width: 20px; height: 20px; }
     
-      .compare { overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); }
-      table { width: 100%; border-collapse: collapse; font-size: .97rem; min-width: 560px; }
-      th, td { padding: 14px 16px; text-align: start; border-bottom: 1px solid var(--line); vertical-align: top; }
-      th { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
-      .rtl th { letter-spacing: 0; }
-      td:first-child { color: var(--ink-2); }
-      td.us { font-weight: 700; color: var(--green); background: color-mix(in srgb, var(--mint) 55%, transparent); }
-      tr:last-child td { border-bottom: 0; }
-      .fine { font-size: .85rem; color: var(--ink-2); margin-top: 10px; }
     
       .safety { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
       .safety-list { margin: 0; padding: 0; display: grid; gap: 10px; }
@@ -132,10 +129,7 @@
       .helpers li { list-style: none; display: flex; gap: 10px; }
       .helpers li::before { content: "•"; color: var(--mint-2); font-weight: 700; }
     
-      .stores { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-      .store { display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: var(--ground); text-decoration: none; padding: 10px 16px; border-radius: 12px; font-weight: 700; min-height: 48px; line-height: 1.15; }
-      .store small { display: block; font-weight: 500; font-size: .7rem; opacity: .8; }
-      .store.soon { opacity: .5; pointer-events: none; }
+      .also { color: var(--ink-2); font-size: .95rem; margin-top: 14px; }
     
       footer { padding-block: 32px 48px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: .9rem; }
       footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; }
@@ -176,121 +170,19 @@
         <h1 data-t="h1">Hilfe von Nachbarn. In deiner Sprache. Kostenlos.</h1>
         <p class="lede" data-t="lede">Putzhilfe, Babysitter, Einkaufen, Nachhilfe – von Menschen aus deinem Kiez, die Deutsch, Türkisch, Arabisch oder Englisch sprechen. Kein Abo, keine Vermittlungsgebühr.</p>
         <div class="ctas">
-          <a class="btn btn-primary" id="cta-need" href="__APP_URL__/" data-t="ctaNeed">Ich brauche Hilfe</a>
+          <a class="btn btn-primary" id="cta-need" href="__APP_URL__/" data-t="ctaNeed">Jetzt starten – ohne Installation</a>
           <a class="btn btn-secondary" id="cta-help" href="__APP_URL__/" data-t="ctaHelp">Ich möchte helfen</a>
         </div>
         <div class="proofs">
-          <span data-t="proof1">Kostenlos anfragen und chatten</span>
+          <span data-t="proof1">Kostenlos anschreiben – kein Abo</span>
           <span data-t="proof2">Bewertungen nur von echten Buchungen</span>
-          <span data-t="proof3">App in 4 Sprachen</span>
+          <span data-t="proof3">Im Browser oder als App, in 4 Sprachen</span>
         </div>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320"
-     preserveAspectRatio="xMidYMax meet" role="img" class="scene"
-     aria-label="Illustration of a neighbourhood with houses, trees and a path">
-    <defs>
-        <clipPath id="hhScene"><rect width="900" height="320"/></clipPath>
-    </defs>
-    <g clip-path="url(#hhScene)">
-
-        <!-- ── Sky layer: sun, skyline, clouds ─────────────────────────── -->
-        <circle cx="468" cy="150" r="66" fill="#FAF0C0" opacity="0.85"/>
-
-        <g fill="#DCEEE3">
-            <rect x="384" y="128" width="44" height="104" rx="4"/>
-            <rect x="436" y="158" width="34" height="74" rx="4"/>
-            <rect x="478" y="142" width="40" height="90" rx="4"/>
-            <rect x="526" y="170" width="30" height="62" rx="4"/>
-            <rect x="564" y="120" width="38" height="112" rx="4"/>
-            <rect x="610" y="152" width="32" height="80" rx="4"/>
-            <rect x="650" y="136" width="26" height="96" rx="4"/>
-        </g>
-
-        <g fill="#D3EBDC">
-            <ellipse cx="150" cy="92" rx="42" ry="20"/>
-            <ellipse cx="182" cy="84" rx="28" ry="22"/>
-            <ellipse cx="742" cy="74" rx="38" ry="18"/>
-            <ellipse cx="772" cy="68" rx="26" ry="20"/>
-        </g>
-
-        <!-- ── Far tree line ───────────────────────────────────────────── -->
-        <g fill="#BFE3CB">
-            <circle cx="60" cy="212" r="46"/>
-            <circle cx="132" cy="204" r="38"/>
-            <circle cx="300" cy="208" r="42"/>
-            <circle cx="600" cy="206" r="40"/>
-            <circle cx="800" cy="200" r="48"/>
-            <circle cx="866" cy="214" r="40"/>
-        </g>
-
-        <!-- ── Mid ground ──────────────────────────────────────────────── -->
-        <path d="M0 232 Q 225 206 450 224 T 900 214 L900 320 L0 320 Z" fill="#9BD9B2"/>
-
-        <!-- ── Houses ──────────────────────────────────────────────────── -->
-        <!-- left -->
-        <g>
-            <path d="M150 232 L214 186 L278 232 Z" fill="#2E8B57"/>
-            <rect x="166" y="230" width="96" height="60" rx="4" fill="#FBF9EF"/>
-            <rect x="184" y="248" width="24" height="22" rx="3" fill="#3FA06A"/>
-            <rect x="220" y="248" width="24" height="22" rx="3" fill="#3FA06A"/>
-        </g>
-        <!-- right -->
-        <g>
-            <path d="M636 236 L692 196 L748 236 Z" fill="#2E8B57"/>
-            <rect x="650" y="234" width="84" height="54" rx="4" fill="#FBF9EF"/>
-            <rect x="666" y="250" width="22" height="20" rx="3" fill="#3FA06A"/>
-            <rect x="700" y="250" width="22" height="20" rx="3" fill="#3FA06A"/>
-        </g>
-
-        <!-- ── Trees ───────────────────────────────────────────────────── -->
-        <g>
-            <!-- rounded canopies -->
-            <g fill="#3FA06A">
-                <circle cx="96" cy="228" r="34"/>
-                <circle cx="330" cy="236" r="28"/>
-                <circle cx="592" cy="238" r="26"/>
-                <circle cx="836" cy="230" r="32"/>
-            </g>
-            <g stroke="#2E8B57" stroke-width="6" stroke-linecap="round">
-                <line x1="96" y1="252" x2="96" y2="288"/>
-                <line x1="330" y1="258" x2="330" y2="290"/>
-                <line x1="592" y1="260" x2="592" y2="290"/>
-                <line x1="836" y1="254" x2="836" y2="288"/>
-            </g>
-            <!-- slim conical trees -->
-            <g fill="#55B77E">
-                <ellipse cx="288" cy="240" rx="16" ry="30"/>
-                <ellipse cx="778" cy="242" rx="15" ry="28"/>
-                <ellipse cx="486" cy="246" rx="14" ry="26"/>
-            </g>
-            <g stroke="#2E8B57" stroke-width="5" stroke-linecap="round">
-                <line x1="288" y1="266" x2="288" y2="292"/>
-                <line x1="778" y1="266" x2="778" y2="292"/>
-                <line x1="486" y1="268" x2="486" y2="292"/>
-            </g>
-        </g>
-
-        <!-- ── Foreground grass ────────────────────────────────────────── -->
-        <path d="M0 274 Q 220 256 452 272 T 900 264 L900 320 L0 320 Z" fill="#7CC894"/>
-
-        <!-- ── Winding path ────────────────────────────────────────────── -->
-        <path d="M452 264
-                 C 442 286 452 302 498 320
-                 L 622 320
-                 C 556 300 502 286 480 264 Z"
-              fill="#F2EDDC"/>
-
-        <!-- ── Foreground bushes ───────────────────────────────────────── -->
-        <g fill="#2F8F5B">
-            <ellipse cx="46" cy="300" rx="76" ry="40"/>
-            <ellipse cx="140" cy="312" rx="58" ry="30"/>
-            <ellipse cx="852" cy="298" rx="80" ry="40"/>
-            <ellipse cx="742" cy="314" rx="56" ry="28"/>
-        </g>
-    </g>
-</svg>
-
+      <div class="hero-art">
+        <div class="phone" aria-hidden="true">
+          <img src="/site/img/app-find-help.png" width="390" height="780" alt="" loading="eager" decoding="async">
+        </div>
       </div>
     </div>
   </section>
@@ -319,28 +211,6 @@
     </div>
   </section>
 
-  <section id="compare">
-    <div class="wrap">
-      <div class="sec-head">
-        <span class="eyebrow" data-t="cmpKicker">Der Unterschied</span>
-        <h2 data-t="cmpH2">Warum kein Abo?</h2>
-        <p data-t="cmpP">Bei den großen Portalen zahlst du ab 35 € im Monat, bevor du überhaupt jemandem schreiben darfst. Helpado ist klein, lokal und kostenlos – für beide Seiten.</p>
-      </div>
-      <div class="compare">
-        <table>
-          <thead><tr><th></th><th data-t="thOther">Große Portale</th><th>Helpado</th></tr></thead>
-          <tbody>
-            <tr><td data-t="r1">Helfer:innen anschreiben</td><td data-t="r1a">Nur mit Premium (ab 35 €/Monat)</td><td class="us" data-t="r1b">Kostenlos</td></tr>
-            <tr><td data-t="r2">Sprachen</td><td data-t="r2a">Deutsch</td><td class="us" data-t="r2b">Deutsch, Türkisch, Arabisch, Englisch</td></tr>
-            <tr><td data-t="r3">Bewertungen</td><td data-t="r3a">Oft ohne Buchungsnachweis</td><td class="us" data-t="r3b">Nur nach abgeschlossener Buchung</td></tr>
-            <tr><td data-t="r4">Reichweite</td><td data-t="r4a">Ganz Deutschland, überall dünn</td><td class="us" data-t="r4b">Ein Kiez, dafür echt</td></tr>
-            <tr><td data-t="r5">Abo</td><td data-t="r5a">Automatische Verlängerung</td><td class="us" data-t="r5b">Kein Abo</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="fine" data-t="cmpFine">Typische Konditionen deutschlandweiter Haushaltshilfe-Portale, Stand September 2026. Auch Helpado prüft keine Identität – siehe Sicherheit.</p>
-    </div>
-  </section>
 
   <section id="safety">
     <div class="wrap">
@@ -390,14 +260,13 @@
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow" data-t="getKicker">Jetzt starten</span>
-        <h2 data-t="getH2">Hol dir die App</h2>
+        <h2 data-t="getH2">Läuft im Browser – nichts zu installieren</h2>
         <p data-t="getP">Wir starten Kiez für Kiez, damit auf der Karte wirklich Nachbarn sind – und nicht nur Punkte.</p>
       </div>
-      <div class="stores">
-        <a class="store" href="__APP_URL__/"><span><small data-t="webSmall">Im Browser</small><span data-t="webBig">Helpado öffnen</span></span></a>
-        <a class="store soon" href="#get" aria-disabled="true"><span><small data-t="soon">Bald</small>Google Play</span></a>
-        <a class="store soon" href="#get" aria-disabled="true"><span><small data-t="soon2">Bald</small>App Store</span></a>
+      <div class="ctas">
+        <a class="btn btn-primary" href="__APP_URL__/" data-t="getCta">Helpado im Browser öffnen</a>
       </div>
+      <p class="also" data-t="alsoApp">Auch als App: Google Play und App Store folgen.</p>
     </div>
   </section>
 </main>
@@ -448,16 +317,12 @@
     en: {
       kicker:'Neighbourhood help', h1:'Help from neighbours. In your language. Free.',
       lede:'Cleaners, babysitters, grocery runs, tutoring — from people in your Kiez who speak German, Turkish, Arabic or English. No subscription, no agency fee.',
-      ctaNeed:'I need help', ctaHelp:'I want to help', proof1:'Ask and chat for free', proof2:'Reviews only from real bookings', proof3:'App in 4 languages',
+      ctaNeed:'Start now – no install', ctaHelp:'I want to help', proof1:'Message for free – no subscription', proof2:'Reviews only from real bookings', proof3:'In the browser or as an app, in 4 languages',
       howKicker:'How it works', howH2:'Three steps, no waiting list',
       s1h:'Pick a category', s1p:'Choose what you need and see helpers near you on the map — with languages, hourly rate and reviews.',
       s2h:'Message directly', s2p:'Chat in the app without a subscription and without giving out your phone number. Price and time are recorded in the chat.',
       s3h:'Book and review', s3p:'Afterwards you rate each other. Only people who actually booked can leave a review.',
       catKicker:'What neighbours help with', catH2:'Everyday life, not an agency',
-      cmpKicker:'The difference', cmpH2:'Why no subscription?', cmpP:'On the big portals you pay from €35 a month before you may message anyone. Helpado is small, local and free — for both sides.', thOther:'Big portals',
-      r1:'Contact helpers', r1a:'Premium only (from €35/month)', r1b:'Free', r2:'Languages', r2a:'German', r2b:'German, Turkish, Arabic, English',
-      r3:'Reviews', r3a:'Often without proof of a booking', r3b:'Only after a completed booking', r4:'Reach', r4a:'All of Germany, thin everywhere', r4b:'One Kiez, but real',
-      r5:'Subscription', r5a:'Auto-renewal', r5b:'No subscription', cmpFine:'Typical terms of Germany-wide household-help portals, September 2026. Helpado does not verify identity either — see Safety.',
       safKicker:'Safety', safH2:'Honestly: we don’t check IDs. Here is how you stay safe anyway.',
       sf1h:'Chat first, then meet', sf1p:'Everything in the app, your number stays private. A short video call before the first visit.',
       sf2h:'Reviews that are real', sf2p:'Only someone who completed a booking can review. No bought stars.',
@@ -467,22 +332,17 @@
       hoP2:'What we do instead: reviews only from real bookings, chat in the app, block and report — and a guide that tells you what to look for.', hoCta:'Read the safety guide',
       hlKicker:'For helpers', hlH2:'Earn on the side — in your Kiez, in your language', hlP:'You set your hourly rate. No fees, no agency. Customers from your neighbourhood message you directly.',
       hlCta:'Create a profile in 2 minutes', hl1:'Profile in German, Turkish, Arabic or English', hl2:'You decide whom you accept and when', hl3:'Paid directly by the customer — we keep nothing', hl4:'Email support in four languages',
-      getKicker:'Get started', getH2:'Get the app', getP:'We launch Kiez by Kiez so the map really shows neighbours — not just dots.',
-      webSmall:'In the browser', webBig:'Open Helpado', soon:'Soon', soon2:'Soon', ftPrivacy:'Privacy', ftTerms:'Terms', ftContact:'Contact'
+      getKicker:'Get started', getH2:'Runs in the browser – nothing to install', getP:'We launch Kiez by Kiez so the map really shows neighbours — not just dots.', getCta:'Open Helpado in the browser', alsoApp:'Also as an app: Google Play and App Store to follow.', ftPrivacy:'Privacy', ftTerms:'Terms', ftContact:'Contact'
     },
     tr: {
       kicker:'Komşu yardımı', h1:'Komşulardan yardım. Kendi dilinde. Ücretsiz.',
       lede:'Temizlik, çocuk bakımı, alışveriş, özel ders — mahallenden, Almanca, Türkçe, Arapça veya İngilizce konuşan insanlardan. Abonelik yok, aracı ücreti yok.',
-      ctaNeed:'Yardıma ihtiyacım var', ctaHelp:'Yardım etmek istiyorum', proof1:'Ücretsiz sor ve yaz', proof2:'Yalnızca gerçek rezervasyonlardan değerlendirme', proof3:'Uygulama 4 dilde',
+      ctaNeed:'Hemen başla – kurulum yok', ctaHelp:'Yardım etmek istiyorum', proof1:'Ücretsiz yaz – abonelik yok', proof2:'Yalnızca gerçek rezervasyonlardan değerlendirme', proof3:'Tarayıcıda veya uygulama olarak, 4 dilde',
       howKicker:'Nasıl çalışır', howH2:'Üç adım, bekleme yok',
       s1h:'Kategori seç', s1p:'Neye ihtiyacın olduğunu seç, yakınındaki yardımcıları haritada gör — diller, saat ücreti ve değerlendirmelerle.',
       s2h:'Doğrudan yaz', s2p:'Abonelik olmadan ve telefon numaranı vermeden uygulamada sohbet et. Fiyat ve saat sohbette kayıtlı kalır.',
       s3h:'Rezerve et ve değerlendir', s3p:'Yardımdan sonra birbirinizi değerlendirirsiniz. Yalnızca gerçekten rezervasyon yapan değerlendirebilir.',
       catKicker:'Komşular nelerde yardım eder', catH2:'Günlük hayat, ajans değil',
-      cmpKicker:'Fark', cmpH2:'Neden abonelik yok?', cmpP:'Büyük portallarda birine yazabilmek için önce ayda 35 €’dan başlayan ücret ödüyorsun. Helpado küçük, yerel ve ücretsiz — iki taraf için de.', thOther:'Büyük portallar',
-      r1:'Yardımcılara yazmak', r1a:'Sadece Premium ile (ayda 35 €’dan)', r1b:'Ücretsiz', r2:'Diller', r2a:'Almanca', r2b:'Almanca, Türkçe, Arapça, İngilizce',
-      r3:'Değerlendirmeler', r3a:'Çoğu zaman rezervasyon kanıtı olmadan', r3b:'Sadece tamamlanan rezervasyondan sonra', r4:'Kapsam', r4a:'Tüm Almanya, her yerde seyrek', r4b:'Bir mahalle, ama gerçek',
-      r5:'Abonelik', r5a:'Otomatik yenileme', r5b:'Abonelik yok', cmpFine:'Almanya genelindeki ev yardımı portallarının tipik koşulları, Eylül 2026. Helpado da kimlik doğrulamaz — Güvenlik bölümüne bak.',
       safKicker:'Güvenlik', safH2:'Dürüstçe: kimlik kontrol etmiyoruz. Yine de böyle güvende kalırsın.',
       sf1h:'Önce yaz, sonra buluş', sf1p:'Her şey uygulamada, numaran gizli kalır. İlk buluşmadan önce kısa bir görüntülü arama.',
       sf2h:'Gerçek değerlendirmeler', sf2p:'Sadece rezervasyonu tamamlayan değerlendirebilir. Satın alınmış yıldız yok.',
@@ -492,22 +352,17 @@
       hoP2:'Bunun yerine yaptığımız: yalnızca gerçek rezervasyonlardan değerlendirme, uygulama içi sohbet, engelleme ve bildirme — ve nelere dikkat etmen gerektiğini anlatan bir rehber.', hoCta:'Güvenlik rehberini oku',
       hlKicker:'Yardımcılar için', hlH2:'Ek gelir — mahallende, kendi dilinde', hlP:'Saat ücretini sen belirlersin. Ücret yok, aracı yok. Mahallendeki müşteriler sana doğrudan yazar.',
       hlCta:'2 dakikada profil oluştur', hl1:'Almanca, Türkçe, Arapça veya İngilizce profil', hl2:'Kimi ve ne zaman kabul edeceğine sen karar verirsin', hl3:'Ödeme doğrudan müşteriden — biz hiçbir şey kesmiyoruz', hl4:'Dört dilde e-posta desteği',
-      getKicker:'Hemen başla', getH2:'Uygulamayı indir', getP:'Haritada gerçekten komşular olsun diye mahalle mahalle başlıyoruz — sadece noktalar değil.',
-      webSmall:'Tarayıcıda', webBig:'Helpado’yu aç', soon:'Yakında', soon2:'Yakında', ftPrivacy:'Gizlilik', ftTerms:'Kullanım şartları', ftContact:'İletişim'
+      getKicker:'Hemen başla', getH2:'Tarayıcıda çalışır – kurulum gerekmez', getP:'Haritada gerçekten komşular olsun diye mahalle mahalle başlıyoruz — sadece noktalar değil.', getCta:'Helpado’yu tarayıcıda aç', alsoApp:'Uygulama olarak da: Google Play ve App Store yakında.', ftPrivacy:'Gizlilik', ftTerms:'Kullanım şartları', ftContact:'İletişim'
     },
     ar: {
       kicker:'مساعدة الجيران', h1:'مساعدة من الجيران. بلغتك. مجاناً.',
       lede:'تنظيف، رعاية أطفال، تسوّق، دروس خصوصية — من أشخاص في حيّك يتحدثون الألمانية أو التركية أو العربية أو الإنجليزية. بدون اشتراك وبدون عمولة وساطة.',
-      ctaNeed:'أحتاج مساعدة', ctaHelp:'أريد أن أساعد', proof1:'اسأل وتحدث مجاناً', proof2:'تقييمات من حجوزات حقيقية فقط', proof3:'التطبيق بأربع لغات',
+      ctaNeed:'ابدأ الآن – بدون تثبيت', ctaHelp:'أريد أن أساعد', proof1:'راسل مجاناً – بدون اشتراك', proof2:'تقييمات من حجوزات حقيقية فقط', proof3:'في المتصفح أو كتطبيق، بأربع لغات',
       howKicker:'كيف يعمل', howH2:'ثلاث خطوات، بلا انتظار',
       s1h:'اختر الفئة', s1p:'اختر ما تحتاجه وشاهد المساعدين القريبين منك على الخريطة — مع اللغات وسعر الساعة والتقييمات.',
       s2h:'راسل مباشرة', s2p:'تحدث داخل التطبيق بدون اشتراك وبدون إعطاء رقم هاتفك. السعر والوقت يُسجّلان في المحادثة.',
       s3h:'احجز وقيّم', s3p:'بعد المساعدة تقيّمون بعضكم. فقط من حجز فعلاً يستطيع التقييم.',
       catKicker:'بماذا يساعد الجيران', catH2:'الحياة اليومية، لا وكالة',
-      cmpKicker:'الفرق', cmpH2:'لماذا بلا اشتراك؟', cmpP:'في البوابات الكبيرة تدفع من 35 € شهرياً قبل أن يُسمح لك بمراسلة أحد. Helpado صغير ومحلي ومجاني — للطرفين.', thOther:'البوابات الكبيرة',
-      r1:'مراسلة المساعدين', r1a:'مع Premium فقط (من 35 € شهرياً)', r1b:'مجاناً', r2:'اللغات', r2a:'الألمانية', r2b:'الألمانية، التركية، العربية، الإنجليزية',
-      r3:'التقييمات', r3a:'غالباً بدون إثبات حجز', r3b:'فقط بعد حجز مكتمل', r4:'النطاق', r4a:'كل ألمانيا، قليل في كل مكان', r4b:'حيّ واحد، لكنه حقيقي',
-      r5:'الاشتراك', r5a:'تجديد تلقائي', r5b:'بدون اشتراك', cmpFine:'شروط نموذجية لبوابات المساعدة المنزلية في عموم ألمانيا، سبتمبر 2026. Helpado أيضاً لا يتحقق من الهوية — انظر الأمان.',
       safKicker:'الأمان', safH2:'بصراحة: لا نفحص الهويات. هكذا تبقى آمناً رغم ذلك.',
       sf1h:'تحدث أولاً ثم التقِ', sf1p:'كل شيء داخل التطبيق ورقمك يبقى خاصاً. مكالمة فيديو قصيرة قبل الموعد الأول.',
       sf2h:'تقييمات حقيقية', sf2p:'فقط من أكمل حجزاً يمكنه التقييم. لا نجوم مشتراة.',
@@ -517,8 +372,7 @@
       hoP2:'ما نفعله بدلاً من ذلك: تقييمات من حجوزات حقيقية فقط، محادثة داخل التطبيق، حظر وإبلاغ — ودليل يخبرك بما تنتبه إليه.', hoCta:'اقرأ دليل الأمان',
       hlKicker:'للمساعدين', hlH2:'اكسب دخلاً إضافياً — في حيّك وبلغتك', hlP:'أنت تحدد سعر الساعة. بدون رسوم وبدون وسيط. الزبائن من حيّك يراسلونك مباشرة.',
       hlCta:'أنشئ ملفك في دقيقتين', hl1:'ملف بالألمانية أو التركية أو العربية أو الإنجليزية', hl2:'أنت تقرر من تقبل ومتى', hl3:'الدفع مباشرة من الزبون — لا نقتطع شيئاً', hl4:'دعم عبر البريد الإلكتروني بأربع لغات',
-      getKicker:'ابدأ الآن', getH2:'احصل على التطبيق', getP:'ننطلق حيّاً بعد حيّ حتى تظهر على الخريطة جيران حقيقيون — لا مجرد نقاط.',
-      webSmall:'في المتصفح', webBig:'افتح Helpado', soon:'قريباً', soon2:'قريباً', ftPrivacy:'الخصوصية', ftTerms:'شروط الاستخدام', ftContact:'اتصل بنا'
+      getKicker:'ابدأ الآن', getH2:'يعمل في المتصفح – لا شيء للتثبيت', getP:'ننطلق حيّاً بعد حيّ حتى تظهر على الخريطة جيران حقيقيون — لا مجرد نقاط.', getCta:'افتح Helpado في المتصفح', alsoApp:'وأيضاً كتطبيق: Google Play وApp Store قريباً.', ftPrivacy:'الخصوصية', ftTerms:'شروط الاستخدام', ftContact:'اتصل بنا'
     }
   };
   document.querySelectorAll('[data-t]').forEach(function (el) { T.de[el.getAttribute('data-t')] = el.textContent; });
@@ -547,7 +401,8 @@
   }
   document.querySelectorAll('.langs button').forEach(function (b) { b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); }); });
   var saved = null; try { saved = localStorage.getItem('helpado_landing_lang'); } catch (e) {}
-  setLang(saved && T[saved] ? saved : 'de');
+  var browser = ((navigator.languages && navigator.languages[0]) || navigator.language || 'de').slice(0, 2).toLowerCase();
+      setLang(saved && T[saved] ? saved : (T[browser] ? browser : 'de'));
 })();
 </script>
 
