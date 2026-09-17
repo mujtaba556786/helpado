@@ -59,6 +59,24 @@ sap.ui.define([], function () {
             var aAppLinks = sText.match(/href="__APP_URL__\//g) || [];
             assert.ok(aAppLinks.length >= 3, "at least the two hero CTAs and the helper CTA use the token (" + aAppLinks.length + ")");
             assert.ok(/href="\/sicherheit"/.test(sText), "the safety block links to /sicherheit");
+            assert.ok(!/\/img\/neighbourhood\.svg|<svg[^>]*viewBox="0 0 900 320"/.test(sText),
+                "the hero shows the product, not the illustration");
+            var m = sText.match(/<img src="(\/site\/img\/[^"]+)"/);
+            assert.ok(m, "the hero carries a screenshot of the app");
+            return fetch(BASE + m[1].replace(/^\//, "")).then(function (r) {
+                assert.ok(r.ok, m[1] + " is served (HTTP " + r.status + ")");
+                done();
+            });
+        }).catch(function (e) { assert.ok(false, String(e)); done(); });
+    });
+
+    QUnit.test("site/index.html follows the browser language and offers a no-install start", function (assert) {
+        var done = assert.async();
+        load("site/index.html").then(function (sText) {
+            assert.ok(/navigator\.language/.test(sText), "default language comes from the browser");
+            assert.ok(/ohne Installation/.test(sText) && /no install/.test(sText), "primary CTA says no install (DE + EN)");
+            assert.ok(!/<section id="compare">/.test(sText), "no comparison table any more");
+            assert.ok(!/<a class="store/.test(sText), "no store buttons; the browser is the product");
             done();
         }).catch(function (e) { assert.ok(false, String(e)); done(); });
     });
