@@ -4,6 +4,12 @@ specVersion: "4.0"
 metadata:
   name: helphub
 type: application
+builder:
+  resources:
+    excludes:
+      # Marketing pages (landing, safety guide) are served by Express at
+      # /welcome and /sicherheit; the APK and the dist bundle don't need them.
+      - "/site/**"
 framework:
   name: OpenUI5
   version: "1.120.18"

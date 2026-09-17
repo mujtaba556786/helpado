@@ -79,7 +79,9 @@ sap.ui.define([
         // Dashboard (Settings → Legal) and Login (Impressum/Privacy footer),
         // since § 5 DDG needs the Impressum reachable before sign-in.
         _openLegalPage: function(sTitle, sPath) {
-            var sUrl = window.location.origin + sPath;
+            // Absolute URLs pass through: /sicherheit is an Express route on the
+            // server, not a bundled file, so the APK has to open it on API_BASE.
+            var sUrl = /^https?:\/\//.test(sPath) ? sPath : window.location.origin + sPath;
             var that  = this;
 
             // ── Cordova InAppBrowser (when packaged with cordova-plugin-inappbrowser)
