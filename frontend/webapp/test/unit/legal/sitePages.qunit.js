@@ -70,13 +70,17 @@ sap.ui.define([], function () {
         }).catch(function (e) { assert.ok(false, String(e)); done(); });
     });
 
-    QUnit.test("site/index.html follows the browser language and offers a no-install start", function (assert) {
+    // Owner's call (2026-09-17): app-first messaging. The CTAs read "Ich brauche
+    // Hilfe" / "Ich möchte helfen", the last section is "Hol dir die App" with the
+    // store badges — never "start in the browser / ohne Installation".
+    QUnit.test("site/index.html follows the browser language and stays app-first", function (assert) {
         var done = assert.async();
         load("site/index.html").then(function (sText) {
             assert.ok(/navigator\.language/.test(sText), "default language comes from the browser");
-            assert.ok(/ohne Installation/.test(sText) && /no install/.test(sText), "primary CTA says no install (DE + EN)");
+            assert.ok(!/ohne Installation|no install|im Browser (öffnen|oder)|in the browser/i.test(sText), "no browser-first wording");
+            assert.ok(/data-t="ctaNeed">Ich brauche Hilfe</.test(sText), "primary CTA is 'Ich brauche Hilfe'");
             assert.ok(!/<section id="compare">/.test(sText), "no comparison table any more");
-            assert.ok(!/<a class="store/.test(sText), "no store buttons; the browser is the product");
+            assert.ok(/<a class="store soon"[^>]*>[\s\S]*?Google Play/.test(sText) && /App Store/.test(sText), "store badges present (marked coming)");
             done();
         }).catch(function (e) { assert.ok(false, String(e)); done(); });
     });
