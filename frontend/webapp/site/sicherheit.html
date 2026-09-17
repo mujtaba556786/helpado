@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Helpado Sicherheits-Guide: worauf Kunden und Helfer:innen achten sollten – Profil, Chat, erstes Treffen, Führungszeugnis, Bezahlung, Melden.">
+    <link rel="icon" href="/img/logo.svg" type="image/svg+xml">
+    <title>Sicherheits-Guide – Helpado</title>
+    <style>
+      :root {
+        --ground: #f9fcf5; --paper: #FFFFFF; --ink: #131e29; --ink-2: #556b82; --line: #d9d9d9;
+        --green: #2F855A; --green-deep: #1C7449; --brand: #5dbf8a; --leaf: #10B981;
+        --mint: #E6F4EC; --mint-2: #D3EBDC; --on-green: #FFFFFF;
+        --warn-bg: #FFF4E5; --warn-ink: #7A4100; --warn-line: #F4C98A;
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --ground: #0F1A15; --paper: #16241D; --ink: #EAF3EE; --ink-2: #A9BDB3; --line: #23362C;
+          --green: #7ED3A6; --green-deep: #5FC08F; --leaf: #34D399; --mint: #1B3328; --mint-2: #224031; --on-green: #0F1A15;
+          --warn-bg: #3A2A12; --warn-ink: #F6D9A8; --warn-line: #6B4A1C;
+        }
+      }
+      :root[data-theme="dark"] {
+        --ground: #0F1A15; --paper: #16241D; --ink: #EAF3EE; --ink-2: #A9BDB3; --line: #23362C;
+        --green: #7ED3A6; --green-deep: #5FC08F; --leaf: #34D399; --mint: #1B3328; --mint-2: #224031; --on-green: #0F1A15;
+        --warn-bg: #3A2A12; --warn-ink: #F6D9A8; --warn-line: #6B4A1C;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--ground); color: var(--ink); font-family: "72", "72full", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+      body.rtl { font-family: "72", "72full", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      h1, h2, h3 { font-family: "72", "72full", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-weight: 700; letter-spacing: 0; line-height: 1.1; text-wrap: balance; margin: 0; }
+      .rtl h1, .rtl h2, .rtl h3 { font-family: "72", "72full", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; letter-spacing: 0; line-height: 1.35; }
+      h1 { font-size: clamp(1.8rem, 4.2vw, 2.6rem); line-height: 1.15; }
+      h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); }
+      h3 { font-size: 1.05rem; font-weight: 700; }
+      p { margin: 0; }
+      a { color: var(--green); }
+      .wrap { width: min(880px, 100%); margin-inline: auto; padding-inline: 20px; }
+      .eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--green); }
+      .rtl .eyebrow { letter-spacing: 0; }
+    
+      .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--ground) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+      .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+      .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+      .brand svg { width: 34px; height: 34px; border-radius: 9px; flex: none; }
+      .brand b { font-family: "72", "72full", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-weight: 700; font-size: 1.35rem; color: var(--green); letter-spacing: 0; }
+      .langs { display: flex; gap: 4px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+      .langs button { border: 0; background: transparent; color: var(--ink-2); font: inherit; font-weight: 700; font-size: .8rem; padding: 6px 10px; border-radius: 999px; cursor: pointer; }
+      .langs button[aria-pressed="true"] { background: var(--brand); color: #131e29; }
+      .langs button:focus-visible { outline: 3px solid var(--brand); outline-offset: 1px; }
+    
+      header.hero { padding-block: 44px 28px; display: grid; gap: 14px; }
+      .lede { font-size: 1.12rem; color: var(--ink-2); max-width: 60ch; }
+      .rtl .lede { max-width: none; }
+      .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+      .fact { border-radius: 16px; padding: 16px 18px; display: grid; gap: 6px; }
+      .fact.yes { background: var(--mint); }
+      .fact.no { background: var(--paper); border: 1px solid var(--line); }
+      .fact b { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
+      .rtl .fact b { letter-spacing: 0; }
+      .fact.yes b { color: var(--green); }
+      .fact.no b { color: var(--ink-2); }
+      .fact ul { margin: 0; padding-inline-start: 18px; font-size: .95rem; }
+    
+      nav.toc { margin-block: 24px 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+      nav.toc a { font-size: .85rem; font-weight: 600; text-decoration: none; color: var(--green); background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; }
+      nav.toc a:hover { background: var(--mint); }
+    
+      section.guide { padding-block: 32px; border-top: 1px solid var(--line); display: grid; gap: 16px; scroll-margin-top: 80px; }
+      section.guide .who { font-size: .8rem; font-weight: 700; color: var(--ink-2); }
+      section.guide p.intro { color: var(--ink-2); max-width: 62ch; }
+      .rtl section.guide p.intro { max-width: none; }
+      .tips { margin: 0; padding: 0; display: grid; gap: 10px; }
+      .tips li { list-style: none; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: grid; gap: 4px; }
+      .tips li b { display: block; }
+      .tips li span { color: var(--ink-2); font-size: .95rem; }
+      .callout { background: var(--warn-bg); color: var(--warn-ink); border: 1px solid var(--warn-line); border-radius: 14px; padding: 12px 14px; font-size: .95rem; }
+      .callout b { display: block; margin-bottom: 2px; }
+      .ask { background: var(--mint); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; }
+      .ask b { color: var(--green); }
+      .ask ul { margin: 0; padding-inline-start: 18px; font-size: .95rem; }
+    
+      .check { background: var(--green); color: var(--on-green); border-radius: 22px; padding: clamp(22px, 4vw, 36px); display: grid; gap: 14px; margin-block: 32px; }
+      .check h2 { color: var(--on-green); }
+      .check ul { margin: 0; padding: 0; display: grid; gap: 8px; }
+      .check li { list-style: none; display: flex; gap: 10px; align-items: flex-start; }
+      .check li::before { content: "☐"; flex: none; font-size: 1.1rem; line-height: 1.35; }
+    
+      .emergency { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .emergency div { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 4px; }
+      .emergency strong { font-family: "72", "72full", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 1.6rem; color: var(--green); }
+      .emergency span { font-size: .9rem; color: var(--ink-2); }
+    
+      footer { padding-block: 32px 48px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: .9rem; margin-top: 24px; }
+      footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; }
+      footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
+      footer a { color: var(--ink-2); }
+      .stamp { font-size: .85rem; color: var(--ink-2); }
+    
+      @media (max-width: 640px) { .facts, .emergency { grid-template-columns: 1fr; } }
+      @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+      html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <a class="brand" href="/welcome" aria-label="Helpado">
+      <svg viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="hhTile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#43AE71"/><stop offset="1" stop-color="#1C7449"/></linearGradient></defs><rect width="512" height="512" rx="116" ry="116" fill="url(#hhTile)"/><path d="M256 96 L444 254 a16 16 0 0 1 -10 28 L410 282 L410 400 a20 20 0 0 1 -20 20 L122 420 a20 20 0 0 1 -20 -20 L102 282 L78 282 a16 16 0 0 1 -10 -28 Z" fill="#FFFFFF"/><path d="M256 372 c-58 -38 -78 -70 -56 -98 c14 -18 41 -17 56 4 c15 -21 42 -22 56 -4 c22 28 2 60 -56 98 Z" fill="url(#hhTile)"/></svg>
+      <b>Helpado</b>
+    </a>
+    <div class="langs" role="group" aria-label="Sprache / Language">
+      <button type="button" id="lang-de" data-lang="de" aria-pressed="true">DE</button>
+      <button type="button" id="lang-tr" data-lang="tr" aria-pressed="false">TR</button>
+      <button type="button" id="lang-ar" data-lang="ar" aria-pressed="false">AR</button>
+      <button type="button" id="lang-en" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="main"></main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Helpado</span>
+    <nav>
+      <a href="/legal/imprint.html">Impressum</a>
+      <a href="/legal/privacy.html" id="ft-privacy">Datenschutz</a>
+      <a href="/legal/terms.html" id="ft-terms">Nutzungsbedingungen</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var C = {};
+
+  C.de = {
+    eyebrow: 'Sicherheits-Guide', h1: 'Sicher helfen und Hilfe finden – ohne dass jemand für dich prüft.',
+    lede: 'Helpado bringt Nachbarn zusammen. Wir prüfen keine Ausweise und keine Führungszeugnisse – das kann keine kostenlose Plattform in Deutschland ehrlich versprechen. Dafür sagen wir dir genau, was du selbst tun kannst. Zehn Minuten Lesezeit, gültig für Kunden und Helfer:innen.',
+    yes: ['Was wir tun', ['E-Mail-Adresse bestätigt bei jeder Anmeldung', 'Bewertungen nur nach abgeschlossener Buchung', 'Chat in der App – deine Nummer bleibt privat', 'Blockieren und Melden mit einem Tipp, jede Meldung wird gelesen', 'Helfer:innen haben den Nutzungsbedingungen und diesem Guide zugestimmt']],
+    no: ['Was wir nicht tun', ['Keine Ausweisprüfung, kein Führungszeugnis, keine Referenzprüfung', 'Keine Versicherung – Schäden regelt ihr direkt', 'Keine Zahlungsabwicklung und keine Zahlungsgarantie', 'Kein Vertrag mit Helpado – der Vertrag entsteht zwischen euch']],
+    toc: 'Inhalt', stamp: 'Stand: 17. September 2026. Keine Rechtsberatung – bei Zweifeln frag einen Anwalt oder die Verbraucherzentrale.',
+    checkTitle: 'Checkliste vor der ersten Buchung',
+    check: ['Profil vollständig: Foto, Text, Sprachen, Stundensatz, mindestens eine Bewertung oder ein persönliches Gespräch', 'Alles im App-Chat besprochen: Aufgaben, Preis, Zeit, Bezahlung', 'Kurzer Videoanruf oder Treffen an der Tür vor dem ersten Termin', 'Bei Kindern oder Angehörigen: beim ersten Mal selbst dabei', 'Bei Kinderbetreuung und Nachhilfe: erweitertes Führungszeugnis angefragt', 'Ausweis im Original gesehen, Name stimmt mit Profil überein', 'Wertsachen weggeschlossen, Schlüssel erst nach Vertrauensaufbau', 'Jemand weiß, wer wann bei dir ist (oder wo du als Helfer:in bist)'],
+    emergency: [['110', 'Polizei – bei Gefahr oder Straftat'], ['112', 'Notarzt, Feuerwehr'], ['In der App', '„Nutzer melden“ im Profil oder Chat – oder E-Mail an mujtabaahmed556@gmail.com']],
+    sections: [
+      { id: 'profil', who: 'Für Kunden', h: '1. Ein Profil lesen wie ein Nachbar', intro: 'Ein gutes Profil erzählt in zwei Sätzen, wer die Person ist und was sie kann. Ein schlechtes Profil ist leer, hat kein Foto oder wirkt kopiert.',
+        tips: [['Echtes Foto, echter Name', 'Kein Logo, kein Stockbild, kein Spitzname. Der Name im Profil muss später zum Ausweis passen.'], ['Bewertungen lesen, nicht zählen', 'Jede Bewertung stammt aus einer abgeschlossenen Buchung. Zwei ehrliche Texte sagen mehr als zehn Sterne.'], ['Sprachen und Stundensatz stehen drin', 'Fehlt beides, wurde das Profil nie fertig gemacht. Frag nach oder such weiter.'], ['Kategorie passt zur Person', 'Wer „Elektrik“, „Pflege“ oder „Umzug mit LKW“ anbietet, braucht dafür in Deutschland Qualifikationen. Bei Zweifeln: nachfragen.']],
+        callout: ['Warnzeichen', 'Drängen auf WhatsApp oder Telefon vor dem ersten Gespräch · Vorkasse · sehr niedriger Preis für Fachkräfte · Profil erst seit Tagen ohne Text · Antwort passt nicht zu deiner Frage.'] },
+      { id: 'chat', who: 'Für beide', h: '2. Erst chatten, dann treffen', intro: 'Alles, was ihr im Helpado-Chat besprecht, könnt ihr später nachlesen. Das schützt beide Seiten – beim Preis, bei der Zeit und wenn etwas schiefgeht.',
+        tips: [['Im Chat bleiben, bis ihr euch kennt', 'Deine Telefonnummer und Adresse gibst du erst weiter, wenn du dich entschieden hast.'], ['Kurzer Videoanruf', 'Fünf Minuten reichen, um zu sehen, ob Foto und Person übereinstimmen und ob die Chemie passt.'], ['Konkret fragen', 'Nicht „Kannst du putzen?“ sondern „Hast du schon mal eine 3-Zimmer-Wohnung alleine gemacht, wie lange brauchst du?“']],
+        ask: ['Fragen, die in fünf Minuten viel zeigen', ['Seit wann machst du das, und für wen?', 'Was machst du nicht (Fenster, Tiere, schwere Möbel)?', 'Wie erreiche ich dich, wenn du dich verspätest?', 'Hast du eine private Haftpflichtversicherung?', 'Bei Kindern: Was machst du, wenn ein Kind sich verletzt?']] },
+      { id: 'treffen', who: 'Für beide', h: '3. Das erste Treffen', intro: 'Beim ersten Mal ist immer jemand dabei. Das ist keine Beleidigung, sondern normal – gute Helfer:innen erwarten es.',
+        tips: [['An der Tür oder im Café, nicht allein in der Wohnung', 'Fünfzehn Minuten kennenlernen, Aufgaben zeigen, dann entscheiden.'], ['Ausweis zeigen lassen', 'Du darfst darum bitten, den Ausweis kurz im Original zu sehen. Foto davon machen darfst du nur mit Zustimmung – nötig ist es nicht.'], ['Bei Kindern: erste Stunde mit dir', 'Beobachte, wie die Person mit dem Kind spricht. Vertraue deinem Eindruck.'], ['Bei Senioren: Angehörige informiert', 'Jemand aus der Familie kennt Name, Foto und die vereinbarten Zeiten.'], ['Schlüssel erst nach mehreren Terminen', 'Und dann mit Übergabe im Chat festgehalten: „Schlüssel übergeben am …“.']] },
+      { id: 'dokumente', who: 'Für Kunden', h: '4. Führungszeugnis, Qualifikation, Versicherung', intro: 'Drei Dokumente, die du je nach Kategorie sehen solltest. Helfer:innen auf Helpado haben zugestimmt, sie auf Nachfrage zu zeigen.',
+        tips: [['Erweitertes Führungszeugnis – bei Kindern und Nachhilfe', 'Beantragt die Person selbst beim Bürgeramt oder online mit Ausweis, kostet etwa 13 €, dauert 2–4 Wochen. Zeigt Einträge, die für die Arbeit mit Kindern relevant sind. Nicht älter als drei Monate.'], ['Nachweis für Fachtätigkeiten', 'Elektro-, Gas- und Sanitärarbeiten brauchen einen Handwerksbetrieb. Nachhilfe braucht keinen Abschluss, aber frag nach Fach und Klassenstufe. Pflege im medizinischen Sinn gibt es auf Helpado nicht – nur Begleitung und Haushalt.'], ['Private Haftpflichtversicherung', 'Deckt viele Schäden, die beim Helfen passieren (zerbrochene Vase, Kratzer im Parkett). Frag, ob eine besteht. Deine eigene Hausratversicherung deckt Diebstahl durch Personen, die du hereingelassen hast, oft nicht – prüfe das.']] },
+      { id: 'vereinbaren', who: 'Für beide', h: '5. Preis, Zeit und Bezahlung festhalten', intro: 'Der Vertrag entsteht zwischen euch, nicht mit Helpado. Drei Sätze im Chat reichen, damit später niemand streiten muss.',
+        tips: [['Im Chat schreiben: was, wann, wie lange, wie viel', '„Freitag 10–13 Uhr, Küche und Bad, 16 €/Stunde, bar nach der Arbeit.“ Beide antworten mit „passt“.'], ['Bezahlung direkt, mit Beleg', 'Bar oder Überweisung – Helpado hält nichts ein. Bei Überweisung ist der Verwendungszweck dein Beleg. Bei bar: kurze Bestätigung im Chat.'], ['Absagen mit Vorlauf', 'Ein Tag vorher ist fair. Wer wiederholt kurzfristig absagt, bekommt eine ehrliche Bewertung.'], ['Regelmäßige Hilfe: anmelden lohnt sich', 'Bis 556 € im Monat kannst du eine Haushaltshilfe als Minijob über die Minijob-Zentrale (Haushaltsscheck) anmelden. Der Aufwand ist gering, und du kannst 20 % der Kosten von der Steuer absetzen (§ 35a EStG). Frag im Zweifel eine:n Steuerberater:in.']],
+        callout: ['Schwarzarbeit ist kein Kavaliersdelikt', 'Regelmäßige, unangemeldete Beschäftigung kann für beide Seiten Bußgelder bedeuten. Gelegentliche Nachbarschaftshilfe ist etwas anderes als jede Woche dieselbe Person.'] },
+      { id: 'helfer', who: 'Für Helfer:innen', h: '6. Deine Sicherheit als Helfer:in', intro: 'Du gehst in fremde Wohnungen. Die gleichen Regeln gelten für dich – und ein paar zusätzliche.',
+        tips: [['Erstes Treffen an der Tür, nicht allein in der Wohnung', 'Bei ungutem Gefühl: freundlich absagen. Du musst nichts begründen.'], ['Jemand weiß, wo du bist', 'Adresse und Uhrzeit an eine Freundin oder Familie schicken. Bei Abendterminen kurz melden.'], ['Preis vorher im Chat, nicht an der Tür', 'Und keine Zusatzarbeit ohne neuen Preis. „Wenn du schon da bist…“ ist eine neue Vereinbarung.'], ['Keine Schlüssel, keine Karten, keine PINs', 'Einkaufen? Bargeld mit Beleg oder die Person kommt mit. Bankkarten nie annehmen.'], ['Nur anbieten, was du darfst', 'Kein Personentransport gegen Geld, keine Elektrik, keine medizinische Pflege. Das schützt dich vor Haftung.'], ['Einnahmen melden', 'Ein Nebenverdienst ist steuerpflichtig, ab der Gewerbeschwelle brauchst du eine Anmeldung. Ehrlich ist billiger als eine Nachzahlung.']] },
+      { id: 'danach', who: 'Für beide', h: '7. Danach: bewerten, melden, blockieren', intro: 'Bewertungen sind das einzige Prüfsystem, das Helpado hat. Sie funktionieren nur, wenn du ehrlich bist.',
+        tips: [['Ehrlich bewerten, auch wenn es unangenehm ist', 'Drei Sterne mit Begründung helfen dem nächsten Nachbarn mehr als fünf aus Höflichkeit.'], ['Melden bei Betrug, Belästigung, Drohung, falscher Identität', 'In der App über „Nutzer melden“. Wir lesen jede Meldung, sperren bei klaren Fällen sofort und melden Straftaten der Polizei.'], ['Blockieren, wenn du keinen Kontakt mehr willst', 'Die Person sieht dich nicht mehr und kann dir nicht mehr schreiben. Du musst nichts erklären.'], ['Bei Schaden: Fotos, Chat, Kontakt', 'Zuerst direkt klären, dann Haftpflicht der Person, dann eigene Versicherung. Helpado kann vermitteln, aber nicht ersetzen.']] }
+    ]
+  };
+
+  C.en = {
+    eyebrow: 'Safety guide', h1: 'Help and get help safely – without anyone checking for you.',
+    lede: 'Helpado connects neighbours. We do not check IDs or criminal-record certificates – no free platform in Germany can honestly promise that. Instead we tell you exactly what you can do yourself. Ten minutes to read, for customers and helpers alike.',
+    yes: ['What we do', ['Email address confirmed on every sign-up', 'Reviews only after a completed booking', 'Chat in the app – your number stays private', 'Block and report in one tap; every report is read', 'Helpers have agreed to the Terms and to this guide']],
+    no: ['What we do not do', ['No ID check, no criminal-record certificate, no reference check', 'No insurance – damage is settled between you', 'No payment processing and no payment guarantee', 'No contract with Helpado – the contract is between the two of you']],
+    toc: 'Contents', stamp: 'As of 17 September 2026. Not legal advice – if in doubt, ask a lawyer or the Verbraucherzentrale.',
+    checkTitle: 'Checklist before the first booking',
+    check: ['Profile complete: photo, text, languages, hourly rate, at least one review or a personal conversation', 'Everything agreed in the app chat: tasks, price, time, payment', 'Short video call or meeting at the door before the first visit', 'With children or relatives: you are present the first time', 'For childcare and tutoring: extended Führungszeugnis requested', 'Original ID seen, name matches the profile', 'Valuables locked away, keys only after trust is built', 'Someone knows who is with you and when (or where you are, as a helper)'],
+    emergency: [['110', 'Police – danger or crime'], ['112', 'Ambulance, fire brigade'], ['In the app', '"Report user" in a profile or chat – or email mujtabaahmed556@gmail.com']],
+    sections: [
+      { id: 'profil', who: 'For customers', h: '1. Read a profile like a neighbour would', intro: 'A good profile says in two sentences who the person is and what they can do. A bad one is empty, has no photo, or looks copied.',
+        tips: [['Real photo, real name', 'No logo, no stock image, no nickname. The name in the profile must later match the ID.'], ['Read reviews, don’t count them', 'Every review comes from a completed booking. Two honest texts say more than ten stars.'], ['Languages and hourly rate are filled in', 'If both are missing, the profile was never finished. Ask, or keep looking.'], ['Category matches the person', 'Anyone offering “electrical”, “nursing care” or “moving with a truck” needs qualifications in Germany. If in doubt, ask.']],
+        callout: ['Warning signs', 'Pushing to WhatsApp or phone before a first conversation · payment in advance · very low price for skilled work · profile only days old with no text · answers that don’t fit your question.'] },
+      { id: 'chat', who: 'For both', h: '2. Chat first, then meet', intro: 'Everything you agree in the Helpado chat can be read back later. That protects both sides – on price, on time, and if something goes wrong.',
+        tips: [['Stay in the chat until you know each other', 'Share your phone number and address only once you have decided.'], ['Short video call', 'Five minutes is enough to see that photo and person match and that you get on.'], ['Ask concrete questions', 'Not “Can you clean?” but “Have you done a three-room flat alone, and how long does it take you?”']],
+        ask: ['Questions that reveal a lot in five minutes', ['Since when have you done this, and for whom?', 'What don’t you do (windows, pets, heavy furniture)?', 'How do I reach you if you are running late?', 'Do you have private liability insurance?', 'With children: what do you do if a child gets hurt?']] },
+      { id: 'treffen', who: 'For both', h: '3. The first meeting', intro: 'The first time, someone else is always present. That is not an insult, it is normal – good helpers expect it.',
+        tips: [['At the door or in a café, not alone in the flat', 'Fifteen minutes to meet, show the tasks, then decide.'], ['Ask to see an ID', 'You may ask to see the original ID briefly. A photo of it needs consent – and isn’t necessary.'], ['With children: first hour with you there', 'Watch how the person talks to the child. Trust your impression.'], ['With seniors: family informed', 'Someone in the family knows the name, photo and agreed times.'], ['Keys only after several visits', 'And then recorded in the chat: “Key handed over on …”.']] },
+      { id: 'dokumente', who: 'For customers', h: '4. Certificate of conduct, qualifications, insurance', intro: 'Three documents you should see depending on the category. Helpers on Helpado have agreed to show them on request.',
+        tips: [['Extended Führungszeugnis – for children and tutoring', 'The person applies themselves at the Bürgeramt or online with their ID; about €13, takes 2–4 weeks. Shows entries relevant to working with children. No older than three months.'], ['Proof for skilled trades', 'Electrical, gas and plumbing work require a registered trade business. Tutoring needs no degree, but ask about subject and grade level. Medical nursing care does not exist on Helpado – only companionship and household help.'], ['Private liability insurance', 'Covers many accidents while helping (a broken vase, a scratched floor). Ask whether they have one. Your own contents insurance often does not cover theft by people you let in – check.']] },
+      { id: 'vereinbaren', who: 'For both', h: '5. Record price, time and payment', intro: 'The contract is between you, not with Helpado. Three sentences in the chat are enough so nobody has to argue later.',
+        tips: [['Write in the chat: what, when, how long, how much', '“Friday 10–13, kitchen and bathroom, €16/hour, cash afterwards.” Both reply “fine”.'], ['Pay directly, with a record', 'Cash or bank transfer – Helpado keeps nothing. With a transfer the reference line is your receipt. With cash: a short confirmation in the chat.'], ['Cancel with notice', 'A day ahead is fair. Repeated short-notice cancellations earn an honest review.'], ['Regular help: registering pays off', 'Up to €556 a month you can register household help as a Minijob via the Minijob-Zentrale (Haushaltsscheck). Little effort, and you can deduct 20% of the cost from your taxes (§ 35a EStG). Ask a tax adviser if unsure.']],
+        callout: ['Undeclared work is not a trivial offence', 'Regular, unregistered employment can mean fines for both sides. Occasional neighbourly help is different from the same person every week.'] },
+      { id: 'helfer', who: 'For helpers', h: '6. Your safety as a helper', intro: 'You enter strangers’ homes. The same rules apply to you – plus a few more.',
+        tips: [['First meeting at the door, not alone in the flat', 'If it feels wrong: decline politely. You owe no explanation.'], ['Someone knows where you are', 'Send the address and time to a friend or family. Check in after evening jobs.'], ['Price in the chat beforehand, not at the door', 'And no extra work without a new price. “While you’re here…” is a new agreement.'], ['No keys, no cards, no PINs', 'Shopping? Cash with a receipt, or the person comes along. Never accept bank cards.'], ['Offer only what you are allowed to', 'No paid passenger transport, no electrical work, no medical care. That protects you from liability.'], ['Declare your income', 'Side income is taxable; above the trade threshold you need a registration. Honest is cheaper than a back payment.']] },
+      { id: 'danach', who: 'For both', h: '7. Afterwards: review, report, block', intro: 'Reviews are the only checking system Helpado has. They only work if you are honest.',
+        tips: [['Review honestly, even when it is awkward', 'Three stars with a reason help the next neighbour more than five out of politeness.'], ['Report fraud, harassment, threats, false identity', 'In the app via “Report user”. We read every report, suspend clear cases immediately and report crimes to the police.'], ['Block when you want no further contact', 'The person no longer sees you and cannot message you. No explanation needed.'], ['In case of damage: photos, chat, contact', 'Settle directly first, then their liability insurance, then your own. Helpado can mediate, but not compensate.']] }
+    ]
+  };
+
+  C.tr = {
+    eyebrow: 'Güvenlik rehberi', h1: 'Güvenle yardım et ve yardım bul – kimse senin yerine kontrol etmeden.',
+    lede: 'Helpado komşuları bir araya getirir. Kimlik veya sabıka kaydı kontrol etmiyoruz – Almanya’da hiçbir ücretsiz platform bunu dürüstçe vaat edemez. Bunun yerine kendin ne yapabileceğini tam olarak anlatıyoruz. On dakikalık okuma, müşteriler ve yardımcılar için.',
+    yes: ['Ne yapıyoruz', ['Her kayıtta e-posta adresi doğrulanır', 'Değerlendirmeler yalnızca tamamlanan rezervasyondan sonra', 'Uygulama içi sohbet – numaran gizli kalır', 'Tek dokunuşla engelle ve bildir; her bildirim okunur', 'Yardımcılar kullanım şartlarını ve bu rehberi kabul etti']],
+    no: ['Ne yapmıyoruz', ['Kimlik kontrolü yok, sabıka kaydı yok, referans kontrolü yok', 'Sigorta yok – hasarı aranızda çözersiniz', 'Ödeme işleme ve ödeme garantisi yok', 'Helpado ile sözleşme yok – sözleşme ikiniz arasında kurulur']],
+    toc: 'İçindekiler', stamp: 'Güncelleme: 17 Eylül 2026. Hukuki danışmanlık değildir – şüphede bir avukata veya Verbraucherzentrale’ye sor.',
+    checkTitle: 'İlk rezervasyondan önce kontrol listesi',
+    check: ['Profil tam: fotoğraf, metin, diller, saat ücreti, en az bir değerlendirme veya kişisel görüşme', 'Her şey uygulama sohbetinde konuşuldu: işler, fiyat, zaman, ödeme', 'İlk ziyaretten önce kısa görüntülü arama veya kapıda buluşma', 'Çocuklar veya yakınlar için: ilk seferde sen de oradasın', 'Çocuk bakımı ve özel derste: genişletilmiş Führungszeugnis istendi', 'Kimliğin aslı görüldü, isim profille uyuşuyor', 'Değerli eşyalar kilitli, anahtar ancak güven kurulduktan sonra', 'Biri kimin ne zaman sende olduğunu biliyor (yardımcıysan nerede olduğunu)'],
+    emergency: [['110', 'Polis – tehlike veya suç'], ['112', 'Ambulans, itfaiye'], ['Uygulamada', 'Profil veya sohbette “Kullanıcıyı bildir” – ya da mujtabaahmed556@gmail.com’a e-posta']],
+    sections: [
+      { id: 'profil', who: 'Müşteriler için', h: '1. Bir profili komşu gibi oku', intro: 'İyi bir profil iki cümlede kişinin kim olduğunu ve ne yapabildiğini anlatır. Kötü bir profil boştur, fotoğrafsızdır ya da kopyalanmış görünür.',
+        tips: [['Gerçek fotoğraf, gerçek isim', 'Logo yok, stok görsel yok, takma ad yok. Profildeki isim sonra kimlikle uyuşmalı.'], ['Değerlendirmeleri oku, sayma', 'Her değerlendirme tamamlanmış bir rezervasyondan gelir. İki dürüst yazı on yıldızdan fazlasını söyler.'], ['Diller ve saat ücreti yazılı', 'İkisi de yoksa profil hiç bitirilmemiş. Sor ya da aramaya devam et.'], ['Kategori kişiye uyuyor', '“Elektrik”, “bakım” veya “kamyonla taşınma” sunan biri Almanya’da bunun için yeterlilik ister. Şüphede sor.']],
+        callout: ['Uyarı işaretleri', 'İlk görüşmeden önce WhatsApp veya telefona zorlamak · ön ödeme · uzmanlık işi için çok düşük fiyat · birkaç günlük, metinsiz profil · sorunla uyuşmayan cevaplar.'] },
+      { id: 'chat', who: 'İkiniz için', h: '2. Önce yaz, sonra buluş', intro: 'Helpado sohbetinde konuştuğunuz her şey sonradan okunabilir. Bu iki tarafı da korur – fiyatta, zamanda ve bir şey ters giderse.',
+        tips: [['Birbirinizi tanıyana kadar sohbette kalın', 'Telefon numaranı ve adresini ancak karar verdikten sonra paylaş.'], ['Kısa görüntülü arama', 'Fotoğrafla kişinin uyuştuğunu ve anlaşabildiğinizi görmek için beş dakika yeter.'], ['Somut sor', '“Temizlik yapabilir misin?” değil, “Üç odalı daireyi tek başına yaptın mı, ne kadar sürüyor?”']],
+        ask: ['Beş dakikada çok şey gösteren sorular', ['Ne zamandan beri ve kimin için yapıyorsun?', 'Neyi yapmıyorsun (cam, hayvan, ağır mobilya)?', 'Geç kalırsan sana nasıl ulaşırım?', 'Özel sorumluluk sigortan var mı?', 'Çocuklarda: bir çocuk yaralanırsa ne yaparsın?']] },
+      { id: 'treffen', who: 'İkiniz için', h: '3. İlk buluşma', intro: 'İlk seferde her zaman biri daha vardır. Bu hakaret değil, normaldir – iyi yardımcılar bunu bekler.',
+        tips: [['Kapıda veya kafede, dairede yalnız değil', 'On beş dakika tanışın, işleri gösterin, sonra karar verin.'], ['Kimlik göstermesini iste', 'Kimliğin aslını kısaca görmeyi isteyebilirsin. Fotoğrafını çekmek için izin gerekir – ve gerekli değildir.'], ['Çocuklarda: ilk saat sen de orada', 'Kişinin çocukla nasıl konuştuğunu izle. İzlenimine güven.'], ['Yaşlılarda: aile bilgilendirilmiş', 'Aileden biri ismi, fotoğrafı ve kararlaştırılan saatleri bilir.'], ['Anahtar ancak birkaç ziyaretten sonra', 'Ve sohbette kayıtla: “Anahtar … tarihinde teslim edildi.”']] },
+      { id: 'dokumente', who: 'Müşteriler için', h: '4. Sabıka kaydı, yeterlilik, sigorta', intro: 'Kategoriye göre görmen gereken üç belge. Helpado’daki yardımcılar istendiğinde göstermeyi kabul etti.',
+        tips: [['Genişletilmiş Führungszeugnis – çocuk ve özel derste', 'Kişi Bürgeramt’ta veya kimliğiyle online kendisi başvurur; yaklaşık 13 €, 2–4 hafta sürer. Çocuklarla çalışmaya ilişkin kayıtları gösterir. Üç aydan eski olmamalı.'], ['Uzmanlık işleri için belge', 'Elektrik, gaz ve tesisat işleri kayıtlı bir zanaat işletmesi ister. Özel ders diploma istemez ama ders ve sınıf seviyesini sor. Tıbbi bakım Helpado’da yoktur – yalnızca refakat ve ev işleri.'], ['Özel sorumluluk sigortası', 'Yardım sırasında olan birçok hasarı karşılar (kırık vazo, çizik parke). Var mı diye sor. Kendi ev eşyası sigortan içeri aldığın kişilerin hırsızlığını çoğu zaman karşılamaz – kontrol et.']] },
+      { id: 'vereinbaren', who: 'İkiniz için', h: '5. Fiyat, zaman ve ödemeyi kayda geçir', intro: 'Sözleşme ikiniz arasında kurulur, Helpado ile değil. Sohbette üç cümle, sonradan kimsenin tartışmaması için yeter.',
+        tips: [['Sohbete yaz: ne, ne zaman, ne kadar süre, ne kadar', '“Cuma 10–13, mutfak ve banyo, saat 16 €, iş bitince nakit.” İkiniz de “tamam” yazın.'], ['Doğrudan öde, kayıtla', 'Nakit veya havale – Helpado bir şey kesmez. Havalede açıklama satırı makbuzundur. Nakitte: sohbette kısa onay.'], ['Önceden haber vererek iptal et', 'Bir gün önce adildir. Sürekli son dakika iptal eden dürüst bir değerlendirme alır.'], ['Düzenli yardım: kayıt yaptırmak kazandırır', 'Ayda 556 €’ya kadar ev yardımını Minijob-Zentrale üzerinden Minijob olarak (Haushaltsscheck) kaydettirebilirsin. Az zahmet, ve masrafın %20’sini vergiden düşebilirsin (§ 35a EStG). Şüphede bir mali müşavire sor.']],
+        callout: ['Kayıt dışı çalışma hafif bir suç değildir', 'Düzenli ve kayıtsız istihdam iki taraf için de para cezası demek olabilir. Ara sıra komşu yardımı, her hafta aynı kişiden farklıdır.'] },
+      { id: 'helfer', who: 'Yardımcılar için', h: '6. Yardımcı olarak senin güvenliğin', intro: 'Yabancı evlere giriyorsun. Aynı kurallar senin için de geçerli – artı birkaç tane daha.',
+        tips: [['İlk buluşma kapıda, dairede yalnız değil', 'İçin rahat değilse: kibarca reddet. Açıklama borcun yok.'], ['Biri nerede olduğunu biliyor', 'Adresi ve saati bir arkadaşa veya aileye gönder. Akşam işlerinden sonra haber ver.'], ['Fiyat önceden sohbette, kapıda değil', 'Ve yeni fiyat olmadan ek iş yok. “Hazır gelmişken…” yeni bir anlaşmadır.'], ['Anahtar yok, kart yok, PIN yok', 'Alışveriş mi? Fişle nakit ya da kişi seninle gelir. Banka kartı asla kabul etme.'], ['Yalnızca izinli olduğunu sun', 'Para karşılığı yolcu taşıma yok, elektrik yok, tıbbi bakım yok. Bu seni sorumluluktan korur.'], ['Gelirini beyan et', 'Ek gelir vergiye tabidir; işletme eşiğinin üstünde kayıt gerekir. Dürüstlük, geri ödemeden ucuzdur.']] },
+      { id: 'danach', who: 'İkiniz için', h: '7. Sonrası: değerlendir, bildir, engelle', intro: 'Değerlendirmeler Helpado’nun sahip olduğu tek kontrol sistemidir. Yalnızca dürüst olursan işler.',
+        tips: [['Rahatsız edici olsa da dürüst değerlendir', 'Gerekçeli üç yıldız, nezaketten beş yıldızdan daha çok yardım eder bir sonraki komşuya.'], ['Dolandırıcılık, taciz, tehdit, sahte kimlikte bildir', 'Uygulamada “Kullanıcıyı bildir” ile. Her bildirimi okuruz, açık durumlarda hemen askıya alırız ve suçları polise bildiririz.'], ['Artık temas istemiyorsan engelle', 'Kişi seni görmez ve yazamaz. Açıklama gerekmez.'], ['Hasarda: fotoğraf, sohbet, iletişim', 'Önce doğrudan çöz, sonra kişinin sorumluluk sigortası, sonra kendi sigortan. Helpado arabuluculuk yapabilir ama tazmin edemez.']] }
+    ]
+  };
+
+  C.ar = {
+    eyebrow: 'دليل الأمان', h1: 'ساعِد واحصل على مساعدة بأمان – دون أن يتحقق أحد نيابةً عنك.',
+    lede: 'Helpado يجمع الجيران. نحن لا نفحص الهويات ولا شهادات السجل الجنائي – لا تستطيع أي منصة مجانية في ألمانيا أن تعد بذلك بصدق. بدلاً من ذلك نخبرك بالضبط ما يمكنك فعله بنفسك. عشر دقائق قراءة، للزبائن والمساعدين.',
+    yes: ['ما نفعله', ['تأكيد البريد الإلكتروني عند كل تسجيل', 'تقييمات فقط بعد حجز مكتمل', 'محادثة داخل التطبيق – رقمك يبقى خاصاً', 'حظر وإبلاغ بنقرة واحدة؛ كل بلاغ يُقرأ', 'المساعدون وافقوا على شروط الاستخدام وعلى هذا الدليل']],
+    no: ['ما لا نفعله', ['لا فحص هوية، لا سجل جنائي، لا فحص مراجع', 'لا تأمين – الأضرار تُسوّى بينكم مباشرة', 'لا معالجة دفع ولا ضمان دفع', 'لا عقد مع Helpado – العقد بينكما أنتما']],
+    toc: 'المحتويات', stamp: 'بتاريخ 17 سبتمبر 2026. ليست استشارة قانونية – عند الشك اسأل محامياً أو مركز حماية المستهلك.',
+    checkTitle: 'قائمة التحقق قبل الحجز الأول',
+    check: ['الملف مكتمل: صورة، نص، لغات، سعر الساعة، تقييم واحد على الأقل أو محادثة شخصية', 'كل شيء متفق عليه في محادثة التطبيق: المهام، السعر، الوقت، الدفع', 'مكالمة فيديو قصيرة أو لقاء عند الباب قبل الزيارة الأولى', 'مع الأطفال أو الأقارب: أنت حاضر في المرة الأولى', 'لرعاية الأطفال والدروس: طُلبت Führungszeugnis موسّعة', 'رأيت الهوية الأصلية والاسم مطابق للملف', 'الأشياء الثمينة مقفلة، والمفاتيح فقط بعد بناء الثقة', 'أحدهم يعرف من عندك ومتى (أو أين أنت، إذا كنت مساعداً)'],
+    emergency: [['110', 'الشرطة – خطر أو جريمة'], ['112', 'إسعاف، إطفاء'], ['في التطبيق', '«الإبلاغ عن مستخدم» في الملف أو المحادثة – أو بريد إلى mujtabaahmed556@gmail.com']],
+    sections: [
+      { id: 'profil', who: 'للزبائن', h: '1. اقرأ الملف كما يقرؤه جار', intro: 'الملف الجيد يقول في جملتين من هو الشخص وماذا يجيد. الملف السيئ فارغ، بلا صورة، أو يبدو منسوخاً.',
+        tips: [['صورة حقيقية، اسم حقيقي', 'لا شعار، لا صورة جاهزة، لا لقب. الاسم في الملف يجب أن يطابق الهوية لاحقاً.'], ['اقرأ التقييمات ولا تعدّها', 'كل تقييم يأتي من حجز مكتمل. نصان صادقان يقولان أكثر من عشر نجوم.'], ['اللغات وسعر الساعة مكتوبان', 'إن غاب الاثنان فالملف لم يُكمل أبداً. اسأل أو تابع البحث.'], ['الفئة تناسب الشخص', 'من يعرض «كهرباء» أو «تمريض» أو «نقل بشاحنة» يحتاج مؤهلات في ألمانيا. عند الشك اسأل.']],
+        callout: ['علامات تحذير', 'الضغط للانتقال إلى واتساب أو الهاتف قبل أول محادثة · دفع مسبق · سعر منخفض جداً لعمل متخصص · ملف عمره أيام بلا نص · إجابات لا تناسب سؤالك.'] },
+      { id: 'chat', who: 'لكليكما', h: '2. تحدث أولاً ثم التقِ', intro: 'كل ما تتفقان عليه في محادثة Helpado يمكن قراءته لاحقاً. هذا يحمي الطرفين – في السعر والوقت وإذا حدث خطأ.',
+        tips: [['ابقَ في المحادثة حتى تتعارفا', 'شارك رقمك وعنوانك فقط بعد أن تقرر.'], ['مكالمة فيديو قصيرة', 'خمس دقائق تكفي لترى أن الصورة تطابق الشخص وأن التفاهم ممكن.'], ['اسأل بشكل محدد', 'ليس «هل تستطيع التنظيف؟» بل «هل نظفت شقة من ثلاث غرف وحدك، وكم يستغرق ذلك؟»']],
+        ask: ['أسئلة تكشف الكثير في خمس دقائق', ['منذ متى تعمل بهذا، ولمن؟', 'ما الذي لا تفعله (نوافذ، حيوانات، أثاث ثقيل)؟', 'كيف أصل إليك إذا تأخرت؟', 'هل لديك تأمين مسؤولية خاص؟', 'مع الأطفال: ماذا تفعل إذا أصيب طفل؟']] },
+      { id: 'treffen', who: 'لكليكما', h: '3. اللقاء الأول', intro: 'في المرة الأولى يكون هناك دائماً شخص آخر. ليس هذا إهانة بل أمر طبيعي – المساعدون الجيدون يتوقعونه.',
+        tips: [['عند الباب أو في مقهى، لا وحدكما في الشقة', 'ربع ساعة للتعارف، عرض المهام، ثم القرار.'], ['اطلب رؤية الهوية', 'يمكنك طلب رؤية الهوية الأصلية لبرهة. تصويرها يحتاج موافقة – وليس ضرورياً.'], ['مع الأطفال: الساعة الأولى بحضورك', 'راقب كيف يتحدث الشخص مع الطفل. ثق بانطباعك.'], ['مع كبار السن: العائلة على علم', 'أحد من العائلة يعرف الاسم والصورة والأوقات المتفق عليها.'], ['المفاتيح فقط بعد عدة زيارات', 'وعندها تُسجَّل في المحادثة: «تم تسليم المفتاح بتاريخ …».']] },
+      { id: 'dokumente', who: 'للزبائن', h: '4. شهادة حسن السلوك، المؤهلات، التأمين', intro: 'ثلاث وثائق ينبغي أن تراها بحسب الفئة. المساعدون في Helpado وافقوا على إظهارها عند الطلب.',
+        tips: [['Führungszeugnis موسّعة – للأطفال والدروس', 'يطلبها الشخص بنفسه من Bürgeramt أو عبر الإنترنت بهويته؛ نحو 13 €، وتستغرق 2–4 أسابيع. تُظهر السجلات المتعلقة بالعمل مع الأطفال. لا أقدم من ثلاثة أشهر.'], ['إثبات للأعمال المتخصصة', 'أعمال الكهرباء والغاز والسباكة تتطلب منشأة حرفية مسجلة. الدروس الخصوصية لا تحتاج شهادة، لكن اسأل عن المادة والصف. الرعاية التمريضية الطبية غير موجودة في Helpado – فقط المرافقة وأعمال المنزل.'], ['تأمين المسؤولية الخاص', 'يغطي كثيراً من الأضرار أثناء المساعدة (مزهرية مكسورة، خدش في الأرضية). اسأل إن كان موجوداً. تأمين محتويات منزلك غالباً لا يغطي السرقة من أشخاص أدخلتهم بنفسك – تحقق.']] },
+      { id: 'vereinbaren', who: 'لكليكما', h: '5. سجّل السعر والوقت والدفع', intro: 'العقد بينكما وليس مع Helpado. ثلاث جمل في المحادثة تكفي كي لا يتجادل أحد لاحقاً.',
+        tips: [['اكتب في المحادثة: ماذا، متى، كم من الوقت، وبكم', '«الجمعة 10–13، المطبخ والحمام، 16 € للساعة، نقداً بعد العمل.» يرد الاثنان بـ«موافق».'], ['ادفع مباشرة مع إثبات', 'نقداً أو تحويلاً – Helpado لا يقتطع شيئاً. في التحويل سطر البيان هو إيصالك. نقداً: تأكيد قصير في المحادثة.'], ['ألغِ بإشعار مسبق', 'قبل يوم أمر عادل. من يلغي مراراً في اللحظة الأخيرة ينال تقييماً صادقاً.'], ['المساعدة المنتظمة: التسجيل يستحق', 'حتى 556 € شهرياً يمكنك تسجيل المساعدة المنزلية كـMinijob عبر Minijob-Zentrale (Haushaltsscheck). الجهد قليل، ويمكنك خصم 20% من التكلفة من الضريبة (§ 35a EStG). عند الشك اسأل مستشاراً ضريبياً.']],
+        callout: ['العمل غير المصرّح به ليس مخالفة بسيطة', 'التوظيف المنتظم غير المسجل قد يعني غرامات للطرفين. المساعدة الجوارية العرضية تختلف عن الشخص نفسه كل أسبوع.'] },
+      { id: 'helfer', who: 'للمساعدين', h: '6. أمانك كمساعد', intro: 'أنت تدخل بيوت غرباء. القواعد نفسها تنطبق عليك – وبضع قواعد إضافية.',
+        tips: [['اللقاء الأول عند الباب، لا وحدك في الشقة', 'إن شعرت بعدم الارتياح: اعتذر بلطف. لست مديناً بتفسير.'], ['أحدهم يعرف أين أنت', 'أرسل العنوان والوقت لصديق أو للعائلة. اطمئنهم بعد المواعيد المسائية.'], ['السعر مسبقاً في المحادثة، لا عند الباب', 'ولا عمل إضافي بلا سعر جديد. «ما دمت هنا…» اتفاق جديد.'], ['لا مفاتيح، لا بطاقات، لا أرقام سرية', 'تسوّق؟ نقد مع إيصال، أو يأتي الشخص معك. لا تقبل بطاقات بنكية أبداً.'], ['اعرض فقط ما يُسمح لك به', 'لا نقل ركاب بأجر، لا كهرباء، لا رعاية طبية. هذا يحميك من المسؤولية.'], ['صرّح بدخلك', 'الدخل الإضافي خاضع للضريبة؛ فوق عتبة النشاط التجاري تحتاج تسجيلاً. الصدق أرخص من دفع متأخر.']] },
+      { id: 'danach', who: 'لكليكما', h: '7. بعد ذلك: قيّم، أبلغ، احظر', intro: 'التقييمات هي نظام التحقق الوحيد لدى Helpado. لا تعمل إلا إذا كنت صادقاً.',
+        tips: [['قيّم بصدق حتى لو كان محرجاً', 'ثلاث نجوم مع سبب تفيد الجار التالي أكثر من خمس من باب المجاملة.'], ['أبلغ عن الاحتيال والتحرش والتهديد والهوية المزيفة', 'في التطبيق عبر «الإبلاغ عن مستخدم». نقرأ كل بلاغ، نوقف الحالات الواضحة فوراً، ونبلغ الشرطة بالجرائم.'], ['احظر إذا لم تعد تريد أي تواصل', 'لن يراك الشخص ولن يستطيع مراسلتك. لا حاجة لتفسير.'], ['عند الضرر: صور، محادثة، تواصل', 'سوِّ الأمر مباشرة أولاً، ثم تأمين مسؤولية الشخص، ثم تأمينك. Helpado يمكنه الوساطة لا التعويض.']] }
+    ]
+  };
+
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function list(items, cls) { var ul = el('ul', cls); items.forEach(function (t) { ul.appendChild(el('li', null, t)); }); return ul; }
+
+  function render(lang) {
+    var c = C[lang] || C.de, main = document.getElementById('main'); main.innerHTML = '';
+    var hero = el('header', 'hero');
+    hero.appendChild(el('span', 'eyebrow', c.eyebrow));
+    hero.appendChild(el('h1', null, c.h1));
+    hero.appendChild(el('p', 'lede', c.lede));
+    var facts = el('div', 'facts');
+    [['yes', c.yes], ['no', c.no]].forEach(function (f) { var d = el('div', 'fact ' + f[0]); d.appendChild(el('b', null, f[1][0])); d.appendChild(list(f[1][1])); facts.appendChild(d); });
+    hero.appendChild(facts);
+    main.appendChild(hero);
+
+    var toc = el('nav', 'toc'); toc.setAttribute('aria-label', c.toc);
+    c.sections.forEach(function (s) { var a = el('a', null, s.h.replace(/^\d+\.\s*/, '')); a.href = '#' + s.id; toc.appendChild(a); });
+    var ca = el('a', null, c.checkTitle); ca.href = '#checkliste'; toc.appendChild(ca);
+    main.appendChild(toc);
+
+    c.sections.forEach(function (s) {
+      var sec = el('section', 'guide'); sec.id = s.id;
+      sec.appendChild(el('span', 'who', s.who));
+      sec.appendChild(el('h2', null, s.h));
+      sec.appendChild(el('p', 'intro', s.intro));
+      var ul = el('ul', 'tips');
+      s.tips.forEach(function (t) { var li = el('li'); li.appendChild(el('b', null, t[0])); li.appendChild(el('span', null, t[1])); ul.appendChild(li); });
+      sec.appendChild(ul);
+      if (s.ask) { var a = el('div', 'ask'); a.appendChild(el('b', null, s.ask[0])); a.appendChild(list(s.ask[1])); sec.appendChild(a); }
+      if (s.callout) { var w = el('div', 'callout'); w.appendChild(el('b', null, s.callout[0])); w.appendChild(document.createTextNode(s.callout[1])); sec.appendChild(w); }
+      main.appendChild(sec);
+    });
+
+    var chk = el('section', 'check'); chk.id = 'checkliste';
+    chk.appendChild(el('h2', null, c.checkTitle)); chk.appendChild(list(c.check)); main.appendChild(chk);
+
+    var em = el('div', 'emergency');
+    c.emergency.forEach(function (e) { var d = el('div'); d.appendChild(el('strong', null, e[0])); d.appendChild(el('span', null, e[1])); em.appendChild(d); });
+    main.appendChild(em);
+    main.appendChild(el('p', 'stamp', c.stamp)).style.marginTop = '20px';
+
+    document.documentElement.lang = lang;
+    var rtl = lang === 'ar';
+    document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+    document.body.classList.toggle('rtl', rtl);
+    document.querySelectorAll('.langs button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang)); });
+    var ft = { de: ['Datenschutz', 'Nutzungsbedingungen'], en: ['Privacy', 'Terms'], tr: ['Gizlilik', 'Kullanım şartları'], ar: ['الخصوصية', 'شروط الاستخدام'] }[lang];
+    document.getElementById('ft-privacy').textContent = ft[0]; document.getElementById('ft-terms').textContent = ft[1];
+    try { localStorage.setItem('helpado_landing_lang', lang); } catch (e) {}
+  }
+  document.querySelectorAll('.langs button').forEach(function (b) { b.addEventListener('click', function () { render(b.getAttribute('data-lang')); }); });
+  var saved = null; try { saved = localStorage.getItem('helpado_landing_lang'); } catch (e) {}
+  render(saved && C[saved] ? saved : 'de');
+})();
+</script>
+
+</body>
+</html>

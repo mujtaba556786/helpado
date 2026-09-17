@@ -12,7 +12,8 @@ sap.ui.define([
     "helphub/test/unit/css/safeArea.qunit",
     "helphub/test/unit/css/categoryIcons.qunit",
     "helphub/test/unit/legal/trustClaims.qunit",
-    "helphub/test/unit/legal/imprint.qunit"
+    "helphub/test/unit/legal/imprint.qunit",
+    "helphub/test/unit/legal/sitePages.qunit"
 ], function () {
     "use strict";
     QUnit.start();

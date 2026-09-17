@@ -477,6 +477,10 @@ sap.ui.define([
             this._openLegalPage("Impressum", "/legal/imprint.html");
         },
 
+        onViewSafetyGuide: function() {
+            this._openLegalPage("Sicherheit", API_BASE + "/sicherheit");
+        },
+
         // Called from TermsAcceptanceDialog inline buttons
         onViewTermsInline: function() {
             this._openLegalPage("Terms & Conditions", "/legal/terms.html");

@@ -135,7 +135,8 @@ sap.ui.define([
     [
         { title: "Terms of Service",  icon: "sap-icon://document-text" },
         { title: "Privacy Policy",    icon: "sap-icon://shield"        },
-        { title: "Imprint",           icon: "sap-icon://building"      }
+        { title: "Imprint",           icon: "sap-icon://building"      },
+        { title: "Safety Guide",      icon: "sap-icon://locked"        }
     ].forEach(function (oItem) {
         opaTest("SettingsDialog contains '" + oItem.title + "' list item", function (Given, When, Then) {
             iOpenSettingsDialog(Given, When);
@@ -197,6 +198,45 @@ sap.ui.define([
                     "Legal dialog loads /legal/imprint.html (got " + oFrame.getAttribute("src") + ")");
             },
             errorMessage: "Legal dialog titled 'Impressum' with the imprint iframe did not open"
+        });
+
+        Then.iTeardownMyUIComponent();
+    });
+
+    // ── 5b. Safety Guide row opens /sicherheit on the API host ───────────────
+    // The guide is an Express route, not a bundled file, so the row must load it
+    // from API_BASE — a relative path would 404 inside the APK's file bundle.
+    opaTest("Pressing the Safety Guide row opens the legal dialog on <API_BASE>/sicherheit", function (Given, When, Then) {
+        iOpenSettingsDialog(Given, When);
+
+        When.waitFor({
+            controlType: "sap.m.CustomListItem",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oItem) {
+                var bFound = false;
+                oItem.findAggregatedObjects(true, function (oChild) {
+                    if (oChild.isA("sap.ui.core.Icon") && oChild.getSrc() === "sap-icon://locked") { bFound = true; }
+                });
+                return bFound;
+            },
+            actions: new Press(),
+            errorMessage: "Safety Guide row not found in SettingsDialog"
+        });
+
+        Then.waitFor({
+            controlType: "sap.m.Dialog",
+            matchers: function (oDialog) {
+                if (oDialog.getTitle() !== "Sicherheit" || !oDialog.isOpen()) { return false; }
+                var oDom = oDialog.getDomRef();
+                var oFrame = oDom && oDom.querySelector("iframe");
+                return !!(oFrame && /^https?:\/\/[^/]+\/sicherheit$/.test(oFrame.getAttribute("src") || ""));
+            },
+            success: function (aDialogs) {
+                var sSrc = aDialogs[0].getDomRef().querySelector("iframe").getAttribute("src");
+                Opa5.assert.ok(/^https?:\/\/[^/]+\/sicherheit$/.test(sSrc),
+                    "iframe loads an absolute <host>/sicherheit URL (got " + sSrc + ")");
+            },
+            errorMessage: "Legal dialog titled 'Sicherheit' with the /sicherheit iframe did not open"
         });
 
         Then.iTeardownMyUIComponent();

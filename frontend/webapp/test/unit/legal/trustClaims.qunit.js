@@ -12,6 +12,7 @@ sap.ui.define([], function () {
     var BASE  = "../../";
     var FILES = [
         "legal/terms.html", "legal/privacy.html", "legal/imprint.html",
+        "site/index.html", "site/sicherheit.html",
         "i18n/i18n.properties", "i18n/i18n_en.properties", "i18n/i18n_de.properties",
         "i18n/i18n_tr.properties", "i18n/i18n_ar.properties"
     ];

@@ -479,6 +479,19 @@ app.get('/admin/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
+// ── Marketing pages (landing, safety guide) ─────────────────────────────────
+// Before the "/" static below, like /admin: the static handler would otherwise
+// answer "/" with the app's index.html on the landing host too.
+const Site = require('./services/SiteService');
+function sendSitePage(name, req, res) {
+    const html = Site.readPage(name);
+    if (html == null) return res.status(404).type('text/plain').send('Not found');
+    res.type('text/html').send(Site.renderSitePage(html, Site.appUrlFor(req)));
+}
+app.get('/welcome',    (req, res) => sendSitePage('welcome', req, res));
+app.get('/sicherheit', (req, res) => sendSitePage('sicherheit', req, res));
+app.get('/', (req, res, next) => Site.isLandingHost(req) ? sendSitePage('welcome', req, res) : next());
+
 // ── Serve SAPUI5 frontend (dynamic config.js + static files) ─────────────────
 app.get('/config.js', (req, res) => {
     const apiBase = process.env.API_BASE_URL ||
