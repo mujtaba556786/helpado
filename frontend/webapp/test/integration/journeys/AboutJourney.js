@@ -7,6 +7,7 @@
  *  3. SettingsDialog has NO Language row (the header globe is the only switcher)
  *  4. SettingsDialog contains Terms of Service list item
  *  5. SettingsDialog contains Privacy Policy list item
+ *  5a. SettingsDialog contains Imprint list item, and pressing it opens /legal/imprint.html
  *  6. SettingsDialog contains Help & FAQ list item
  *  7. SettingsDialog contains Contact Support list item
  *  8. SettingsDialog contains "Helpado" title in About section
@@ -133,7 +134,8 @@ sap.ui.define([
 
     [
         { title: "Terms of Service",  icon: "sap-icon://document-text" },
-        { title: "Privacy Policy",    icon: "sap-icon://shield"        }
+        { title: "Privacy Policy",    icon: "sap-icon://shield"        },
+        { title: "Imprint",           icon: "sap-icon://building"      }
     ].forEach(function (oItem) {
         opaTest("SettingsDialog contains '" + oItem.title + "' list item", function (Given, When, Then) {
             iOpenSettingsDialog(Given, When);
@@ -155,6 +157,49 @@ sap.ui.define([
 
             Then.iTeardownMyUIComponent();
         });
+    });
+
+    // ── 5a. Imprint row really opens the Impressum ───────────────────────────
+    // § 5 DDG wants the Impressum reachable from the app. A row that is present
+    // but wired to the wrong page (or to nothing) would pass the icon check
+    // above, so press it and read the iframe the legal dialog loads.
+
+    opaTest("Pressing the Imprint row opens the legal dialog on /legal/imprint.html", function (Given, When, Then) {
+        iOpenSettingsDialog(Given, When);
+
+        When.waitFor({
+            controlType: "sap.m.CustomListItem",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oItem) {
+                var bFound = false;
+                oItem.findAggregatedObjects(true, function (oChild) {
+                    if (oChild.isA("sap.ui.core.Icon") && oChild.getSrc() === "sap-icon://building") {
+                        bFound = true;
+                    }
+                });
+                return bFound;
+            },
+            actions: new Press(),
+            errorMessage: "Imprint row not found in SettingsDialog"
+        });
+
+        Then.waitFor({
+            controlType: "sap.m.Dialog",
+            matchers: function (oDialog) {
+                if (oDialog.getTitle() !== "Impressum" || !oDialog.isOpen()) { return false; }
+                var oDom = oDialog.getDomRef();
+                var oFrame = oDom && oDom.querySelector("iframe");
+                return !!(oFrame && /\/legal\/imprint\.html$/.test(oFrame.getAttribute("src") || ""));
+            },
+            success: function (aDialogs) {
+                var oFrame = aDialogs[0].getDomRef().querySelector("iframe");
+                Opa5.assert.ok(/\/legal\/imprint\.html$/.test(oFrame.src),
+                    "Legal dialog loads /legal/imprint.html (got " + oFrame.getAttribute("src") + ")");
+            },
+            errorMessage: "Legal dialog titled 'Impressum' with the imprint iframe did not open"
+        });
+
+        Then.iTeardownMyUIComponent();
     });
 
     // ── 6 & 7. Support list items ─────────────────────────────────────────────

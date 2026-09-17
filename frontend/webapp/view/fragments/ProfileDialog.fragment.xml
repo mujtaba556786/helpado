@@ -172,7 +172,11 @@
 
                 <!-- ── Reviews ── -->
                 <VBox class="sapUiMediumMarginBeginEnd sapUiSmallMarginTop">
-                    <Title text="{i18n>reviews}" level="H5" class="sapUiTinyMarginBottom"/>
+                    <Title text="{i18n>reviews}" level="H5"/>
+                    <!-- UWG § 5b (3): where reviews are shown, say whether and how they are
+                         checked. The backend only accepts a rating with a completed booking. -->
+                    <Text id="reviewsAuthenticityNote" text="{i18n>reviewsAuthenticityNote}"
+                          wrapping="true" class="smallText grayText sapUiTinyMarginBottom"/>
                     <List id="reviewsList"
                         items="{appData>/selectedProfile/reviews}"
                         noDataText="{i18n>noReviewsYet}"

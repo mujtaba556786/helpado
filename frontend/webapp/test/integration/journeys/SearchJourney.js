@@ -36,6 +36,30 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    // The heading used to be the literal "{name} Experts Nearby": English in every
+    // locale, and "experts" promises a vetting Helpado does not do. It is now
+    // built from helpersNearbyHeading with the tile's localised label.
+    opaTest("Results heading is the localised '{label} helpers nearby', not 'Experts Nearby'", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.onTheDashboard.iPressServiceTile("Cleaning");
+
+        Then.waitFor({
+            id: "helpersNearbyTitle",
+            viewName: "helphub.view.Dashboard",
+            matchers: function (oTitle) { return !!oTitle.getText(); },
+            success: function (oTitle) {
+                var oBundle = oTitle.getModel("i18n").getResourceBundle();
+                var sWant = oBundle.getText("helpersNearbyHeading", [oBundle.getText("serviceCleaning")]);
+                Opa5.assert.strictEqual(oTitle.getText(), sWant, "heading is \"" + sWant + "\"");
+                Opa5.assert.ok(!/expert/i.test(oTitle.getText()), "heading does not call helpers experts");
+            },
+            errorMessage: "helpersNearbyTitle did not render a heading"
+        });
+
+        Then.iTeardownMyUIComponent();
+    });
+
     opaTest("Cleaning results page shows a populated provider list", function (Given, When, Then) {
         Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
 

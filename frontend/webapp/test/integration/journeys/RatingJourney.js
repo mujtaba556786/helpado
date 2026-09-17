@@ -222,4 +222,66 @@ sap.ui.define([
         Then.iTeardownMyUIComponent();
     });
 
+    // UWG § 5b (3): wherever reviews are shown, the page must say whether and
+    // how they are checked. The statement has to sit in the Reviews section of
+    // the profile itself, next to the list it describes, and match the bundle.
+    opaTest("Profile Reviews section states that reviews need a completed booking", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        When.waitFor({
+            id: "dashboardPage",
+            viewName: VIEW,
+            actions: function (oPage) {
+                oPage.getModel("appData").setProperty("/recentlyViewed", [
+                    { id: "p4", name: "Lisa Chen", category: "Cleaning", avatar: "" }
+                ]);
+            },
+            errorMessage: "dashboardPage not found"
+        });
+        When.onTheDashboard.iPressNavTab("saved");
+
+        When.waitFor({
+            controlType: "sap.m.Button",
+            viewName: VIEW,
+            matchers: function (oBtn) {
+                if (oBtn.getIcon() !== "sap-icon://person-placeholder") { return false; }
+                var oParent = oBtn.getParent();
+                while (oParent && oParent.getId && oParent.getId().indexOf("recentlyViewedList") < 0) {
+                    oParent = oParent.getParent();
+                }
+                return !!oParent;
+            },
+            actions: new Press(),
+            errorMessage: "Profile button on the Recently Viewed card not found"
+        });
+
+        Then.waitFor({
+            id: "profileDialog",
+            viewName: VIEW,
+            matchers: function (oDialog) { return oDialog.isOpen(); },
+            success: function (oDialog) {
+                var sWant = oDialog.getModel("i18n").getResourceBundle().getText("reviewsAuthenticityNote");
+                var aNotes = oDialog.findAggregatedObjects(true, function (oCtrl) {
+                    return oCtrl.isA("sap.m.Text") && oCtrl.getText() === sWant;
+                });
+                Opa5.assert.strictEqual(aNotes.length, 1, "authenticity note rendered once: \"" + sWant + "\"");
+                Opa5.assert.ok(/booking completed|completed booking|abgeschlossenen Buchung/.test(sWant),
+                    "the note names the completed-booking rule the backend enforces");
+
+                // …and it belongs to the Reviews block, not somewhere else in the dialog.
+                var oNote = aNotes[0];
+                var oList = oDialog.findAggregatedObjects(true, function (oCtrl) {
+                    return oCtrl.getId && /reviewsList$/.test(oCtrl.getId());
+                })[0];
+                Opa5.assert.ok(oNote && oList && oNote.getParent() === oList.getParent(),
+                    "the note sits in the same box as the reviews list (note parent: " +
+                    (oNote && oNote.getParent() && oNote.getParent().getId()) + ", list: " +
+                    (oList ? oList.getId() + " in " + oList.getParent().getId() : "not found") + ")");
+            },
+            errorMessage: "Profile dialog did not open"
+        });
+
+        Then.iTeardownMyUIComponent();
+    });
+
 });

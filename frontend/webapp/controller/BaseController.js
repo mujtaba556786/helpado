@@ -74,6 +74,84 @@ sap.ui.define([
          * and the .catch() below it reported "Could not reach the server." on a
          * send that had actually succeeded.
          */
+        // Opens one of the static pages under /legal. Cordova gets the
+        // InAppBrowser; the web build gets a Dialog with an iframe. Shared by
+        // Dashboard (Settings → Legal) and Login (Impressum/Privacy footer),
+        // since § 5 DDG needs the Impressum reachable before sign-in.
+        _openLegalPage: function(sTitle, sPath) {
+            var sUrl = window.location.origin + sPath;
+            var that  = this;
+
+            // ── Cordova InAppBrowser (when packaged with cordova-plugin-inappbrowser)
+            if (window.cordova && window.cordova.InAppBrowser) {
+                window.cordova.InAppBrowser.open(
+                    sUrl, "_blank",
+                    "location=no,toolbar=yes,toolbarcolor=#4FB584," +
+                    "closebuttoncaption=Close,closebuttoncolor=#ffffff," +
+                    "zoom=no,hardwareback=yes"
+                );
+                return;
+            }
+
+            // ── Web fallback: full-screen Dialog with iframe ──────────────────
+            // Build the dialog once; on subsequent calls just swap the src.
+            if (!this._oLegalDialog) {
+                // Placeholder div — real iframe injected after dialog opens to
+                // guarantee the element is in the DOM before src is assigned.
+                this._oLegalWrap = new sap.ui.core.HTML({
+                    content: '<div style="width:100%;height:100%;"></div>',
+                    preferDOM: true          // keep the DOM node across re-renders
+                });
+
+                this._oLegalDialog = new sap.m.Dialog({
+                    title: sTitle,
+                    contentWidth: "92%",
+                    contentHeight: "82%",
+                    stretch: sap.ui.Device.system.phone,
+                    verticalScrolling: false,
+                    content: [this._oLegalWrap],
+                    afterOpen: function() {
+                        // First open: create the iframe and remember it
+                        if (!that._oLegalFrameEl) {
+                            var oWrap = that._oLegalWrap.getDomRef();
+                            if (oWrap) {
+                                var oFrame = document.createElement("iframe");
+                                oFrame.style.cssText = "width:100%;height:100%;min-height:500px;border:none;display:block;";
+                                oFrame.setAttribute("frameborder", "0");
+                                oWrap.style.cssText = "width:100%;height:100%;";
+                                oWrap.appendChild(oFrame);
+                                that._oLegalFrameEl = oFrame;
+                            }
+                        }
+                        // Always set/update src when the dialog opens
+                        if (that._oLegalFrameEl) {
+                            that._oLegalFrameEl.src = that._sPendingLegalUrl;
+                        }
+                    },
+                    endButton: new sap.m.Button({
+                        text: "Close",
+                        press: function() { that._oLegalDialog.close(); }
+                    })
+                });
+
+                this.getView().addDependent(this._oLegalDialog);
+            }
+
+            // Store the URL so afterOpen can read it (needed because afterOpen
+            // fires asynchronously after open() is called).
+            this._sPendingLegalUrl = sUrl;
+            this._oLegalDialog.setTitle(sTitle);
+
+            // If the dialog is already open (user switches Terms ↔ Privacy),
+            // update the iframe src directly — no need to reopen.
+            if (this._oLegalDialog.isOpen()) {
+                if (this._oLegalFrameEl) { this._oLegalFrameEl.src = sUrl; }
+                return;
+            }
+
+            this._oLegalDialog.open();
+        },
+
         getResourceBundle: function () {
             return this.getOwnerComponent().getModel("i18n").getResourceBundle();
         },

@@ -1,8 +1,9 @@
 sap.ui.define([
     "sap/ui/test/opaQunit",
     "sap/ui/test/Opa5",
+    "sap/ui/test/actions/Press",
     "helphub/test/mockserver/MockServer"
-], function (opaTest, Opa5, MockServer) {
+], function (opaTest, Opa5, Press, MockServer) {
     "use strict";
 
     var VIEW = "helphub.view.Login";
@@ -17,6 +18,52 @@ sap.ui.define([
             localStorage.removeItem("helpmate_user_id");
         },
         after: function () { MockServer.stop(); }
+    });
+
+    // ── Legal footer ─────────────────────────────────────────────────────────
+    // § 5 DDG: the Impressum has to be reachable without an account. Settings
+    // only exists behind the login, so the login card carries the links.
+
+    opaTest("Login card links to the Impressum and Privacy Policy, and the Impressum link opens it", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        Then.waitFor({
+            id: "loginLegalLinks",
+            viewName: VIEW,
+            success: function (oBox) {
+                var aTexts = oBox.findAggregatedObjects(true, function (oCtrl) {
+                    return oCtrl.isA("sap.m.Link");
+                }).map(function (oLink) { return oLink.getText(); });
+                Opa5.assert.ok(aTexts.some(function (t) { return /Impressum/i.test(t); }),
+                    "an Impressum link is on the login card (" + aTexts.join(" | ") + ")");
+                Opa5.assert.ok(aTexts.some(function (t) { return /Privacy|Datenschutz/i.test(t); }),
+                    "a Privacy Policy link is on the login card");
+            },
+            errorMessage: "loginLegalLinks not rendered on the Login view"
+        });
+
+        When.waitFor({
+            id: "loginImprintLink",
+            viewName: VIEW,
+            actions: new Press(),
+            errorMessage: "Impressum link not found on the login card"
+        });
+
+        Then.waitFor({
+            controlType: "sap.m.Dialog",
+            matchers: function (oDialog) {
+                if (oDialog.getTitle() !== "Impressum" || !oDialog.isOpen()) { return false; }
+                var oDom = oDialog.getDomRef();
+                var oFrame = oDom && oDom.querySelector("iframe");
+                return !!(oFrame && /\/legal\/imprint\.html$/.test(oFrame.getAttribute("src") || ""));
+            },
+            success: function () {
+                Opa5.assert.ok(true, "Impressum opens from the login card before sign-in");
+            },
+            errorMessage: "Legal dialog with /legal/imprint.html did not open from the login card"
+        });
+
+        Then.iTeardownMyUIComponent();
     });
 
     // Relative luminance / contrast per WCAG 2.1, same helper as PolishJourney.
