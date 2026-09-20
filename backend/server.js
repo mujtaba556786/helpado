@@ -371,6 +371,23 @@ async function initDb() {
             )
         `);
 
+        // In-app feedback (Settings → Support → "Feedback geben"). Read in the
+        // admin panel; never shown to other users.
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS feedback (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id VARCHAR(50) NOT NULL,
+                type ENUM('idea','problem','praise') NOT NULL,
+                message TEXT NOT NULL,
+                app_build VARCHAR(20),
+                platform VARCHAR(20),
+                status ENUM('new','read','done') DEFAULT 'new',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_fb_status (status),
+                INDEX idx_fb_user (user_id)
+            )
+        `);
+
         await connection.query(`
             CREATE TABLE IF NOT EXISTS device_tokens (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -458,6 +475,7 @@ app.use('/api',                require('./routes/messageRoutes'));
 app.use('/api/tasks',          require('./routes/taskRoutes'));
 app.use('/api/auth',           require('./routes/authRoutes'));
 app.use('/api',                require('./routes/adminRoutes'));
+app.use('/api',                require('./routes/feedbackRoutes'));
 app.use('/api/chat',           require('./routes/chatRoutes'));
 
 // ── Global 404 & error handler ────────────────────────────────────────────────

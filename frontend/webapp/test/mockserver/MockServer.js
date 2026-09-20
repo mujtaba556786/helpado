@@ -191,6 +191,11 @@ sap.ui.define([
             return makeResponse({ success: true, newAverage: 4.9 });
         }
 
+        // ── Feedback ──────────────────────────────────────────────────────────
+        if (matchUrl(sUrl, "/api/feedback")) {
+            return makeResponse({ success: true, id: 1 });
+        }
+
         // ── Reports / Blocks ──────────────────────────────────────────────────
         if (matchUrl(sUrl, "/api/reports")) {
             return makeResponse({ success: true });

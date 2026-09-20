@@ -232,6 +232,20 @@ CREATE TABLE reports (
     INDEX idx_status (status)
 );
 
+-- In-app feedback (Settings → Support → "Feedback geben"); admin-only.
+CREATE TABLE feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL,
+    type ENUM('idea','problem','praise') NOT NULL,
+    message TEXT NOT NULL,
+    app_build VARCHAR(20),
+    platform VARCHAR(20),
+    status ENUM('new','read','done') DEFAULT 'new',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_fb_status (status),
+    INDEX idx_fb_user (user_id)
+);
+
 -- ─── DEVICE TOKENS ────────────────────────────────────────────────────────────
 
 CREATE TABLE device_tokens (

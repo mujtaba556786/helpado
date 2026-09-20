@@ -11,6 +11,7 @@ import Sidebar from './components/Sidebar';
 import AIAssistant from './components/AIAssistant';
 import AdRevenueView from './components/AdRevenueView';
 import AuthView from './components/AuthView';
+import FeedbackView from './components/FeedbackView';
 import TrustSafetyView from './components/TrustSafety';
 
 const App: React.FC = () => {
@@ -51,6 +52,7 @@ const App: React.FC = () => {
       case 'bookings': return <BookingManagementView bookings={bookings} setBookings={setBookings} />;
       case 'reviews': return <ReviewModerationView reviews={reviews} setReviews={setReviews} />;
       case 'trust-safety': return <TrustSafetyView />;
+      case 'feedback': return <FeedbackView />;
       case 'revenue': return <AdRevenueView stats={stats} />;
       default: return <DashboardView stats={stats} bookings={bookings} />;
     }

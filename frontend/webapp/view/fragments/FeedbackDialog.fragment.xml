@@ -1,0 +1,47 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <!-- Settings → Support → "Give feedback". Same shape as ReportDialog so the
+         two read as one family; posts to /api/feedback, admin-only on the other end. -->
+    <Dialog id="feedbackDialog"
+        title="{i18n>feedbackTitle}"
+        verticalScrolling="true"
+        stretch="true">
+
+        <content>
+            <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
+                <Label text="{i18n>feedbackTypeLabel}" class="sapUiTinyMarginBottom"/>
+                <SegmentedButton id="feedbackTypeButton"
+                    selectedKey="{appData>/feedback/type}"
+                    width="100%"
+                    class="sapUiSmallMarginBottom">
+                    <items>
+                        <SegmentedButtonItem key="idea"    text="{i18n>feedbackTypeIdea}"    icon="sap-icon://lightbulb"/>
+                        <SegmentedButtonItem key="problem" text="{i18n>feedbackTypeProblem}" icon="sap-icon://alert"/>
+                        <SegmentedButtonItem key="praise"  text="{i18n>feedbackTypePraise}"  icon="sap-icon://heart-2"/>
+                    </items>
+                </SegmentedButton>
+                <Label text="{i18n>feedbackMessageLabel}" class="sapUiTinyMarginBottom"/>
+                <TextArea id="feedbackMessage"
+                    value="{appData>/feedback/message}"
+                    rows="6"
+                    width="100%"
+                    maxLength="2000"
+                    showExceededText="true"
+                    placeholder="{i18n>feedbackPlaceholder}"
+                    class="sapUiSmallMarginBottom"/>
+                <Text text="{i18n>feedbackNote}" class="smallText grayText" wrapping="true"/>
+            </VBox>
+        </content>
+
+        <beginButton>
+            <Button id="feedbackSendButton" text="{i18n>feedbackSend}" type="Emphasized" press="onSubmitFeedback"/>
+        </beginButton>
+        <endButton>
+            <Button text="{i18n>cancel}" press="onCloseFeedback"/>
+        </endButton>
+
+    </Dialog>
+
+</core:FragmentDefinition>

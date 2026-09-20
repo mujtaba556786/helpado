@@ -154,6 +154,17 @@ const submitReport = z.object({
     description:   z.string().trim().max(2000).optional()
 });
 
+// ── Feedback ──────────────────────────────────────────────────────────────────
+const submitFeedback = z.object({
+    type:      z.enum(['idea', 'problem', 'praise']),
+    message:   z.string().trim().min(3).max(2000),
+    app_build: z.string().trim().max(20).optional(),
+    platform:  z.string().trim().max(20).optional()
+});
+const actionFeedback = z.object({
+    status: z.enum(['new', 'read', 'done'])
+});
+
 // ── Admin ─────────────────────────────────────────────────────────────────────
 const actionReport = z.object({
     status: z.enum(['reviewed', 'actioned'])
@@ -177,5 +188,6 @@ module.exports = {
     // messages
     createConversation, sendMessage, markMessagesRead,
     // reports & admin
-    submitReport, actionReport, actionUser
+    submitReport, actionReport, actionUser,
+    submitFeedback, actionFeedback
 };
