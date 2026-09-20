@@ -15,12 +15,13 @@ sap.ui.define([
     "helphub/controller/mixins/ProfileMixin",
     "helphub/controller/mixins/TaskMixin",
     "helphub/controller/mixins/TrustSafetyMixin",
+    "helphub/controller/mixins/FeedbackMixin",
     "helphub/config"
 ], function(
     BaseController, MessageToast, MessageBox, Fragment, CountryStates, ServiceConstants,
     NotificationMixin, MapMixin, FilterMixin, BookingMixin, AiChatMixin,
     DmMixin, OnboardingFavoritesMixin, ProfileMixin, TaskMixin, TrustSafetyMixin,
-    Config
+    FeedbackMixin, Config
 ) {
     "use strict";
 
@@ -848,7 +849,8 @@ sap.ui.define([
         OnboardingFavoritesMixin,
         ProfileMixin,
         TaskMixin,
-        TrustSafetyMixin
+        TrustSafetyMixin,
+        FeedbackMixin
     );
 
     return DashboardController;

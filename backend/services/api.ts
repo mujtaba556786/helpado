@@ -172,6 +172,33 @@ export const apiService = {
         return [];
     },
 
+    // ── Feedback (Settings → Support → "Give feedback" in the app) ────────────
+
+    async getFeedback(status?: 'new' | 'read' | 'done'): Promise<any[]> {
+        try {
+            const url = status
+                ? `${BASE_URL}/admin/feedback?status=${status}&limit=100`
+                : `${BASE_URL}/admin/feedback?limit=100`;
+            const res = await fetch(url, { headers: { 'x-admin-token': adminToken } });
+            if (res.ok) {
+                const data = await res.json();
+                return data.feedback || [];
+            }
+        } catch { }
+        return [];
+    },
+
+    async setFeedbackStatus(id: string | number, status: 'new' | 'read' | 'done'): Promise<boolean> {
+        try {
+            const res = await fetch(`${BASE_URL}/admin/feedback/${id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
+                body: JSON.stringify({ status })
+            });
+            return res.ok;
+        } catch { return false; }
+    },
+
     // ── Trust & Safety ────────────────────────────────────────────────────────
 
     async getReports(status?: string): Promise<any[]> {
