@@ -371,6 +371,15 @@ async function initDb() {
             )
         `);
 
+        // Moderation: a removed DM keeps its row (evidence for the report that
+        // caused it) but is served as content '' + removed = 1.
+        {
+            const [rows] = await connection.query("SHOW COLUMNS FROM direct_messages LIKE 'deleted_at'");
+            if (rows.length === 0) {
+                await connection.query('ALTER TABLE direct_messages ADD COLUMN deleted_at DATETIME NULL');
+            }
+        }
+
         // In-app feedback (Settings → Support → "Feedback geben"). Read in the
         // admin panel; never shown to other users.
         await connection.query(`
@@ -476,6 +485,7 @@ app.use('/api/tasks',          require('./routes/taskRoutes'));
 app.use('/api/auth',           require('./routes/authRoutes'));
 app.use('/api',                require('./routes/adminRoutes'));
 app.use('/api',                require('./routes/feedbackRoutes'));
+app.use('/api',                require('./routes/moderationRoutes'));
 app.use('/api/chat',           require('./routes/chatRoutes'));
 
 // ── Global 404 & error handler ────────────────────────────────────────────────

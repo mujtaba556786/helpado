@@ -164,6 +164,7 @@ CREATE TABLE direct_messages (
     sender_id VARCHAR(50) NOT NULL,
     content TEXT NOT NULL,
     is_read TINYINT(1) DEFAULT 0,
+    deleted_at DATETIME NULL,              -- set by admin moderation; content then served as ''
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_conversation (conversation_id),
     INDEX idx_sender (sender_id),

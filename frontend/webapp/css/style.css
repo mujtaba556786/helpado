@@ -381,6 +381,10 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
     padding: 8px 12px;
     border-radius: 16px;
 }
+/* A message removed by moderation: the reader sees the i18n placeholder in the
+   secondary colour, whichever side of the chat it was on. */
+.hhBubble .sapMText[data-hhremoved="true"] { color: #556b82; font-style: italic; }
+
 .hhBubble[data-hhown="true"] {
     background: var(--sapButton_Emphasized_Background, #4FB584);
     color: var(--sapButton_Emphasized_TextColor, #fff);

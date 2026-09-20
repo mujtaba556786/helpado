@@ -15,34 +15,58 @@ async function requireAdmin(req, res, next) {
 
     // Identity comes from a signed JWT only. The previous x-user-id / ?user_id
     // fallback let any caller claim to be an admin just by setting a header.
+    try {
+        const userId = await authenticate(req, res);
+        if (!userId) return;
+        const [[user]] = await pool.query('SELECT role FROM users WHERE id = ?', [userId]);
+        // The seed writes 'Admin'; compare case-insensitively so the panel's
+        // Admin role and any lower-case variant both count.
+        if (!user || !isAdminRole(user.role)) return res.status(403).json({ success: false, error: 'Admin only' });
+        req.userId = userId;
+        next();
+    } catch (e) { next(e); }
+}
+
+function isAdminRole(role) { return String(role || '').toLowerCase() === 'admin'; }
+
+// Statuses that end a session: an admin ban ('Blocked') and a GDPR erasure
+// ('Deleted'). Checked on EVERY token-authenticated call — a still-valid access
+// token used to keep a banned user fully functional for its remaining lifetime.
+const DISABLED_STATUSES = new Set(['Blocked', 'Deleted']);
+
+async function accountDisabled(userId) {
+    const [[user]] = await pool.query('SELECT status FROM users WHERE id = ?', [userId]);
+    return !user || DISABLED_STATUSES.has(user.status);
+}
+
+/**
+ * The one place a Bearer token becomes req.userId. Answers 401 itself and
+ * returns null on any failure (no/invalid token, disabled account), so every
+ * middleware below shares the same rules.
+ */
+async function authenticate(req, res) {
     const auth = req.headers.authorization || '';
     const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-    if (!token) return res.status(401).json({ success: false, error: 'Not authenticated' });
-
+    if (!token) { res.status(401).json({ success: false, error: 'Not authenticated' }); return null; }
     let userId;
     try {
         userId = jwt.verify(token, JWT_SECRET).userId;
     } catch {
-        return res.status(401).json({ success: false, error: 'Invalid or expired token' });
+        res.status(401).json({ success: false, error: 'Invalid or expired token' }); return null;
     }
-
-    const [[user]] = await pool.query('SELECT role FROM users WHERE id = ?', [userId]);
-    if (!user || user.role !== 'admin') return res.status(403).json({ success: false, error: 'Admin only' });
-    req.userId = userId;
-    next();
+    if (await accountDisabled(userId)) {
+        res.status(401).json({ success: false, error: 'account_disabled' }); return null;
+    }
+    return userId;
 }
 
-function requireAuth(req, res, next) {
-    const auth = req.headers.authorization || '';
-    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-    if (!token) return res.status(401).json({ success: false, error: 'Not authenticated' });
+async function requireAuth(req, res, next) {
     try {
-        const payload = jwt.verify(token, JWT_SECRET);
-        req.userId = payload.userId;
+        const userId = await authenticate(req, res);
+        if (!userId) return;
+        req.userId = userId;
         next();
-    } catch {
-        res.status(401).json({ success: false, error: 'Invalid or expired token' });
-    }
+    } catch (e) { next(e); }
 }
 
 async function requireTerms(req, res, next) {
@@ -79,10 +103,11 @@ function requireSelfParam(sParam) {
             req.isAdminPanel = true;
             return next();
         }
-        const userId = resolveUserId(req);
-        if (!userId) return res.status(401).json({ success: false, error: 'Not authenticated' });
-        req.userId = userId;
-        next();
+        authenticate(req, res).then(function (userId) {
+            if (!userId) return;
+            req.userId = userId;
+            next();
+        }).catch(next);
     }, function (req, res, next) {
         if (!req.isAdminPanel && String(req.params[sParam]) !== String(req.userId)) {
             return res.status(403).json({ success: false, error: 'Not your data' });
@@ -99,25 +124,13 @@ function forceBodyUser(...aFields) {
     }];
 }
 
-// Resolves the caller from the Bearer token. Returns null when absent/invalid.
-function resolveUserId(req) {
-    const auth = req.headers.authorization || '';
-    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-    if (!token) return null;
-    try {
-        return jwt.verify(token, JWT_SECRET).userId;
-    } catch {
-        return null;
-    }
-}
-
 // Wraps an async ownership check with auth + consistent error handling.
 function ownershipGuard(fnCheck) {
     return async function (req, res, next) {
-        const userId = resolveUserId(req);
-        if (!userId) return res.status(401).json({ success: false, error: 'Not authenticated' });
-        req.userId = userId;
         try {
+            const userId = await authenticate(req, res);
+            if (!userId) return;
+            req.userId = userId;
             await fnCheck(req, res, next);
         } catch (err) {
             next(err);
@@ -174,7 +187,7 @@ const requireTaskOwner = ownershipGuard(async (req, res, next) => {
 });
 
 module.exports = {
-    handleAsync, requireAdmin, requireAuth, requireTerms, isBlocked,
+    handleAsync, requireAdmin, requireAuth, requireTerms, isBlocked, isAdminRole,
     requireSelfParam, forceBodyUser,
     requireBookingParticipant, requireConversationParticipant,
     requireTaskOwner, requireTaskParticipant

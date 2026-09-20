@@ -191,6 +191,11 @@ sap.ui.define([
             return makeResponse({ success: true, newAverage: 4.9 });
         }
 
+        // ── Account erasure (Settings → Account → Delete account) ─────────────
+        if (matchUrl(sUrl, "/api/users/me") && sMethod === "DELETE") {
+            return makeResponse({ success: true, already: false });
+        }
+
         // ── Feedback ──────────────────────────────────────────────────────────
         if (matchUrl(sUrl, "/api/feedback")) {
             return makeResponse({ success: true, id: 1 });

@@ -569,6 +569,34 @@ sap.ui.define([
             this.getOwnerComponent().getRouter().navTo("login", {}, true);
         },
 
+        // GDPR erasure from Settings → Account. Confirm first; on success the server
+        // has already revoked the refresh token and marked the user Deleted, so the
+        // normal logout path just clears local state and returns to the login screen.
+        onDeleteAccount: function() {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            MessageBox.confirm(oBundle.getText("deleteAccountConfirmText"), {
+                title: oBundle.getText("deleteAccountConfirmTitle"),
+                actions: [MessageBox.Action.DELETE, MessageBox.Action.CANCEL],
+                emphasizedAction: MessageBox.Action.CANCEL,
+                onClose: function(sAction) {
+                    if (sAction !== MessageBox.Action.DELETE) return;
+                    this.apiFetch(API_BASE + "/api/users/me", { method: "DELETE" })
+                        .then(function(oData) {
+                            if (!oData.success) {
+                                MessageToast.show(oData.error || oBundle.getText("deleteAccountFailed"));
+                                return;
+                            }
+                            this._getSettingsDialog && this._getSettingsDialog().then(function(oDialog) { oDialog.close(); });
+                            MessageToast.show(oBundle.getText("deleteAccountDone"));
+                            this.onLogout();
+                        }.bind(this))
+                        .catch(function() {
+                            MessageToast.show(oBundle.getText("deleteAccountFailed"));
+                        });
+                }.bind(this)
+            });
+        },
+
         onServicePress: function(oEvent) {
             var oTile = oEvent.getSource();
             var oContext = oTile.getBindingContext("appData");
