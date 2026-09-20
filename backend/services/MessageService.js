@@ -56,7 +56,10 @@ async function findOrCreateConversation(user1_id, user2_id) {
 
 async function getMessages(conversationId) {
     const [rows] = await pool.query(
-        `SELECT dm.*, u.name AS sender_name, u.avatar AS sender_avatar
+        `SELECT dm.id, dm.conversation_id, dm.sender_id, dm.is_read, dm.created_at,
+                IF(dm.deleted_at IS NULL, dm.content, '') AS content,
+                IF(dm.deleted_at IS NULL, 0, 1)          AS removed,
+                u.name AS sender_name, u.avatar AS sender_avatar
          FROM direct_messages dm
          LEFT JOIN users u ON u.id = dm.sender_id
          WHERE dm.conversation_id = ?

@@ -199,6 +199,39 @@ export const apiService = {
         } catch { return false; }
     },
 
+    // ── Moderation (report-scoped message access, erasure) ───────────────────
+
+    /** The conversation between a report's reporter and reported user — the only DM access the panel has. */
+    async getReportConversation(reportId: string | number): Promise<{ conversation: any; messages: any[] } | null> {
+        try {
+            const res = await fetch(`${BASE_URL}/admin/reports/${reportId}/conversation`, { headers: { 'x-admin-token': adminToken } });
+            if (res.ok) {
+                const data = await res.json();
+                return { conversation: data.conversation, messages: data.messages || [] };
+            }
+        } catch { }
+        return null;
+    },
+
+    async removeMessage(messageId: string): Promise<boolean> {
+        try {
+            const res = await fetch(`${BASE_URL}/admin/messages/${encodeURIComponent(messageId)}/remove`, {
+                method: 'PUT', headers: { 'x-admin-token': adminToken }
+            });
+            return res.ok;
+        } catch { return false; }
+    },
+
+    /** GDPR erasure: anonymises the row, revokes sessions, removes the user's own content. */
+    async eraseUser(userId: string): Promise<boolean> {
+        try {
+            const res = await fetch(`${BASE_URL}/admin/users/${encodeURIComponent(userId)}`, {
+                method: 'DELETE', headers: { 'x-admin-token': adminToken }
+            });
+            return res.ok;
+        } catch { return false; }
+    },
+
     // ── Trust & Safety ────────────────────────────────────────────────────────
 
     async getReports(status?: string): Promise<any[]> {

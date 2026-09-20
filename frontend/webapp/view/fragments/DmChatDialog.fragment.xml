@@ -40,7 +40,13 @@
                                         <customData>
                                             <core:CustomData key="hhown" value="{appData>isOwnStr}" writeToDom="true"/>
                                         </customData>
-                                        <Text text="{appData>content}" renderWhitespace="true"/>
+                                        <!-- class="{= }" renders nothing in UI5; the removed state is a
+                                             DOM attribute styled by .hhBubble .sapMText[data-hhremoved="true"]. -->
+                                        <Text text="{appData>content}" renderWhitespace="true">
+                                            <customData>
+                                                <core:CustomData key="hhremoved" value="{appData>removedStr}" writeToDom="true"/>
+                                            </customData>
+                                        </Text>
                                         <HBox justifyContent="End" alignItems="Center">
                                             <Text text="{appData>time}" class="hhBubbleMeta"/>
                                             <Text text="{appData>ticks}"

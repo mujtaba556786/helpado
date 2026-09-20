@@ -37,6 +37,27 @@ const TrustSafetyView: React.FC = () => {
   const [reportFilter, setReportFilter] = useState<ReportStatus>('all');
   const [reportsLoading, setReportsLoading] = useState(true);
   const [actioningReport, setActioningReport] = useState<string | null>(null);
+  // Report-scoped conversation viewer. Only the thread between the two parties
+  // of one report is ever fetched — there is no "browse all chats".
+  const [convoFor, setConvoFor] = useState<any | null>(null);
+  const [convoMessages, setConvoMessages] = useState<any[]>([]);
+  const [convoLoading, setConvoLoading] = useState(false);
+  const [removingMsg, setRemovingMsg] = useState<string | null>(null);
+
+  const openConversation = async (report: any) => {
+    setConvoFor(report); setConvoLoading(true); setConvoMessages([]);
+    const data = await apiService.getReportConversation(report.id);
+    setConvoMessages(data ? data.messages : []);
+    setConvoLoading(false);
+  };
+
+  const handleRemoveMessage = async (messageId: string) => {
+    if (!window.confirm('Remove this message for both participants? The text is replaced by a moderation notice; the record is kept.')) return;
+    setRemovingMsg(messageId);
+    const ok = await apiService.removeMessage(messageId);
+    if (ok) setConvoMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: '', removed: 1 } : m));
+    setRemovingMsg(null);
+  };
 
   // Flagged users state
   const [flagged, setFlagged] = useState<any[]>([]);
@@ -237,6 +258,12 @@ const TrustSafetyView: React.FC = () => {
                   )}
 
                   <div className="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
+                    {report.reported_type === 'user' && (
+                      <button
+                        onClick={() => openConversation(report)}
+                        className="mr-auto px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-black hover:bg-slate-200 transition-colors"
+                      >View conversation</button>
+                    )}
                     {report.status === 'pending' && (
                       <>
                         <button
@@ -266,6 +293,56 @@ const TrustSafetyView: React.FC = () => {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Report-scoped conversation viewer ── */}
+      {convoFor && (
+        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4" onClick={() => setConvoFor(null)}>
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="p-5 border-b border-slate-100 flex items-start justify-between">
+              <div>
+                <h3 className="font-black text-lg">Conversation for report #{convoFor.id}</h3>
+                <p className="text-xs text-slate-500">
+                  <span className="font-bold text-slate-700">{convoFor.reporter_name || convoFor.reporter_id}</span>
+                  {' ↔ '}
+                  <span className="font-bold text-rose-700">{convoFor.reported_name || convoFor.reported_id}</span>
+                  {' · last 50 messages · read-only except Remove'}
+                </p>
+              </div>
+              <button onClick={() => setConvoFor(null)} className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-black hover:bg-slate-200">Close</button>
+            </div>
+            <div className="p-5 overflow-y-auto space-y-3">
+              {convoLoading ? (
+                <p className="text-slate-400 text-sm font-semibold">Loading…</p>
+              ) : convoMessages.length === 0 ? (
+                <p className="text-slate-400 text-sm font-semibold">These two users have no conversation.</p>
+              ) : convoMessages.map(m => {
+                const fromReported = m.sender_id === convoFor.reported_id;
+                return (
+                  <div key={m.id} className={`flex ${fromReported ? 'justify-start' : 'justify-end'}`}>
+                    <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${fromReported ? 'bg-rose-50 border border-rose-100' : 'bg-slate-50 border border-slate-100'}`}>
+                      <p className="text-[10px] font-bold text-slate-500 mb-1">
+                        {m.sender_name || m.sender_id} · {new Date(m.created_at).toLocaleString('de-DE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                      {m.removed ? (
+                        <p className="text-sm italic text-slate-400">Removed by moderation</p>
+                      ) : (
+                        <p className="text-sm text-slate-800 whitespace-pre-wrap">{m.content}</p>
+                      )}
+                      {!m.removed && (
+                        <button
+                          onClick={() => handleRemoveMessage(m.id)}
+                          disabled={removingMsg === m.id}
+                          className="mt-2 text-[10px] font-black uppercase tracking-widest text-rose-600 hover:text-rose-800 disabled:opacity-50"
+                        >Remove</button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
 

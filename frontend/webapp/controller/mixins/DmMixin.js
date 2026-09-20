@@ -137,8 +137,13 @@ sap.ui.define([
             var aMessages = (this._dmMessages || []).map(function (m) {
                 var bOwn = m.sender_id === sUserId;
                 var bRead = !!m.is_read;
+                var bRemoved = !!m.removed;
                 return {
-                    content: m.content || "",
+                    // A moderated message arrives as content '' + removed = 1; show the
+                    // placeholder in the reader's language, never the original text.
+                    content: bRemoved ? oBundle.getText("messageRemoved") : (m.content || ""),
+                    removed: bRemoved,
+                    removedStr: bRemoved ? "true" : "false",
                     isOwn: bOwn,
                     isOwnStr: bOwn ? "true" : "false",
                     time: m.created_at

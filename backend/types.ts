@@ -11,7 +11,8 @@ export enum UserStatus {
   SUSPENDED = 'Suspended',
   BLOCKED = 'Blocked',
   PENDING_ONBOARDING = 'Pending Onboarding',
-  PENDING_APPROVAL = 'Pending Approval'
+  PENDING_APPROVAL = 'Pending Approval',
+  DELETED = 'Deleted'
 }
 
 export enum BookingStatus {
