@@ -138,8 +138,11 @@ sap.ui.define([
     opaTest("Delete account: confirming sends exactly one DELETE /api/users/me and returns to login", function (Given, When, Then) {
         var aCalls = [];
         MockServer.override("/api/users/me", function (url, options) {
-            aCalls.push((options.method || "GET").toUpperCase());
-            return MockServer.respond({ success: true, already: false });
+            // The substring also matches GET /api/users/me/blocks (loaded at start);
+            // this test is about the erasure call, so record DELETEs only.
+            var sMethod = (options.method || "GET").toUpperCase();
+            if (sMethod === "DELETE") { aCalls.push(sMethod); }
+            return MockServer.respond({ success: true, already: false, blocked: [] });
         });
 
         iOpenSettings(Given, When);

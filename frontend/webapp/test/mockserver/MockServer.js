@@ -197,6 +197,11 @@ sap.ui.define([
             return makeResponse({ success: true, newAverage: 4.9 });
         }
 
+        // ── Blocks ────────────────────────────────────────────────────────────
+        if (matchUrl(sUrl, "/api/users/me/blocks")) {
+            return makeResponse({ success: true, blocked: [] });
+        }
+
         // ── Account erasure (Settings → Account → Delete account) ─────────────
         if (matchUrl(sUrl, "/api/users/me") && sMethod === "DELETE") {
             return makeResponse({ success: true, already: false });

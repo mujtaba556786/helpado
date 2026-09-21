@@ -363,11 +363,14 @@ sap.ui.define([
 
         onDeleteTask: function() {
             var oModel  = this.getModel("appData");
+            // Was missing: onDeleteTask referenced oBundle without declaring it, so
+            // tapping Delete threw a ReferenceError before the confirm even opened.
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var sTaskId = oModel.getProperty("/selectedTask/id");
             var sUserId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
-            var sTitle  = oModel.getProperty("/selectedTask/title") || "this task";
+            var sTitle  = oModel.getProperty("/selectedTask/title") || "";
 
-            if (!sUserId) { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errLoginFirst")); return; }
+            if (!sUserId) { MessageToast.show(oBundle.getText("errLoginFirst")); return; }
 
             var that = this;
             MessageBox.confirm(oBundle.getText("taskDeleteConfirm", [sTitle]), {
@@ -381,18 +384,35 @@ sap.ui.define([
                     })
                     .then(function(r) { return r.json(); })
                     .then(function(oData) {
+                        // `this` is not the controller inside a plain .then; the old code
+                        // called this.getOwnerComponent() here and threw AFTER the server
+                        // had deleted the task, so the dialog stayed open and the lists
+                        // kept the task.
                         if (oData.success) {
-                            MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("taskDeleted"));
-                            that._getTaskDetailDialog().then(function(d) { d.close(); });
+                            MessageToast.show(oBundle.getText("taskDeleted"));
+                            that._getTaskDetailDialog().then(function(d) { if (d.isOpen()) { d.close(); } });
                             that._loadTasksFeed();
                             that._loadMyTasks();
                         } else {
-                            MessageToast.show(oData.error || "Could not delete task.");
+                            MessageToast.show(oData.error || oBundle.getText("taskDeleteFailed"));
                         }
                     })
-                    .catch(function() { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
+                    .catch(function() { MessageToast.show(oBundle.getText("errNoServer")); });
                 }
             });
+        },
+
+        /** Trash icon on a card in "My tasks": same confirm + DELETE as the detail dialog. */
+        onDeleteTaskFromList: function(oEvent) {
+            var oCtx = oEvent.getSource().getBindingContext("appData");
+            if (!oCtx) return;
+            this.getModel("appData").setProperty("/selectedTask", oCtx.getObject());
+            this.onDeleteTask();
+        },
+
+        formatApplicantCount: function(iCount) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            return oBundle.getText(Number(iCount) === 1 ? "applicantOne" : "applicantMany", [Number(iCount) || 0]);
         },
 
         onCloseTaskDetail: function() {

@@ -1,0 +1,41 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <!-- Settings → Blocked users. Rows come from GET /users/me/blocks; "Unblock"
+         calls DELETE /users/:id/block and refreshes the providers list, since the
+         server drops blocked users from it. -->
+    <Dialog id="blockedUsersDialog"
+        title="{i18n>blockedUsersTitle}"
+        contentWidth="26rem"
+        stretchOnPhone="true"
+        verticalScrolling="true">
+
+        <content>
+            <List id="blockedUsersList"
+                items="{appData>/myBlocks}"
+                noDataText="{i18n>blockedUsersNone}"
+                showSeparators="Inner">
+                <CustomListItem>
+                    <!-- No BeginEnd margin here: width 100% plus side margins overflowed the
+                         row and clipped the Unblock button on the right. -->
+                    <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                          class="sapUiTinyMarginTopBottom">
+                        <HBox alignItems="Center">
+                            <Avatar src="{appData>avatar}" initials="{= (${appData>name} || '?').charAt(0) }"
+                                    displaySize="XS" class="sapUiSmallMarginEnd"/>
+                            <Text text="{appData>name}"/>
+                        </HBox>
+                        <Button text="{i18n>unblockAction}" type="Transparent" icon="sap-icon://accept"
+                                press="onUnblockFromList"/>
+                    </HBox>
+                </CustomListItem>
+            </List>
+        </content>
+
+        <endButton>
+            <Button text="{i18n>close}" press="onCloseBlockedUsers"/>
+        </endButton>
+    </Dialog>
+
+</core:FragmentDefinition>

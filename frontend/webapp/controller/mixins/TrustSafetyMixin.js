@@ -90,6 +90,10 @@ sap.ui.define([
                                 if (oData.success) {
                                     MessageToast.show(oBundle.getText("userBlocked", [sName]));
                                     that._getProfileDialog().then(function(d) { d.close(); });
+                                    // The server now drops blocked users from /api/providers;
+                                    // refetch so the list, map and search follow immediately.
+                                    that._loadMyBlocks();
+                                    if (that._loadProvidersFromApi) { that._loadProvidersFromApi(); }
                                 }
                             })
                             .catch(function() {
@@ -122,6 +126,79 @@ sap.ui.define([
                     oDialog.open();
                 }
             );
+        },
+
+        // ── Blocks: list, unblock ─────────────────────────────────────────────
+
+        /** GET /users/me/blocks → /myBlocks (rows) and /myBlockedIds (strings) for quick lookups. */
+        _loadMyBlocks: function() {
+            var oModel = this.getModel("appData");
+            return this.apiFetch(API_BASE + "/api/users/me/blocks")
+                .then(function(oData) {
+                    var aRows = (oData && oData.success && oData.blocked) ? oData.blocked : [];
+                    oModel.setProperty("/myBlocks", aRows);
+                    oModel.setProperty("/myBlockedIds", aRows.map(function(r) { return String(r.blocked_id); }));
+                    return aRows;
+                })
+                .catch(function() { return []; });
+        },
+
+        onOpenBlockedUsers: function() {
+            var that = this;
+            this._loadMyBlocks().then(function() {
+                that._getBlockedUsersDialog().then(function(oDialog) { oDialog.open(); });
+            });
+        },
+
+        onCloseBlockedUsers: function() {
+            this._getBlockedUsersDialog().then(function(oDialog) { oDialog.close(); });
+        },
+
+        /** From the profile dialog of a user I blocked. */
+        onUnblockUser: function() {
+            var oModel = this.getModel("appData");
+            var sId    = oModel.getProperty("/selectedProfile/id");
+            var sName  = oModel.getProperty("/selectedProfile/name") || "";
+            if (!sId) return;
+            this._unblock(sId, sName);
+        },
+
+        /** From a row of the Blocked users list. */
+        onUnblockFromList: function(oEvent) {
+            var oCtx = oEvent.getSource().getBindingContext("appData");
+            var oRow = oCtx && oCtx.getObject();
+            if (!oRow) return;
+            this._unblock(String(oRow.blocked_id), oRow.name || "");
+        },
+
+        _unblock: function(sId, sName) {
+            var that = this;
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            this.apiFetch(API_BASE + "/api/users/" + encodeURIComponent(sId) + "/block", { method: "DELETE" })
+                .then(function(oData) {
+                    if (!oData.success) { MessageToast.show(oData.error || oBundle.getText("unblockFailed")); return; }
+                    MessageToast.show(oBundle.getText("userUnblocked", [sName]));
+                    that._loadMyBlocks().then(function() {
+                        // Re-evaluate the open profile's flags (Book/Message come back).
+                        if (that._refreshRateDisplay) { that._refreshRateDisplay(); }
+                    });
+                    if (that._loadProvidersFromApi) { that._loadProvidersFromApi(); }
+                })
+                .catch(function() { MessageToast.show(oBundle.getText("unblockFailed")); });
+        },
+
+        _getBlockedUsersDialog: function() {
+            if (!this._pBlockedUsersDialog) {
+                this._pBlockedUsersDialog = Fragment.load({
+                    id:         this.getView().getId(),
+                    name:       "helphub.view.fragments.BlockedUsersDialog",
+                    controller: this
+                }).then(function(oDialog) {
+                    this.getView().addDependent(oDialog);
+                    return oDialog;
+                }.bind(this));
+            }
+            return this._pBlockedUsersDialog;
         },
 
         onBlockCurrentDm: function() {
