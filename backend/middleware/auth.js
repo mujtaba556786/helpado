@@ -77,6 +77,36 @@ async function requireTerms(req, res, next) {
     next();
 }
 
+// Like requireAuth, but a missing/invalid token just leaves req.userId unset.
+// For public reads that get personalised when a token is present (providers
+// list: blocked users are dropped for the caller).
+async function optionalAuth(req, res, next) {
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    if (!token) return next();
+    try {
+        const payload = jwt.verify(token, JWT_SECRET);
+        if (!(await accountDisabled(payload.userId))) req.userId = payload.userId;
+    } catch { /* anonymous */ }
+    next();
+}
+
+/**
+ * SQL fragment excluding users blocked in EITHER direction relative to
+ * `userId`, for use as `AND <col> NOT IN (...)`. Returns { sql, params };
+ * with no user it excludes nothing.
+ */
+function blockExclusion(column, userId) {
+    if (!userId) return { sql: '', params: [] };
+    return {
+        sql: ` AND ${column} NOT IN (
+                  SELECT blocked_id FROM user_blocks WHERE blocker_id = ?
+                  UNION
+                  SELECT blocker_id FROM user_blocks WHERE blocked_id = ?)`,
+        params: [userId, userId]
+    };
+}
+
 async function isBlocked(userA, userB) {
     const [[row]] = await pool.query(
         'SELECT id FROM user_blocks WHERE (blocker_id = ? AND blocked_id = ?) OR (blocker_id = ? AND blocked_id = ?)',
@@ -187,7 +217,7 @@ const requireTaskOwner = ownershipGuard(async (req, res, next) => {
 });
 
 module.exports = {
-    handleAsync, requireAdmin, requireAuth, requireTerms, isBlocked, isAdminRole,
+    handleAsync, requireAdmin, requireAuth, optionalAuth, requireTerms, isBlocked, isAdminRole, blockExclusion,
     requireSelfParam, forceBodyUser,
     requireBookingParticipant, requireConversationParticipant,
     requireTaskOwner, requireTaskParticipant

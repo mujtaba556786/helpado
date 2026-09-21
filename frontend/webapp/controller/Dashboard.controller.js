@@ -76,6 +76,7 @@ sap.ui.define([
             this._loadSchedule();
             this._loadFavorites();
             this._loadUnreadDmCount();
+            this._loadMyBlocks();
             this._loadTasksFeed();
             this._loadHomeActivity();
             this._loadSubscriptionStatus();
@@ -152,6 +153,11 @@ sap.ui.define([
             var bOwn      = !!sSelected && !!sUser && String(sSelected) === String(sUser);
             oModel.setProperty("/isOwnProfile",   bOwn);
             oModel.setProperty("/isOtherProfile", !!sSelected && !bOwn);
+            // Blocked by me? Book/Message hide and the Block link becomes Unblock.
+            var aBlocked = oModel.getProperty("/myBlockedIds") || [];
+            var bBlocked = !!sSelected && aBlocked.indexOf(String(sSelected)) !== -1;
+            oModel.setProperty("/isBlockedProfile", bBlocked);
+            oModel.setProperty("/isOtherUnblockedProfile", !!sSelected && !bOwn && !bBlocked);
         },
 
         // ── FRAGMENT DIALOG FACTORIES ────────────────────────────────────────────

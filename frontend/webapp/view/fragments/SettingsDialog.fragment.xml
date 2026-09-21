@@ -181,6 +181,19 @@
                      DELETE /users/me, which anonymises the row and revokes sessions. -->
                 <List width="auto" showSeparators="None" class="sapUiSmallMarginBeginEnd">
                     <GroupHeaderListItem title="{i18n>settingsAccountSection}" upperCase="false"/>
+                    <CustomListItem id="blockedUsersRow" type="Active" press="onOpenBlockedUsers">
+                        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
+                              class="sapUiTinyMarginTopBottom">
+                            <HBox alignItems="Center" width="100%">
+                                <core:Icon src="sap-icon://cancel" size="1.25rem" width="1.75rem"
+                                           color="#2E8B57" class="sapUiTinyMarginEnd"/>
+                                <VBox width="100%">
+                                    <Text text="{i18n>blockedUsersRow}"/>
+                                    <Text text="{i18n>blockedUsersRowDesc}" wrapping="true" class="grayText"/>
+                                </VBox>
+                            </HBox>
+                        </HBox>
+                    </CustomListItem>
                     <CustomListItem id="deleteAccountRow" type="Active" press="onDeleteAccount">
                         <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%"
                               class="sapUiTinyMarginTopBottom">

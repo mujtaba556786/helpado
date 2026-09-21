@@ -18,7 +18,7 @@ async function uploadAvatar(req, res) {
 }
 
 async function getProviders(req, res) {
-    const providers = await svc.getProviders(req.query.category);
+    const providers = await svc.getProviders(req.query.category, req.userId);
     res.json({ success: true, providers });
 }
 

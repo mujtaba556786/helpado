@@ -82,10 +82,15 @@
                     </VBox>
                 </HBox>
 
-                <!-- ── Action buttons (only for other people) ── -->
+                <!-- Blocked by me: no Book/Message; say so, offer Unblock below. -->
+                <MessageStrip id="profileBlockedStrip" text="{i18n>profileBlockedNote}" type="Warning"
+                    showIcon="true" class="sapUiMediumMarginBeginEnd sapUiSmallMarginBottom"
+                    visible="{appData>/isBlockedProfile}"/>
+
+                <!-- ── Action buttons (only for other, unblocked people) ── -->
                 <HBox justifyContent="SpaceAround"
                     class="sapUiMediumMarginBeginEnd sapUiSmallMarginBottom"
-                    visible="{appData>/isOtherProfile}">
+                    visible="{appData>/isOtherUnblockedProfile}">
                     <Button text="{i18n>book}"    icon="sap-icon://appointment-2" type="Emphasized" press="onOpenBooking"/>
                     <Button text="{i18n>messageAction}" icon="sap-icon://discussion"    type="Default"    press="onStartDm"/>
                     <!-- Ask AI hidden until the feature is ready: /api/chat has no ANTHROPIC_API_KEY
@@ -229,8 +234,12 @@
                     visible="{appData>/isOtherProfile}">
                     <Button text="{i18n>reportThisHelper}" icon="sap-icon://flag"
                         type="Transparent" width="100%" press="onReportUser"/>
-                    <Button text="{i18n>blockThisHelper}" icon="sap-icon://cancel"
-                        type="Transparent" width="100%" press="onBlockUser"/>
+                    <Button id="profileBlockBtn" text="{i18n>blockThisHelper}" icon="sap-icon://cancel"
+                        type="Transparent" width="100%" press="onBlockUser"
+                        visible="{= !${appData>/isBlockedProfile} }"/>
+                    <Button id="profileUnblockBtn" text="{i18n>unblockThisUser}" icon="sap-icon://accept"
+                        type="Transparent" width="100%" press="onUnblockUser"
+                        visible="{appData>/isBlockedProfile}"/>
                 </VBox>
 
 

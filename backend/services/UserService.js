@@ -2,6 +2,7 @@ const pool = require('../db/pool');
 const path = require('path');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
+const { blockExclusion } = require('../middleware/auth');
 const https = require('https');
 
 /**
@@ -153,7 +154,7 @@ const HELPER_WHERE = `users.service_categories IS NOT NULL
 
 const HERO_CATEGORY = 'Cleaning';
 
-async function getProviders(category) {
+async function getProviders(category, viewerId) {
     // Select monetization columns alongside existing fields
     // created_at and completed_jobs back the two facts shown on a provider card.
     // They replaced a "Verified" badge that claimed an identity check nobody
@@ -178,6 +179,10 @@ async function getProviders(category) {
         sql += ' AND FIND_IN_SET(?, service_categories)';
         params.push(category);
     }
+    // A block is mutual for discovery: whoever blocked whom, neither sees the
+    // other in the list, the map or search (which all come from this query).
+    const excl = blockExclusion('users.id', viewerId);
+    sql += excl.sql; params.push(...excl.params);
     // Ranking: featured (1000) → Pro (+20) → hero category (+15) → rating×10
     const heroBoost  = category === HERO_CATEGORY ? 15 : 0;
     const catParam   = category || '';

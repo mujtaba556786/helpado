@@ -472,7 +472,9 @@ sap.ui.define([
                                 if (!c.isA || !c.isA("sap.m.Button")) { return false; }
                                 if (c.getIcon() === "sap-icon://overflow") { aOverflow.push(c); }
                                 var sText = c.getText();
-                                if (sText && /report|block|melden|blockieren|bildir|engelle/i.test(sText)) {
+                                // "Unblock" exists too, but only shows for a user I blocked;
+                                // count what the reader sees, not every control in the tree.
+                                if (sText && c.getVisible() && /report|block|melden|blockieren|bildir|engelle/i.test(sText)) {
                                     aSafety.push(c);
                                 }
                                 return false;

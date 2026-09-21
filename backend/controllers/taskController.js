@@ -6,7 +6,7 @@ async function createTask(req, res) {
 }
 
 async function listTasks(req, res) {
-    const tasks = await TaskService.listTasks(req.query);
+    const tasks = await TaskService.listTasks(req.query, req.userId);
     res.json({ success: true, tasks });
 }
 

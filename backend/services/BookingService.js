@@ -1,4 +1,5 @@
 const pool                    = require('../db/pool');
+const { isBlocked } = require('../middleware/auth');
 const { calculateTrustScore } = require('./TrustService');
 const { createAndPush }       = require('./NotificationService');
 
@@ -15,6 +16,13 @@ async function createBooking({ customer_id, provider_id, service, scheduled_date
     if (!customer_id || !provider_id) {
         const err = new Error('customer_id and provider_id are required');
         err.statusCode = 400;
+        throw err;
+    }
+
+    // Blocking must end contact in both directions, not only in chat.
+    if (await isBlocked(customer_id, provider_id)) {
+        const err = new Error('Cannot book this user');
+        err.statusCode = 403; err.code = 'blocked';
         throw err;
     }
 

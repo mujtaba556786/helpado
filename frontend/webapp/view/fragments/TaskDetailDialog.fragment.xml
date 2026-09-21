@@ -85,14 +85,16 @@
                     class="sapUiSmallMarginTop"
                     visible="{= ${appData>/selectedTask/status} === 'assigned' &amp;&amp; ${appData>/isOwnTask}}"/>
 
-                <!-- Delete task (poster only) -->
-                <Button text="{i18n>deleteTask}" icon="sap-icon://delete" type="Reject" press="onDeleteTask"
-                    class="sapUiSmallMarginTop"
-                    visible="{appData>/isOwnTask}"/>
+                <!-- Delete task moved to the dialog footer (beginButton): in a stretched
+                     dialog with a long description it sat below the fold and was missed. -->
 
             </VBox>
         </content>
 
+        <beginButton>
+            <Button id="taskDeleteBtn" text="{i18n>deleteTask}" icon="sap-icon://delete" type="Reject"
+                press="onDeleteTask" visible="{appData>/isOwnTask}"/>
+        </beginButton>
         <endButton>
             <Button text="{i18n>close}" press="onCloseTaskDetail"/>
         </endButton>

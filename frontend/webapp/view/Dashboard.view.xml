@@ -180,7 +180,7 @@ xmlns:l="sap.ui.layout"
                                                         </HBox>
                                                         <HBox alignItems="Center" class="hhApplicantPill">
                                                             <core:Icon src="sap-icon://group" class="hhApplicantIcon"/>
-                                                            <Text text="{= ${appData>application_count} + ' applicant' + (${appData>application_count} === 1 ? '' : 's')}" class="hhApplicantText"/>
+                                                            <Text text="{path:'appData>application_count', formatter:'.formatApplicantCount'}" class="hhApplicantText"/>
                                                         </HBox>
                                                     </HBox>
                                                 </VBox>
@@ -221,9 +221,13 @@ xmlns:l="sap.ui.layout"
                                                             <core:Icon src="sap-icon://person-placeholder" class="hhPosterIcon"/>
                                                             <Text text="{appData>poster_name}" class="hhTaskPosterName"/>
                                                         </HBox>
-                                                        <HBox alignItems="Center" class="hhApplicantPill">
-                                                            <core:Icon src="sap-icon://group" class="hhApplicantIcon"/>
-                                                            <Text text="{= ${appData>application_count} + ' applicant' + (${appData>application_count} === 1 ? '' : 's')}" class="hhApplicantText"/>
+                                                        <HBox alignItems="Center">
+                                                            <HBox alignItems="Center" class="hhApplicantPill">
+                                                                <core:Icon src="sap-icon://group" class="hhApplicantIcon"/>
+                                                                <Text text="{path:'appData>application_count', formatter:'.formatApplicantCount'}" class="hhApplicantText"/>
+                                                            </HBox>
+                                                            <Button icon="sap-icon://delete" type="Transparent" tooltip="{i18n>deleteTask}"
+                                                                press="onDeleteTaskFromList" class="sapUiTinyMarginBegin hhTaskDeleteBtn"/>
                                                         </HBox>
                                                     </HBox>
                                                 </VBox>

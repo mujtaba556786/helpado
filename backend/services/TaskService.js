@@ -1,5 +1,5 @@
 const pool = require('../db/pool');
-const { isBlocked } = require('../middleware/auth');
+const { isBlocked, blockExclusion } = require('../middleware/auth');
 
 async function createTask({ poster_id, title, description, category, budget, task_date, location, lat, lng }) {
     if (!poster_id || !title || !category) {
@@ -37,7 +37,7 @@ async function createTask({ poster_id, title, description, category, budget, tas
     return { taskId: id };
 }
 
-async function listTasks({ category, status, poster_id, search }) {
+async function listTasks({ category, status, poster_id, search }, viewerId) {
     let sql = `SELECT t.*, u.name AS poster_name, u.avatar AS poster_avatar,
                       (SELECT COUNT(*) FROM task_applications ta WHERE ta.task_id = t.id) AS application_count
                FROM tasks t
@@ -48,6 +48,9 @@ async function listTasks({ category, status, poster_id, search }) {
     if (status)   { sql += ' AND t.status = ?';   params.push(status); }
     if (poster_id){ sql += ' AND t.poster_id = ?'; params.push(poster_id); }
     if (search)   { sql += ' AND (t.title LIKE ? OR t.description LIKE ? OR t.location LIKE ?)'; params.push(`%${search}%`, `%${search}%`, `%${search}%`); }
+    // Tasks from people blocked either way do not appear in the feed.
+    const excl = blockExclusion('t.poster_id', viewerId);
+    sql += excl.sql; params.push(...excl.params);
     sql += ' ORDER BY t.created_at DESC LIMIT 50';
 
     const [rows] = await pool.query(sql, params);
