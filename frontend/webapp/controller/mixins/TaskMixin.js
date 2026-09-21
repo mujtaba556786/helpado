@@ -373,10 +373,13 @@ sap.ui.define([
             if (!sUserId) { MessageToast.show(oBundle.getText("errLoginFirst")); return; }
 
             var that = this;
-            MessageBox.confirm(oBundle.getText("taskDeleteConfirm", [sTitle]), {
+            this._confirmSheet({
+                id: "deleteTaskConfirm",
                 title: oBundle.getText("taskDeleteTitle"),
-                onClose: function(sAction) {
-                    if (sAction !== MessageBox.Action.OK) return;
+                text: oBundle.getText("taskDeleteConfirm", [sTitle]),
+                confirmText: oBundle.getText("delete"),
+                cancelText: oBundle.getText("cancel"),
+                onConfirm: function() {
                     fetch(API_BASE + "/api/tasks/" + encodeURIComponent(sTaskId), {
                         method: "DELETE",
                         headers: { "Content-Type": "application/json" },

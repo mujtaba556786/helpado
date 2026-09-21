@@ -1,8 +1,7 @@
 sap.ui.define([
     "sap/m/MessageToast",
-    "sap/m/MessageBox",
     "helphub/config"
-], function (MessageToast, MessageBox, Config) {
+], function (MessageToast, Config) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -237,28 +236,14 @@ sap.ui.define([
             if (!oMsg || !oMsg.isOwn || !oMsg.canUnsend) return;   // other people's and gone messages: no menu
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var that = this;
-            var oAnchor = oEvent.getSource();
-            sap.ui.require(["sap/m/ActionSheet", "sap/m/Button"], function (ActionSheet, Button) {
-                var oSheet;
-                var aButtons = [];
-                if (oMsg.canEdit) {
-                    aButtons.push(new Button({
-                        text: oBundle.getText("dmEdit"), icon: "sap-icon://edit",
-                        press: function () { oSheet.close(); that._startEdit(oMsg); }
-                    }));
-                }
-                aButtons.push(new Button({
-                    text: oBundle.getText("dmUnsend"), icon: "sap-icon://delete", type: "Reject",
-                    press: function () { oSheet.close(); that._confirmUnsend(oMsg); }
-                }));
-                oSheet = new ActionSheet({
-                    placement: "Auto",
-                    buttons: aButtons,
-                    cancelButton: new Button({ text: oBundle.getText("cancel"), press: function () { oSheet.close(); } }),
-                    afterClose: function () { oSheet.destroy(); }
-                });
-                oSheet.openBy(oAnchor);
-            });
+            var aActions = [];
+            if (oMsg.canEdit) {
+                aActions.push({ id: "edit", text: oBundle.getText("dmEdit"), icon: "sap-icon://edit",
+                    press: function () { that._startEdit(oMsg); } });
+            }
+            aActions.push({ id: "unsend", text: oBundle.getText("dmUnsend"), icon: "sap-icon://delete", danger: true,
+                press: function () { that._confirmUnsend(oMsg); } });
+            this._openSheet({ id: "messageMenu", actions: aActions, cancelText: oBundle.getText("cancel") });
         },
 
         _startEdit: function (oMsg) {
@@ -301,12 +286,13 @@ sap.ui.define([
         _confirmUnsend: function (oMsg) {
             var that = this;
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-            MessageBox.confirm(oBundle.getText("dmUnsendConfirmText"), {
+            this._confirmSheet({
+                id: "unsendConfirm",
                 title: oBundle.getText("dmUnsendConfirmTitle"),
-                actions: [MessageBox.Action.DELETE, MessageBox.Action.CANCEL],
-                emphasizedAction: MessageBox.Action.CANCEL,
-                onClose: function (sAction) {
-                    if (sAction !== MessageBox.Action.DELETE) return;
+                text: oBundle.getText("dmUnsendConfirmText"),
+                confirmText: oBundle.getText("delete"),
+                cancelText: oBundle.getText("cancel"),
+                onConfirm: function () {
                     fetch(API_BASE + "/api/messages/" + encodeURIComponent(oMsg.id), { method: "DELETE" })
                         .then(function (r) { return r.json(); })
                         .then(function (oData) {
@@ -322,21 +308,14 @@ sap.ui.define([
         },
 
         // ── Chat header ⋮ : Chat löschen (for me) ────────────────────────────
-        onDmChatMenu: function (oEvent) {
+        onDmChatMenu: function () {
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var that = this;
-            var oAnchor = oEvent.getSource();
-            sap.ui.require(["sap/m/ActionSheet", "sap/m/Button"], function (ActionSheet, Button) {
-                var oSheet = new ActionSheet({
-                    placement: "Bottom",
-                    buttons: [new Button({
-                        text: oBundle.getText("dmDeleteChat"), icon: "sap-icon://delete", type: "Reject",
-                        press: function () { oSheet.close(); that._confirmDeleteChat(); }
-                    })],
-                    cancelButton: new Button({ text: oBundle.getText("cancel"), press: function () { oSheet.close(); } }),
-                    afterClose: function () { oSheet.destroy(); }
-                });
-                oSheet.openBy(oAnchor);
+            this._openSheet({
+                id: "chatMenu",
+                actions: [{ id: "deleteChat", text: oBundle.getText("dmDeleteChat"), icon: "sap-icon://delete", danger: true,
+                    press: function () { that._confirmDeleteChat(); } }],
+                cancelText: oBundle.getText("cancel")
             });
         },
 
@@ -345,12 +324,13 @@ sap.ui.define([
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
             var sConvoId = this._currentConvoId;
             if (!sConvoId) return;
-            MessageBox.confirm(oBundle.getText("dmDeleteChatConfirmText"), {
+            this._confirmSheet({
+                id: "deleteChatConfirm",
                 title: oBundle.getText("dmDeleteChatConfirmTitle"),
-                actions: [MessageBox.Action.DELETE, MessageBox.Action.CANCEL],
-                emphasizedAction: MessageBox.Action.CANCEL,
-                onClose: function (sAction) {
-                    if (sAction !== MessageBox.Action.DELETE) return;
+                text: oBundle.getText("dmDeleteChatConfirmText"),
+                confirmText: oBundle.getText("dmDeleteChat"),
+                cancelText: oBundle.getText("cancel"),
+                onConfirm: function () {
                     fetch(API_BASE + "/api/conversations/" + encodeURIComponent(sConvoId) + "/me", { method: "DELETE" })
                         .then(function (r) { return r.json(); })
                         .then(function (oData) {
