@@ -401,11 +401,25 @@ sap.ui.define([
 
         _loadProvidersFromApi: function() {
             var oModel = this.getModel("appData");
+            var that = this;
             fetch(API_BASE + "/api/providers")
                 .then(function(r) { return r.json(); })
                 .then(function(oData) {
-                    if (oData.success && oData.providers.length) {
+                    // An empty array is a real answer (e.g. every helper blocked), so
+                    // do not gate on length — only on a well-formed response.
+                    if (oData.success && Array.isArray(oData.providers)) {
                         oModel.setProperty("/providers", oData.providers);
+                        // The results page holds a filtered snapshot; after a block or
+                        // unblock it must follow the fresh list or the blocked helper
+                        // stays on screen until the user navigates away and back.
+                        var sCategory = oModel.getProperty("/selectedCategoryName");
+                        var oNav = that.byId("navContainer");
+                        var bOnResults = oNav && oNav.getCurrentPage && oNav.getCurrentPage() === that.byId("searchPage");
+                        if (sCategory && bOnResults && that._applyFiltersForService) {
+                            var aFiltered = that._applyFiltersForService(sCategory);
+                            oModel.setProperty("/filteredProviders", aFiltered);
+                            if (that._updateProviderMarkers) { that._updateProviderMarkers(aFiltered); }
+                        }
                     }
                 })
                 .catch(function() { /* keep mock data on network error */ });
