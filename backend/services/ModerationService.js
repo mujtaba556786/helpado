@@ -22,10 +22,16 @@ async function getReportConversation(reportId) {
         [report.reporter_id, report.reported_id, report.reported_id, report.reporter_id]);
     if (!conv) return { report, conversation: null, messages: [] };
 
+    // Evidence view: a message the SENDER unsent still shows its text here (kept
+    // 30 days, see MessageService.purgeUnsentMessages) flagged unsent = 1, so a
+    // report cannot be dodged by deleting the insult. Moderation-removed text
+    // stays hidden even from admins.
     const [messages] = await pool.query(
         `SELECT dm.id, dm.sender_id, dm.created_at,
                 IF(dm.deleted_at IS NULL, dm.content, '') AS content,
-                IF(dm.deleted_at IS NULL, 0, 1)          AS removed,
+                IF(dm.deleted_at IS NULL, 0, 1)           AS removed,
+                IF(dm.deleted_by_sender_at IS NULL, 0, 1) AS unsent,
+                IF(dm.edited_at IS NULL, 0, 1)            AS edited,
                 u.name AS sender_name
            FROM direct_messages dm
       LEFT JOIN users u ON u.id = dm.sender_id

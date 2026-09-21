@@ -15,6 +15,7 @@
                     <Title text="{appData>/currentDmOtherName}"/>
                 </contentMiddle>
                 <contentRight>
+                    <Button id="dmChatMenuBtn" icon="sap-icon://overflow" tooltip="{i18n>chatOptions}" type="Transparent" press="onDmChatMenu"/>
                     <Button icon="sap-icon://decline" tooltip="{i18n>close}" type="Transparent" press="onCloseDmChat"/>
                 </contentRight>
             </Bar>
@@ -32,7 +33,9 @@
                             backgroundDesign="Transparent"
                             noDataText="{i18n>noMessagesYet}"
                             width="100%">
-                            <CustomListItem type="Inactive">
+                            <!-- Own bubbles open Bearbeiten / Löschen (onDmBubblePress ignores
+                                 other people's messages and ones already gone). -->
+                            <CustomListItem type="{= ${appData>canUnsend} ? 'Active' : 'Inactive' }" press="onDmBubblePress">
                                 <HBox width="100%"
                                     justifyContent="{= ${appData>isOwn} ? 'End' : 'Start' }"
                                     class="sapUiTinyMarginTop">
@@ -48,6 +51,8 @@
                                             </customData>
                                         </Text>
                                         <HBox justifyContent="End" alignItems="Center">
+                                            <Text text="{appData>editedLabel}" visible="{appData>edited}"
+                                                class="hhBubbleMeta sapUiTinyMarginEnd"/>
                                             <Text text="{appData>time}" class="hhBubbleMeta"/>
                                             <Text text="{appData>ticks}"
                                                 tooltip="{appData>tickTooltip}"
@@ -64,6 +69,18 @@
                          newline and the labelled Send button is the only send action.
                          growFactor makes it fill the bar — width="100%" does not grow a flex
                          child. alignItems=End keeps Send on the last line as the field grows. -->
+                    <!-- Edit mode: shown while the composer holds a message being corrected. -->
+                    <HBox id="dmEditBar" alignItems="Center" justifyContent="SpaceBetween"
+                        visible="{= !!${appData>/dmEditing} }"
+                        class="sapUiSmallMarginBeginEnd sapUiTinyMarginTop">
+                        <layoutData><FlexItemData shrinkFactor="0"/></layoutData>
+                        <HBox alignItems="Center">
+                            <core:Icon src="sap-icon://edit" class="sapUiTinyMarginEnd" color="#2E8B57"/>
+                            <Text text="{i18n>dmEditingLabel}" class="smallText"/>
+                        </HBox>
+                        <Button id="dmCancelEditBtn" icon="sap-icon://decline" type="Transparent"
+                            tooltip="{i18n>cancel}" press="onDmCancelEdit"/>
+                    </HBox>
                     <HBox alignItems="End"
                         class="sapUiSmallMarginBeginEnd sapUiTinyMarginTop sapUiSmallMarginBottom hhComposer">
                         <layoutData><FlexItemData shrinkFactor="0"/></layoutData>

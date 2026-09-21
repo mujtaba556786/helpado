@@ -1,7 +1,8 @@
 sap.ui.define([
     "sap/m/MessageToast",
+    "sap/m/MessageBox",
     "helphub/config"
-], function (MessageToast, Config) {
+], function (MessageToast, MessageBox, Config) {
     "use strict";
 
     var API_BASE = Config.API_BASE;
@@ -134,16 +135,31 @@ sap.ui.define([
             var sUserId = oModel.getProperty("/user/id") || localStorage.getItem("helpmate_user_id");
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
+            var EDIT_WINDOW_MS = 15 * 60 * 1000;   // mirrors MessageService.EDIT_WINDOW_MINUTES
             var aMessages = (this._dmMessages || []).map(function (m) {
                 var bOwn = m.sender_id === sUserId;
                 var bRead = !!m.is_read;
                 var bRemoved = !!m.removed;
+                var bDeleted = !!m.deleted;
+                var bEdited  = !!m.edited;
+                var iAge = m.created_at ? (Date.now() - new Date(m.created_at).getTime()) : 0;
+                var sContent = bRemoved ? oBundle.getText("messageRemoved")
+                             : bDeleted ? oBundle.getText("dmMessageDeleted")
+                             : (m.content || "");
                 return {
-                    // A moderated message arrives as content '' + removed = 1; show the
-                    // placeholder in the reader's language, never the original text.
-                    content: bRemoved ? oBundle.getText("messageRemoved") : (m.content || ""),
+                    id: m.id,
+                    // Moderation-removed and sender-unsent messages arrive as content ''
+                    // plus a flag; the reader sees the placeholder in their language.
+                    content: sContent,
                     removed: bRemoved,
-                    removedStr: bRemoved ? "true" : "false",
+                    deleted: bDeleted,
+                    // One DOM attribute drives the grey placeholder style for both cases.
+                    removedStr: (bRemoved || bDeleted) ? "true" : "false",
+                    edited: bEdited,
+                    editedLabel: bEdited && !bRemoved && !bDeleted ? oBundle.getText("dmEdited") : "",
+                    // Own, intact and young enough: the bubble offers "Bearbeiten".
+                    canEdit: bOwn && !bRemoved && !bDeleted && iAge <= EDIT_WINDOW_MS,
+                    canUnsend: bOwn && !bRemoved && !bDeleted,
                     isOwn: bOwn,
                     isOwnStr: bOwn ? "true" : "false",
                     time: m.created_at
@@ -177,6 +193,13 @@ sap.ui.define([
             var sConvoId = this._currentConvoId;
             if (!sConvoId || !sUserId) return;
 
+            // Edit mode: the composer holds a message being corrected → PUT, not POST.
+            var oEditing = oModel.getProperty("/dmEditing");
+            if (oEditing && oEditing.id) {
+                this._submitEdit(oEditing.id, sText);
+                return;
+            }
+
             oInput.setValue("");
 
             if (!this._dmMessages) { this._dmMessages = []; }
@@ -207,6 +230,139 @@ sap.ui.define([
                 .catch(function () { MessageToast.show(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errNoServer")); });
         },
 
+        // ── Own-message menu: Bearbeiten / Löschen ───────────────────────────
+        onDmBubblePress: function (oEvent) {
+            var oCtx = oEvent.getSource().getBindingContext("appData");
+            var oMsg = oCtx && oCtx.getObject();
+            if (!oMsg || !oMsg.isOwn || !oMsg.canUnsend) return;   // other people's and gone messages: no menu
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            var that = this;
+            var oAnchor = oEvent.getSource();
+            sap.ui.require(["sap/m/ActionSheet", "sap/m/Button"], function (ActionSheet, Button) {
+                var oSheet;
+                var aButtons = [];
+                if (oMsg.canEdit) {
+                    aButtons.push(new Button({
+                        text: oBundle.getText("dmEdit"), icon: "sap-icon://edit",
+                        press: function () { oSheet.close(); that._startEdit(oMsg); }
+                    }));
+                }
+                aButtons.push(new Button({
+                    text: oBundle.getText("dmUnsend"), icon: "sap-icon://delete", type: "Reject",
+                    press: function () { oSheet.close(); that._confirmUnsend(oMsg); }
+                }));
+                oSheet = new ActionSheet({
+                    placement: "Auto",
+                    buttons: aButtons,
+                    cancelButton: new Button({ text: oBundle.getText("cancel"), press: function () { oSheet.close(); } }),
+                    afterClose: function () { oSheet.destroy(); }
+                });
+                oSheet.openBy(oAnchor);
+            });
+        },
+
+        _startEdit: function (oMsg) {
+            var oModel = this.getModel("appData");
+            oModel.setProperty("/dmEditing", { id: oMsg.id, original: oMsg.content });
+            var oInput = this.byId("dmInput");
+            oInput.setValue(oMsg.content);
+            setTimeout(function () { oInput.focus(); }, 0);
+        },
+
+        onDmCancelEdit: function () {
+            this.getModel("appData").setProperty("/dmEditing", null);
+            this.byId("dmInput").setValue("");
+        },
+
+        _submitEdit: function (sMessageId, sText) {
+            var that = this;
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            fetch(API_BASE + "/api/messages/" + encodeURIComponent(sMessageId), {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: sText })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (oData) {
+                    if (!oData.success) {
+                        MessageToast.show(oData.code === "edit_window_over"
+                            ? oBundle.getText("dmEditWindowOver") : oBundle.getText("dmActionFailed"));
+                        return;
+                    }
+                    (that._dmMessages || []).forEach(function (m) {
+                        if (m.id === sMessageId) { m.content = sText; m.edited = 1; }
+                    });
+                    that.onDmCancelEdit();
+                    that._setDmMessages();
+                })
+                .catch(function () { MessageToast.show(oBundle.getText("errNoServer")); });
+        },
+
+        _confirmUnsend: function (oMsg) {
+            var that = this;
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            MessageBox.confirm(oBundle.getText("dmUnsendConfirmText"), {
+                title: oBundle.getText("dmUnsendConfirmTitle"),
+                actions: [MessageBox.Action.DELETE, MessageBox.Action.CANCEL],
+                emphasizedAction: MessageBox.Action.CANCEL,
+                onClose: function (sAction) {
+                    if (sAction !== MessageBox.Action.DELETE) return;
+                    fetch(API_BASE + "/api/messages/" + encodeURIComponent(oMsg.id), { method: "DELETE" })
+                        .then(function (r) { return r.json(); })
+                        .then(function (oData) {
+                            if (!oData.success) { MessageToast.show(oBundle.getText("dmActionFailed")); return; }
+                            (that._dmMessages || []).forEach(function (m) {
+                                if (m.id === oMsg.id) { m.content = ""; m.deleted = 1; }
+                            });
+                            that._setDmMessages();
+                        })
+                        .catch(function () { MessageToast.show(oBundle.getText("errNoServer")); });
+                }
+            });
+        },
+
+        // ── Chat header ⋮ : Chat löschen (for me) ────────────────────────────
+        onDmChatMenu: function (oEvent) {
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            var that = this;
+            var oAnchor = oEvent.getSource();
+            sap.ui.require(["sap/m/ActionSheet", "sap/m/Button"], function (ActionSheet, Button) {
+                var oSheet = new ActionSheet({
+                    placement: "Bottom",
+                    buttons: [new Button({
+                        text: oBundle.getText("dmDeleteChat"), icon: "sap-icon://delete", type: "Reject",
+                        press: function () { oSheet.close(); that._confirmDeleteChat(); }
+                    })],
+                    cancelButton: new Button({ text: oBundle.getText("cancel"), press: function () { oSheet.close(); } }),
+                    afterClose: function () { oSheet.destroy(); }
+                });
+                oSheet.openBy(oAnchor);
+            });
+        },
+
+        _confirmDeleteChat: function () {
+            var that = this;
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            var sConvoId = this._currentConvoId;
+            if (!sConvoId) return;
+            MessageBox.confirm(oBundle.getText("dmDeleteChatConfirmText"), {
+                title: oBundle.getText("dmDeleteChatConfirmTitle"),
+                actions: [MessageBox.Action.DELETE, MessageBox.Action.CANCEL],
+                emphasizedAction: MessageBox.Action.CANCEL,
+                onClose: function (sAction) {
+                    if (sAction !== MessageBox.Action.DELETE) return;
+                    fetch(API_BASE + "/api/conversations/" + encodeURIComponent(sConvoId) + "/me", { method: "DELETE" })
+                        .then(function (r) { return r.json(); })
+                        .then(function (oData) {
+                            if (!oData.success) { MessageToast.show(oBundle.getText("dmActionFailed")); return; }
+                            MessageToast.show(oBundle.getText("dmChatDeleted"));
+                            that.onCloseDmChat();   // reloads the conversation list, which no longer has it
+                        })
+                        .catch(function () { MessageToast.show(oBundle.getText("errNoServer")); });
+                }
+            });
+        },
+
         onDmQuickReply: function (oEvent) {
             var sText = oEvent.getSource().getText().replace(/\s*[\u{1F600}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}]+$/u, "").trim();
             this.byId("dmInput").setValue(sText);
@@ -221,6 +377,7 @@ sap.ui.define([
             this._getDmChatDialog().then(function (d) { d.close(); }.bind(this));
             this._dmMessages = [];
             this.getModel("appData").setProperty("/dmMessages", []);
+            this.getModel("appData").setProperty("/dmEditing", null);
             this._loadConversations();
         },
 
@@ -233,7 +390,7 @@ sap.ui.define([
                 return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
             }
             if (d.toDateString() === oYest.toDateString()) {
-                return "Yesterday";
+                return this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("yesterday");
             }
             // Within this year: "Apr 9"
             if (d.getFullYear() === now.getFullYear()) {
@@ -319,13 +476,15 @@ sap.ui.define([
             var sId = String(oConvo.id);
             var bIsPinned = aPinned.indexOf(sId) !== -1;
             var that = this;
+            var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
             sap.ui.require(["sap/m/ActionSheet", "sap/m/Button"], function (ActionSheet, Button) {
                 var oSheet = new ActionSheet({
-                    title: oConvo.other_name || "Conversation",
+                    title: oConvo.other_name || "",
                     buttons: [
                         new Button({
-                            text: bIsPinned ? "📌 Unpin conversation" : "📌 Pin conversation",
+                            icon: "sap-icon://pushpin-on",
+                            text: oBundle.getText(bIsPinned ? "unpinConversation" : "pinConversation"),
                             press: function () {
                                 if (bIsPinned) {
                                     aPinned = aPinned.filter(function (id) { return id !== sId; });
@@ -338,7 +497,7 @@ sap.ui.define([
                             }
                         })
                     ],
-                    cancelButton: new Button({ text: "Cancel", press: function () { oSheet.close(); } })
+                    cancelButton: new Button({ text: oBundle.getText("cancel"), press: function () { oSheet.close(); } })
                 });
                 oSheet.openBy(oEvent.getSource());
             });

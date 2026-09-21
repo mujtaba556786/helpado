@@ -146,6 +146,10 @@ const markMessagesRead = z.object({
     user_id: userId
 });
 
+const editMessage = z.object({
+    content: z.string().trim().min(1, 'Message cannot be empty').max(5000)
+});
+
 // ── Reports ───────────────────────────────────────────────────────────────────
 const submitReport = z.object({
     reported_type: z.enum(['user', 'post', 'message']),
@@ -189,5 +193,6 @@ module.exports = {
     createConversation, sendMessage, markMessagesRead,
     // reports & admin
     submitReport, actionReport, actionUser,
-    submitFeedback, actionFeedback
+    submitFeedback, actionFeedback,
+    editMessage
 };

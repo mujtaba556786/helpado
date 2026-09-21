@@ -13,8 +13,23 @@ async function createConversation(req, res) {
 }
 
 async function getMessages(req, res) {
-    const messages = await MessageService.getMessages(req.params.conversationId);
+    const messages = await MessageService.getMessages(req.params.conversationId, req.userId);
     res.json({ success: true, messages });
+}
+
+async function editMessage(req, res) {
+    await MessageService.editMessage(req.params.messageId, req.userId, req.body.content);
+    res.json({ success: true });
+}
+
+async function unsendMessage(req, res) {
+    const r = await MessageService.unsendMessage(req.params.messageId, req.userId);
+    res.json({ success: true, already: r.already });
+}
+
+async function hideConversation(req, res) {
+    await MessageService.hideConversation(req.params.conversationId, req.userId);
+    res.json({ success: true });
 }
 
 async function sendMessage(req, res) {
@@ -34,4 +49,4 @@ async function getUnreadCount(req, res) {
     res.json({ success: true, count });
 }
 
-module.exports = { getConversations, createConversation, getMessages, sendMessage, markRead, getUnreadCount };
+module.exports = { getConversations, createConversation, getMessages, sendMessage, markRead, getUnreadCount, editMessage, unsendMessage, hideConversation };

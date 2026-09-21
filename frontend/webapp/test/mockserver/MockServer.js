@@ -179,6 +179,12 @@ sap.ui.define([
         if (matchUrl(sUrl, "/api/messages") && matchUrl(sUrl, "unread-count")) {
             return makeResponse({ success: true, count: MockData.DM_UNREAD_COUNT });
         }
+        if (matchUrl(sUrl, "/api/conversations/") && matchUrl(sUrl, "/me") && sMethod === "DELETE") {
+            return makeResponse({ success: true });
+        }
+        if (matchUrl(sUrl, "/api/messages/") && (sMethod === "PUT" || sMethod === "DELETE") && !matchUrl(sUrl, "/read")) {
+            return makeResponse({ success: true });
+        }
         if (matchUrl(sUrl, "/api/messages") && sMethod === "POST") {
             return makeResponse({ success: true, messageId: "DM_MOCK_" + Date.now() });
         }
