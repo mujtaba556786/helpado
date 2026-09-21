@@ -380,6 +380,29 @@ async function initDb() {
             }
         }
 
+        // Own-message edit ("(bearbeitet)", 15-min window) and unsend ("Nachricht
+        // gelöscht"); the sender-deleted text is kept 30 days for reports, then blanked.
+        for (const col of [
+            { name: 'edited_at',            type: 'DATETIME NULL' },
+            { name: 'deleted_by_sender_at', type: 'DATETIME NULL' }
+        ]) {
+            const [rows] = await connection.query(`SHOW COLUMNS FROM direct_messages LIKE '${col.name}'`);
+            if (rows.length === 0) {
+                await connection.query(`ALTER TABLE direct_messages ADD COLUMN ${col.name} ${col.type}`);
+            }
+        }
+
+        // "Chat löschen" hides a conversation for ONE participant: messages before
+        // hidden_at disappear for them; the other person keeps their copy.
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS conversation_hides (
+                conversation_id VARCHAR(50) NOT NULL,
+                user_id VARCHAR(50) NOT NULL,
+                hidden_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (conversation_id, user_id)
+            )
+        `);
+
         // In-app feedback (Settings → Support → "Feedback geben"). Read in the
         // admin panel; never shown to other users.
         await connection.query(`
@@ -546,6 +569,12 @@ initDb().then(success => {
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 HelpHub API online → http://localhost:${PORT}`);
         });
+        // Unsent messages keep their text 30 days so a report can still be judged
+        // (privacy policy §3), then the text is wiped. Once at boot, then daily.
+        const { purgeUnsentMessages } = require('./services/MessageService');
+        purgeUnsentMessages().catch(e => console.error('[MESSAGES] purge failed:', e.message));
+        setInterval(() => purgeUnsentMessages().catch(e => console.error('[MESSAGES] purge failed:', e.message)),
+            24 * 60 * 60 * 1000).unref();
     } else {
         console.error('⛔ Database connection failed. Server not started.');
     }

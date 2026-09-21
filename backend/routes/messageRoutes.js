@@ -1,6 +1,6 @@
 const router      = require('express').Router();
 const {
-    handleAsync, requireSelfParam, forceBodyUser, requireConversationParticipant
+    handleAsync, requireAuth, requireSelfParam, forceBodyUser, requireConversationParticipant
 } = require('../middleware/auth');
 const validate    = require('../middleware/validate');
 const s           = require('../middleware/schemas');
@@ -20,5 +20,13 @@ router.put('/messages/:conversationId/read',  forceBodyUser('user_id'),
                                               validate(s.markMessagesRead),
                                               requireConversationParticipant,    handleAsync(ctrl.markRead));
 router.get('/messages/unread-count/:userId',  requireSelfParam('userId'),        handleAsync(ctrl.getUnreadCount));
+
+// Own-message edit / unsend: the service checks sender === caller (403 otherwise).
+// Declared after the two-segment /messages/:conversationId/read so Express does
+// not confuse a message id with a conversation id.
+router.put('/messages/:messageId',            requireAuth, validate(s.editMessage), handleAsync(ctrl.editMessage));
+router.delete('/messages/:messageId',         requireAuth,                       handleAsync(ctrl.unsendMessage));
+// "Chat löschen" for the caller only.
+router.delete('/conversations/:conversationId/me', requireConversationParticipant, handleAsync(ctrl.hideConversation));
 
 module.exports = router;

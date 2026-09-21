@@ -328,7 +328,14 @@ const TrustSafetyView: React.FC = () => {
                       {m.removed ? (
                         <p className="text-sm italic text-slate-400">Removed by moderation</p>
                       ) : (
-                        <p className="text-sm text-slate-800 whitespace-pre-wrap">{m.content}</p>
+                        <>
+                          <p className="text-sm text-slate-800 whitespace-pre-wrap">{m.content || <span className="italic text-slate-400">(text purged after 30 days)</span>}</p>
+                          {(m.unsent || m.edited) ? (
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700 mt-1">
+                              {m.unsent ? 'Unsent by sender — kept 30 days as evidence' : 'Edited by sender'}
+                            </p>
+                          ) : null}
+                        </>
                       )}
                       {!m.removed && (
                         <button

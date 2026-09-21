@@ -156,6 +156,14 @@ CREATE TABLE conversations (
     INDEX idx_p2 (participant_2)
 );
 
+-- "Chat löschen" for one participant only: their view hides messages before hidden_at.
+CREATE TABLE conversation_hides (
+    conversation_id VARCHAR(50) NOT NULL,
+    user_id VARCHAR(50) NOT NULL,
+    hidden_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (conversation_id, user_id)
+);
+
 -- ─── DIRECT MESSAGES ─────────────────────────────────────────────────────────
 
 CREATE TABLE direct_messages (
@@ -165,6 +173,8 @@ CREATE TABLE direct_messages (
     content TEXT NOT NULL,
     is_read TINYINT(1) DEFAULT 0,
     deleted_at DATETIME NULL,              -- set by admin moderation; content then served as ''
+    edited_at DATETIME NULL,               -- sender edited within 15 min; clients show "(bearbeitet)"
+    deleted_by_sender_at DATETIME NULL,    -- sender unsent; text kept 30 days for reports, then blanked
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_conversation (conversation_id),
     INDEX idx_sender (sender_id),

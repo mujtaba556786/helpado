@@ -48,7 +48,8 @@ sap.ui.define([
     "helphub/test/integration/journeys/SessionJourney",
     "helphub/test/integration/journeys/CategoryIconJourney",
     "helphub/test/integration/journeys/FeedbackJourney",
-    "helphub/test/integration/journeys/ModerationJourney"
+    "helphub/test/integration/journeys/ModerationJourney",
+    "helphub/test/integration/journeys/ChatEditJourney"
 ], function (Opa5) {
     "use strict";
 
