@@ -88,16 +88,17 @@ sap.ui.define([
         });
     }
 
+    // Confirms are bottom sheets (SheetMixin): a sap.m.Dialog with class hhSheet.
     function iPressMessageBoxAction(When, sActionText) {
         When.waitFor({
             controlType: "sap.m.Button",
             matchers: function (oBtn) {
                 var oDialog = oBtn.getParent();
                 while (oDialog && !(oDialog.isA && oDialog.isA("sap.m.Dialog"))) { oDialog = oDialog.getParent(); }
-                return !!oDialog && oDialog.isOpen() && oBtn.getText() === sActionText;
+                return !!oDialog && oDialog.isOpen() && oDialog.hasStyleClass("hhSheet") && oBtn.getText() === sActionText;
             },
             actions: new Press(),
-            errorMessage: "MessageBox button '" + sActionText + "' not found"
+            errorMessage: "Sheet button '" + sActionText + "' not found"
         });
     }
 
@@ -113,12 +114,14 @@ sap.ui.define([
 
         Then.waitFor({
             controlType: "sap.m.Dialog",
-            matchers: function (d) { return d.isOpen() && d.getTitle() === "Delete your account?"; },
+            matchers: function (d) { return d.isOpen() && d.hasStyleClass("hhSheet") && d.data("sheet") === "deleteAccount"; },
             success: function (aDialogs) {
-                var aBtns = aDialogs[0].getButtons().map(function (b) { return b.getText(); });
-                Opa5.assert.ok(aBtns.indexOf("Delete") >= 0 && aBtns.indexOf("Cancel") >= 0, "confirm offers Delete and Cancel (" + aBtns.join(", ") + ")");
+                var aTexts = aDialogs[0].findAggregatedObjects(true, function (c) { return c.isA("sap.m.Text"); }).map(function (t) { return t.getText(); });
+                Opa5.assert.ok(aTexts.indexOf("Delete your account?") >= 0, "sheet carries the question as its title text");
+                var aBtns = aDialogs[0].findAggregatedObjects(true, function (c) { return c.isA("sap.m.Button"); }).map(function (b) { return b.getText(); });
+                Opa5.assert.deepEqual(aBtns, ["Cancel", "Delete account"], "confirm offers Cancel then Delete account (" + aBtns.join(", ") + ")");
             },
-            errorMessage: "Confirmation MessageBox did not open"
+            errorMessage: "Delete-account sheet did not open"
         });
         iPressMessageBoxAction(When, "Cancel");
 
@@ -147,7 +150,7 @@ sap.ui.define([
 
         iOpenSettings(Given, When);
         When.waitFor({ id: "deleteAccountRow", viewName: VIEW, actions: new Press(), errorMessage: "Delete account row not found" });
-        iPressMessageBoxAction(When, "Delete");
+        iPressMessageBoxAction(When, "Delete account");
 
         Then.waitFor({
             viewName: "helphub.view.Login",

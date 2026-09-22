@@ -79,29 +79,21 @@ sap.ui.define([
         };
     }
 
+    // Menus and confirms are bottom sheets: sap.m.Dialog with the hhSheet class
+    // (SheetMixin). Buttons are found by text inside an OPEN sheet.
+    function sheetOf(oCtrl) {
+        var o = oCtrl.getParent();
+        while (o && !(o.isA && o.isA("sap.m.Dialog"))) { o = o.getParent(); }
+        return o && o.hasStyleClass("hhSheet") && o.isOpen() ? o : null;
+    }
     function iPressActionSheetButton(When, sText) {
         When.waitFor({
             controlType: "sap.m.Button",
-            matchers: function (oBtn) {
-                var oParent = oBtn.getParent();
-                while (oParent && !(oParent.isA && oParent.isA("sap.m.ActionSheet"))) { oParent = oParent.getParent(); }
-                return !!oParent && oBtn.getText() === sText;
-            },
-            actions: new Press(), errorMessage: "ActionSheet button '" + sText + "' not found"
+            matchers: function (oBtn) { return !!sheetOf(oBtn) && oBtn.getText() === sText; },
+            actions: new Press(), errorMessage: "Sheet button '" + sText + "' not found"
         });
     }
-
-    function iPressMessageBoxAction(When, sText) {
-        When.waitFor({
-            controlType: "sap.m.Button",
-            matchers: function (oBtn) {
-                var oDialog = oBtn.getParent();
-                while (oDialog && !(oDialog.isA && oDialog.isA("sap.m.Dialog"))) { oDialog = oDialog.getParent(); }
-                return !!oDialog && oDialog.isOpen() && oBtn.getText() === sText;
-            },
-            actions: new Press(), errorMessage: "MessageBox button '" + sText + "' not found"
-        });
-    }
+    var iPressMessageBoxAction = iPressActionSheetButton;
 
     // ── 1. Who gets a menu ───────────────────────────────────────────────────
 
@@ -126,15 +118,19 @@ sap.ui.define([
         // Open the menu on the fresh own bubble and read its buttons.
         When.waitFor({ controlType: "sap.m.CustomListItem", viewName: VIEW, matchers: bubbleFor("MX2"), actions: new Press(), errorMessage: "own bubble MX2 not found" });
         Then.waitFor({
-            controlType: "sap.m.ActionSheet",
+            controlType: "sap.m.Dialog",
+            matchers: function (d) { return d.hasStyleClass("hhSheet") && d.isOpen() && d.data("sheet") === "messageMenu"; },
             success: function (aSheets) {
-                var aTexts = aSheets[0].getButtons().map(function (b) { return b.getText(); });
+                var aRows = aSheets[0].findAggregatedObjects(true, function (c) { return c.isA("sap.m.Button") && c.hasStyleClass("hhSheetRow") && !c.hasStyleClass("hhSheetCancel"); });
+                var aTexts = aRows.map(function (b) { return b.getText(); });
                 Opa5.assert.deepEqual(aTexts, ["Edit", "Delete message"], "menu offers Edit and Delete message (" + aTexts.join(", ") + ")");
+                var oDanger = aRows.filter(function (b) { return b.hasStyleClass("hhSheetDanger"); });
+                Opa5.assert.deepEqual(oDanger.map(function (b) { return b.getText(); }), ["Delete message"], "only the destructive row is marked danger");
+                Opa5.assert.notOk(aSheets[0].getShowHeader(), "the sheet has no title bar");
             },
-            errorMessage: "ActionSheet did not open on the own bubble"
+            errorMessage: "message menu sheet did not open on the own bubble"
         });
-        // The cancel button only exists on phone widths (desktop renders a Popover), so close it directly.
-        When.waitFor({ controlType: "sap.m.ActionSheet", success: function (aSheets) { aSheets[0].close(); }, errorMessage: "ActionSheet not open" });
+        iPressActionSheetButton(When, "Cancel");
 
         Then.waitFor({ success: function () { Opa5.assert.strictEqual(aCalls.length, 0, "opening a menu sends nothing"); MockServer.clearOverrides(); } });
         Then.iTeardownMyUIComponent();
@@ -233,8 +229,8 @@ sap.ui.define([
         iOpenTheChat(Given, When, aCalls);
 
         When.waitFor({ id: "dmChatMenuBtn", viewName: VIEW, actions: new Press(), errorMessage: "chat ⋮ button not found" });
-        iPressActionSheetButton(When, "Delete chat");
-        iPressMessageBoxAction(When, "Delete");
+        iPressActionSheetButton(When, "Delete chat");          // menu row
+        iPressActionSheetButton(When, "Delete chat");          // confirm sheet's destructive button carries the same label
 
         Then.waitFor({
             id: "dmChatDialog", viewName: VIEW, visible: false,

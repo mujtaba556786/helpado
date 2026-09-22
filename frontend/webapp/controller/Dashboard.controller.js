@@ -16,12 +16,13 @@ sap.ui.define([
     "helphub/controller/mixins/TaskMixin",
     "helphub/controller/mixins/TrustSafetyMixin",
     "helphub/controller/mixins/FeedbackMixin",
+    "helphub/controller/mixins/SheetMixin",
     "helphub/config"
 ], function(
     BaseController, MessageToast, MessageBox, Fragment, CountryStates, ServiceConstants,
     NotificationMixin, MapMixin, FilterMixin, BookingMixin, AiChatMixin,
     DmMixin, OnboardingFavoritesMixin, ProfileMixin, TaskMixin, TrustSafetyMixin,
-    FeedbackMixin, Config
+    FeedbackMixin, SheetMixin, Config
 ) {
     "use strict";
 
@@ -594,12 +595,13 @@ sap.ui.define([
         // normal logout path just clears local state and returns to the login screen.
         onDeleteAccount: function() {
             var oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-            MessageBox.confirm(oBundle.getText("deleteAccountConfirmText"), {
+            this._confirmSheet({
+                id: "deleteAccount",
                 title: oBundle.getText("deleteAccountConfirmTitle"),
-                actions: [MessageBox.Action.DELETE, MessageBox.Action.CANCEL],
-                emphasizedAction: MessageBox.Action.CANCEL,
-                onClose: function(sAction) {
-                    if (sAction !== MessageBox.Action.DELETE) return;
+                text: oBundle.getText("deleteAccountConfirmText"),
+                confirmText: oBundle.getText("deleteAccountRow"),
+                cancelText: oBundle.getText("cancel"),
+                onConfirm: function() {
                     this.apiFetch(API_BASE + "/api/users/me", { method: "DELETE" })
                         .then(function(oData) {
                             if (!oData.success) {
@@ -898,7 +900,8 @@ sap.ui.define([
         ProfileMixin,
         TaskMixin,
         TrustSafetyMixin,
-        FeedbackMixin
+        FeedbackMixin,
+        SheetMixin
     );
 
     return DashboardController;

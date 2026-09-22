@@ -381,9 +381,55 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
     padding: 8px 12px;
     border-radius: 16px;
 }
-/* A message removed by moderation: the reader sees the i18n placeholder in the
-   secondary colour, whichever side of the chat it was on. */
+/* A message removed by moderation or unsent by its sender: the reader sees the
+   i18n placeholder in a secondary colour. On the own (green) bubble grey was
+   unreadable, so it is translucent white there. */
 .hhBubble .sapMText[data-hhremoved="true"] { color: #556b82; font-style: italic; }
+.hhBubble[data-hhown="true"] .sapMText[data-hhremoved="true"] { color: rgba(255,255,255,.85); }
+
+/* ── Bottom sheet (SheetMixin) ───────────────────────────────────────────────
+   One sap.m.Dialog pinned to the bottom edge, full width on phones and a
+   centred 30rem card on wider screens; rounded top corners, no header. */
+.sapMDialog.hhSheet {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 100% !important;
+    max-width: 30rem !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 -8px 30px rgba(19,30,41,.18) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.sapMDialog.hhSheet .sapMDialogSection { padding-top: 0 !important; }   /* no title bar to clear */
+.sapMDialog.hhSheet .sapMDialogScrollCont { padding: 0 !important; }
+.hhSheetHandle { width: 36px; height: 4px; border-radius: 2px; background: #d9d9d9; margin: 10px auto 6px; }
+.hhSheetRows { padding: 0 8px; }
+.hhSheet .hhSheetRow.sapMBtn { height: 3rem !important; }
+.hhSheet .hhSheetRow .sapMBtnInner { justify-content: flex-start !important; padding-left: 0.75rem !important; }
+.hhSheet .hhSheetRow .sapMBtnContent, .hhSheet .hhSheetRow .sapMBtnIcon { color: #131e29 !important; font-size: 1rem !important; }
+.hhSheet .hhSheetRow.hhSheetDanger .sapMBtnContent, .hhSheet .hhSheetRow.hhSheetDanger .sapMBtnIcon { color: #B00020 !important; }
+.hhSheet .hhSheetRow.hhSheetCancel { border-top: 1px solid #ececec; margin: 6px 0 4px; }
+.hhSheet .hhSheetRow.hhSheetCancel .sapMBtnInner { justify-content: center !important; padding-left: 0 !important; }
+.hhSheet .hhSheetRow.hhSheetCancel .sapMBtnContent { color: #556b82 !important; font-weight: 600; }
+/* confirm variant */
+.hhSheetBody { padding: 4px 20px 12px; }
+.hhSheetTitle { font-size: 1.125rem; font-weight: 700; color: #131e29; display: block; margin-bottom: 6px; }
+.hhSheetText  { color: #556b82; display: block; margin-bottom: 14px; }
+.hhSheetButtons .sapMBtn { min-width: 6rem; }
+.hhSheet .hhSheetCancelBtn .sapMBtnContent { color: #556b82 !important; font-weight: 600; }
+.hhSheet .hhSheetConfirmBtn .sapMBtnContent { color: #B00020 !important; font-weight: 700; }
+/* A tap leaves focus on the row; the theme then draws a green frame around it,
+   which reads as a selected state. Sheets are touch UI: no focus frame here. */
+.hhSheet .sapMBtn:focus::after,
+.hhSheet .sapMBtn .sapMBtnFocusDiv,
+.hhSheet .sapMBtnInner::before { display: none !important; }   /* the theme draws its 2px focus frame as ::before */
+.hhSheet .sapMBtn:focus > .sapMBtnInner,
+.hhSheet .sapMBtnInner:focus,
+.hhSheet .sapMBtnInner.sapMBtnTransparent { border-color: transparent !important; box-shadow: none !important; outline: none !important; }
 
 .hhBubble[data-hhown="true"] {
     background: var(--sapButton_Emphasized_Background, #4FB584);

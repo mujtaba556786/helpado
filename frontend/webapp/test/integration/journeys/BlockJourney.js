@@ -199,9 +199,9 @@ sap.ui.define([
             matchers: function (oBtn) {
                 var oDialog = oBtn.getParent();
                 while (oDialog && !(oDialog.isA && oDialog.isA("sap.m.Dialog"))) { oDialog = oDialog.getParent(); }
-                return !!oDialog && oDialog.isOpen() && oBtn.getText() === "OK";
+                return !!oDialog && oDialog.isOpen() && oDialog.hasStyleClass("hhSheet") && oBtn.getText() === "Delete";
             },
-            actions: new Press(), errorMessage: "confirmation OK button not found (did the confirm open at all?)"
+            actions: new Press(), errorMessage: "confirmation Delete button not found (did the confirm sheet open at all?)"
         });
 
         Then.waitFor({
