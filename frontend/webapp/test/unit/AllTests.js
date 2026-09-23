@@ -13,7 +13,8 @@ sap.ui.define([
     "helphub/test/unit/css/categoryIcons.qunit",
     "helphub/test/unit/legal/trustClaims.qunit",
     "helphub/test/unit/legal/imprint.qunit",
-    "helphub/test/unit/legal/sitePages.qunit"
+    "helphub/test/unit/legal/sitePages.qunit",
+    "helphub/test/unit/brand/brandMark.qunit"
 ], function () {
     "use strict";
     QUnit.start();
