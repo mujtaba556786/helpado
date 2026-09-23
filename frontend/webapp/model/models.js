@@ -43,7 +43,7 @@ sap.ui.define([
         // Brand artwork. Resolved through the module path rather than written as a
         // relative src in the view, because the view is also loaded from
         // test/integration/, where "img/..." would resolve against the wrong folder.
-        logoUrl: sap.ui.require.toUrl("helphub/img/logo.svg"),
+        logoUrl: sap.ui.require.toUrl("helphub/img/logo.png"),
         sceneUrl: sap.ui.require.toUrl("helphub/img/neighbourhood.svg"),
         user: {
             id: "",

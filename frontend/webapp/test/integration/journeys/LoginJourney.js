@@ -85,8 +85,8 @@ sap.ui.define([
         Then.waitFor({
             id: "brandLogo", viewName: VIEW,
             success: function (oAvatar) {
-                Opa5.assert.ok(/img\/logo\.svg(\?.*)?$/.test(oAvatar.getSrc()),
-                    "Logo resolves to img/logo.svg (got " + oAvatar.getSrc() + ")");
+                Opa5.assert.ok(/img\/logo\.png(\?.*)?$/.test(oAvatar.getSrc()),
+                    "Logo resolves to img/logo.png (got " + oAvatar.getSrc() + ")");
             },
             errorMessage: "Brand logo is not rendered on the login page"
         });
