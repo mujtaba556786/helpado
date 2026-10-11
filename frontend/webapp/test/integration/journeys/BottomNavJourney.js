@@ -239,4 +239,55 @@ sap.ui.define([
 
         Then.iTeardownMyUIComponent();
     });
+
+    // Every scrollable tab runs its ScrollContainer underneath the bottom nav, so
+    // each one needs bottom padding of at least the nav's height. Tasks and Find
+    // Help had it; Messages and My Schedule did not, and their last row sat behind
+    // the nav at maximum scroll with no way to reach it (measured 35px clipped on
+    // Messages with a full list). Checking the clearance rather than the clipping
+    // keeps the test meaningful even when the fixture's lists are short.
+    opaTest("Every tab clears the bottom nav, so its last row is reachable", function (Given, When, Then) {
+        Given.iStartMyUIComponent({ componentConfig: { name: "helphub", manifest: true } });
+
+        ["findHelp", "tasks", "messages", "mySchedule"].forEach(function (sTab) {
+            When.onTheDashboard.iPressNavTab(sTab);
+
+            Then.waitFor({
+                id: "dashboardPage",
+                viewName: VIEW,
+                success: function () {
+                    var oNav = document.querySelector(".hhBottomNav");
+                    Opa5.assert.ok(oNav, "Bottom nav is present");
+                    var fNavH = oNav.getBoundingClientRect().height;
+
+                    // The visible tab panel's scroll content.
+                    var oScroll = Array.prototype.slice
+                        .call(document.querySelectorAll(".sapMScrollCont"))
+                        .filter(function (el) { return el.offsetParent !== null; })[0];
+                    Opa5.assert.ok(oScroll, sTab + ": scroll container is rendered");
+
+                    var oInner = oScroll.querySelector(".sapMScrollContScroll");
+                    var oContent = oInner && oInner.firstElementChild;
+                    Opa5.assert.ok(oContent, sTab + ": tab content is rendered");
+
+                    // Clearance may sit on the content root or on the one child that
+                    // actually holds the list (Find Help puts it on the services grid).
+                    var fClear = 0;
+                    var aCandidates = [oContent].concat(
+                        Array.prototype.slice.call(oContent.querySelectorAll("*")));
+                    aCandidates.forEach(function (el) {
+                        var f = parseFloat(window.getComputedStyle(el).paddingBottom) || 0;
+                        if (f > fClear) { fClear = f; }
+                    });
+
+                    Opa5.assert.ok(fClear >= fNavH - 8,
+                        sTab + ": clears the " + Math.round(fNavH) + "px nav (" +
+                        Math.round(fClear) + "px bottom padding)");
+                },
+                errorMessage: sTab + ": dashboard page not found"
+            });
+        });
+
+        Then.iTeardownMyUIComponent();
+    });
 });
