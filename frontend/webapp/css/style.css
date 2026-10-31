@@ -502,6 +502,12 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 .hhToastClose { background: none; border: none; font-size: 16px; cursor: pointer; padding: 0; flex-shrink: 0; margin-top: 2px; }
 
 /* ── Messages tab ─────────────────────────────────────────────── */
+/* Bottom-nav clearance. The nav sits at the foot of the page but the tab's
+   ScrollContainer runs underneath it, so without this the last conversation
+   stays behind the nav at maximum scroll and cannot be brought into view —
+   measured at 35px clipped with a full list. .hhTaskList and .fiServicesGrid
+   already carried the same 80px; Messages and My Schedule were simply missed. */
+.hhMsgTab         { padding-bottom: 80px; }
 .hhMsgSearchWrap  { padding: 12px 16px 10px; position: sticky; top: 0; z-index: 10; }
 .hhMsgSectionHdr  { padding: 16px 18px 6px; gap: 6px; }
 .hhMsgSectionLabel { font-size: 11px !important; font-weight: 700 !important; text-transform: uppercase; letter-spacing: 0.06em; }
@@ -719,7 +725,9 @@ body.hhDialogOpen .hhBottomNav.sapMBar {
 }
 
 /* ── My Schedule tab ──────────────────────────────────────────── */
-.fiScheduleTab      { padding: 0; }
+/* Same bottom-nav clearance as the Messages and Tasks lists above — the
+   bookings list scrolls too, so its last card was clipped the same way. */
+.fiScheduleTab      { padding: 0 0 80px; }
 .fiScheduleTitle.sapMTitle { padding: 16px 16px 0 !important; }
 
 /* Filter row — same pattern as notification chips */
