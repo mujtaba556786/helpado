@@ -52,6 +52,7 @@ sap.ui.define([
             }).addTo(this._oMap);
 
             this._aProviderMarkers = [];
+            this._refreshLocationNote();
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (pos) {
@@ -61,10 +62,34 @@ sap.ui.define([
                     this._oMap.setView([oRealLoc.lat, oRealLoc.lng], 13);
                     this._oUserMarker.setLatLng([oRealLoc.lat, oRealLoc.lng]);
                     this._oRadiusCircle.setLatLng([oRealLoc.lat, oRealLoc.lng]);
+                    this._refreshLocationNote();
                 }.bind(this), function () {
-                    // Permission denied or unavailable — keep Berlin default
-                });
+                    // Denied or unavailable: keep the saved-address fallback, or Berlin if there is none
+                    this._refreshLocationNote();
+                }.bind(this));
             }
+        },
+
+        /**
+         * Tells the user which location the map is using, and why. The source
+         * is set in Component (profile) and here (GPS); see /user/locationSource.
+         */
+        _refreshLocationNote: function () {
+            var oModel = this.getModel("appData");
+            var oBundle = this.getModel("i18n").getResourceBundle();
+            var sSource = oModel.getProperty("/user/locationSource");
+            var sKey = "locationNoteNone";
+            if (sSource === "gps") {
+                sKey = "locationNoteGps";
+            } else if (sSource === "profile") {
+                sKey = "locationNoteProfile";
+            }
+            oModel.setProperty("/locationNote", oBundle.getText(sKey));
+            oModel.setProperty("/locationNoteShowAction", sKey !== "locationNoteGps");
+        },
+
+        onLocationNoteAction: function () {
+            this.onEditProfile();
         },
 
         _updateProviderMarkers: function (aProviders) {
