@@ -57,6 +57,7 @@ sap.ui.define([
                 navigator.geolocation.getCurrentPosition(function (pos) {
                     var oRealLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                     oModel.setProperty("/user/location", oRealLoc);
+                    oModel.setProperty("/user/locationSource", "gps");
                     this._oMap.setView([oRealLoc.lat, oRealLoc.lng], 13);
                     this._oUserMarker.setLatLng([oRealLoc.lat, oRealLoc.lng]);
                     this._oRadiusCircle.setLatLng([oRealLoc.lat, oRealLoc.lng]);
@@ -111,6 +112,7 @@ sap.ui.define([
                 navigator.geolocation.getCurrentPosition(function (pos) {
                     var oLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                     oModel.setProperty("/user/location", oLoc);
+                    oModel.setProperty("/user/locationSource", "gps");
                     this._oTaskMap.setView([oLoc.lat, oLoc.lng], 13);
                 }.bind(this), function () { });
             }

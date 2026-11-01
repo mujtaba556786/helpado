@@ -341,6 +341,12 @@ sap.ui.define([
                 oAppData.setProperty("/user/address/state",       u.state         || "");
                 oAppData.setProperty("/user/address/country",     u.country       || "");
                 oAppData.setProperty("/user/address/postalCode",  u.pincode       || "");
+                // Saved-address coordinates are the map's fallback when GPS is denied.
+                // A real GPS fix always wins, whichever of the two arrives first.
+                if (u.lat != null && u.lng != null && oAppData.getProperty("/user/locationSource") !== "gps") {
+                    oAppData.setProperty("/user/location", { lat: parseFloat(u.lat), lng: parseFloat(u.lng) });
+                    oAppData.setProperty("/user/locationSource", "profile");
+                }
                 oAppData.setProperty("/user/role",           u.role          || "Customer");
                 oAppData.setProperty("/user/terms_accepted_at", u.terms_accepted_at || "");
                 oAppData.setProperty("/user/terms_version",     u.terms_version     || "");
@@ -417,6 +423,7 @@ sap.ui.define([
                         lat: pos.coords.latitude,
                         lng: pos.coords.longitude
                     });
+                    oAppData.setProperty("/user/locationSource", "gps");
                 });
             }
         }
