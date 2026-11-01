@@ -43,6 +43,7 @@ sap.ui.define([
     "helphub/test/integration/journeys/HelpFaqJourney",
     "helphub/test/integration/journeys/HeaderJourney",
     "helphub/test/integration/journeys/BottomNavJourney",
+    "helphub/test/integration/journeys/LocationNoteJourney",
     "helphub/test/integration/journeys/RatingJourney",
     "helphub/test/integration/journeys/PopoverJourney",
     "helphub/test/integration/journeys/SessionJourney",

@@ -597,6 +597,18 @@ xmlns:l="sap.ui.layout"
 
                     <!-- ── Collapsible map ── -->
                     <VBox class="hhMapWrap">
+                        <MessageStrip id="locationNoteStrip"
+                            text="{appData>/locationNote}"
+                            type="Information"
+                            showIcon="true"
+                            visible="{= !!${appData>/locationNote}}"
+                            class="sapUiSmallMarginBottom"/>
+                        <Button id="locationNoteAction"
+                            text="{i18n>locationNoteAction}"
+                            type="Transparent"
+                            press="onLocationNoteAction"
+                            visible="{appData>/locationNoteShowAction}"
+                            class="sapUiSmallMarginBottom"/>
                         <VBox id="mapContainer" class="hhMapBox mapPlaceholder" visible="{appData>/mapExpanded}">
                             <core:HTML content='&lt;div id="googleMap" class="mapDiv"&gt;&lt;/div&gt;'/>
                         </VBox>
