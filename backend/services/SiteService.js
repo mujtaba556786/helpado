@@ -40,4 +40,20 @@ function isLandingHost(req) {
     return !!host && (req.hostname || '').toLowerCase() === host;
 }
 
-module.exports = { renderSitePage, appUrlFor, readPage, isLandingHost, PAGES };
+/**
+ * Old *.up.railway.app address → FRONTEND_URL, for browser page loads only.
+ * Returns the target URL, or null when the request should be served as-is.
+ * /api is never redirected: the installed APK and config.js still call the
+ * Railway address, and a redirect there would break them.
+ */
+function canonicalRedirectUrl(req) {
+    const canonical = (process.env.FRONTEND_URL || '').trim().replace(/\/+$/, '');
+    if (!/^https?:\/\//.test(canonical)) return null;
+    if (!['GET', 'HEAD'].includes(req.method)) return null;
+    if (!(req.hostname || '').toLowerCase().endsWith('.up.railway.app')) return null;
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return null;
+    if (!String(req.get('accept') || '').includes('text/html')) return null;
+    return canonical + req.originalUrl;
+}
+
+module.exports = { renderSitePage, appUrlFor, readPage, isLandingHost, canonicalRedirectUrl, PAGES };

@@ -522,6 +522,13 @@ app.use((err, req, res, next) => {
     res.status(status).json({ success: false, error: err.message });
 });
 
+// ── Old Railway address → canonical domain (page loads only, never /api) ─────
+app.use((req, res, next) => {
+    const target = require('./services/SiteService').canonicalRedirectUrl(req);
+    if (target) return res.redirect(301, target);
+    next();
+});
+
 // ── Serve React admin panel (built) ──────────────────────────────────────────
 // MUST come before the SAPUI5 handlers below: the '/' static + the .js/.css 404
 // catch-all would otherwise intercept /admin/*.js and blank it out (white page).

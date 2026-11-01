@@ -42,3 +42,28 @@ test('appUrlFor prefers FRONTEND_URL (the magic-link base) over the request orig
     assert.equal(Site.appUrlFor({ protocol: 'http', get: () => 'localhost:3000' }), 'http://localhost:3000');
     if (prev !== undefined) process.env.FRONTEND_URL = prev;
 });
+
+test('canonicalRedirectUrl sends old Railway page loads to FRONTEND_URL, keeping path and query', () => {
+    const prev = process.env.FRONTEND_URL;
+    process.env.FRONTEND_URL = 'https://helpado.de/';
+    const page = (over) => Object.assign({
+        method: 'GET', hostname: 'helphub-production.up.railway.app', path: '/', originalUrl: '/?x=1',
+        get: (h) => (h === 'accept' ? 'text/html,application/xhtml+xml' : undefined)
+    }, over);
+    try {
+        assert.equal(Site.canonicalRedirectUrl(page({})), 'https://helpado.de/?x=1', 'root page redirects');
+        assert.equal(Site.canonicalRedirectUrl(page({ path: '/admin/', originalUrl: '/admin/' })), 'https://helpado.de/admin/', 'admin redirects too');
+        assert.equal(Site.canonicalRedirectUrl(page({ method: 'HEAD' })), 'https://helpado.de/?x=1', 'HEAD redirects');
+
+        assert.equal(Site.canonicalRedirectUrl(page({ path: '/api/users', originalUrl: '/api/users' })), null, 'API never redirects (APK still calls Railway)');
+        assert.equal(Site.canonicalRedirectUrl(page({ path: '/uploads/a.png', originalUrl: '/uploads/a.png' })), null, 'uploads never redirect');
+        assert.equal(Site.canonicalRedirectUrl(page({ method: 'POST' })), null, 'POST never redirects');
+        assert.equal(Site.canonicalRedirectUrl(page({ hostname: 'helpado.de' })), null, 'already on the canonical host');
+        assert.equal(Site.canonicalRedirectUrl(page({ get: () => 'application/json' })), null, 'non-page request (no text/html) is not redirected');
+
+        delete process.env.FRONTEND_URL;
+        assert.equal(Site.canonicalRedirectUrl(page({})), null, 'FRONTEND_URL unset → never redirect');
+    } finally {
+        if (prev === undefined) delete process.env.FRONTEND_URL; else process.env.FRONTEND_URL = prev;
+    }
+});
